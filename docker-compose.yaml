@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  admin:
+    container_name: admin
+    image: chilindo/admin
+    build:
+      context: .
+      dockerfile: ./src/admin-service/dockerfile
+    ports:
+      - "1001:1001"
+      - "50051:50051"
+    environment:
+      - DB_USER=root
+      - DB_PASS=Ledoan070899
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - DB_NAME=chilindo
+      - GIN_PORT=1001
+      - GRPC_SERVER_PORT=50051
+
+  product:
+    container_name: product
+    image: chilindo/product
+    build:
+      context: .
+      dockerfile: ./src/product-service/dockerfile
+    ports:
+      - "1002:1002"
+      - "50052:50052"
+    environment:
+      - DB_USER=root
+      - DB_PASS=Ledoan070899
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - DB_NAME=chilindo
+      - GIN_PORT=1002
+      - GRPC_SERVER_PORT=50052
+      - ADMIN_SRV_HOST=admin:50051
+
+  auction:
+    container_name: auction
+    image: chilindo/auction
+    build:
+      context: .
+      dockerfile: ./src/auction-service/dockerfile
+    ports:
+      - "1009:1009"
+    environment:
+      - DB_USER=root
+      - DB_PASS=Ledoan070899
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - DB_NAME=chilindo
+      - GIN_PORT=1009
+      - USER_SRV_HOST=admin:50051
+      - PRODUCT_SRV_HOST=product:50052
