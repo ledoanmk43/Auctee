@@ -11,7 +11,7 @@ type Admin struct {
 	gorm.Model `json:"-"`
 	Id         uint   `json:"id" gorm:"primaryKey"`
 	Username   string `json:"username" gorm:"type:nvarchar(100);unique"`
-	Password   string `json:"password" gorm:"type:nvarchar(100);not null"`
+	Password   string `json:"password,omitempty" gorm:"type:nvarchar(100);not null"`
 	Token      string `gorm:"-" json:"token,omitempty"`
 }
 

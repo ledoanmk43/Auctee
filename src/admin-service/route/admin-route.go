@@ -2,6 +2,7 @@ package route
 
 import (
 	"chilindo/src/admin-service/controller"
+	"chilindo/src/admin-service/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,22 +13,16 @@ type IAdminRoute interface {
 type AdminRouteDefault struct {
 	AdminController controller.IAdminController
 	Router          *gin.Engine
+	JWTMiddleware   *middleware.SMiddleWare
 }
 
 func (a *AdminRouteDefault) GetRouter() {
-	newAdminRoute(a.AdminController, a.Router)
-}
-
-func newAdminRoute(controller controller.IAdminController, group *gin.Engine) {
-	userRoute := group.Group("/chilindo/admin")
+	userRoute := a.Router.Group("/chilindo/admin")
 	{
-		userRoute.POST("/sign-up", controller.SignUp)
-		userRoute.POST("/sign-in", controller.SignIn)
+		userRoute.POST("/sign-up", a.AdminController.SignUp)
+		userRoute.POST("/sign-in", a.AdminController.SignIn)
+		userRoute.PATCH("/id=:id/password-setting", a.AdminController.UpdatePassword).Use(a.JWTMiddleware.IsAuthenticated())
 	}
-	//userAuthRoute := group.Group("/chilindo/user").Use(middleware.AuthorizeJWT())
-	//{
-	//	userAuthRoute.PUT("/update", controller.Update)
-	//}
 }
 
 func NewAdminRouteDefault(adminController controller.IAdminController, router *gin.Engine) *AdminRouteDefault {

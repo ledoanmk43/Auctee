@@ -33,7 +33,7 @@ func (t productConnection) DeleteProduct(b *dto.ProductDTO) (*entity.Product, er
 func (t productConnection) InsertProduct(b *dto.ProductCreatedDTO) (*entity.Product, error) {
 	record := t.connection.Create(&b.Product)
 	if record.Error != nil {
-		log.Println("Error to create product repo")
+		log.Println("Error to create product in repo")
 		return nil, record.Error
 	}
 	return b.Product, nil
@@ -45,7 +45,7 @@ func (t productConnection) UpdateProduct(b *dto.ProductUpdateDTO) (*entity.Produ
 	record := t.connection.Where("id = ?", b.ProductId).Find(&updateProduct).Count(&count)
 
 	if record.Error != nil {
-		log.Println("Error to find product repo", record.Error)
+		log.Println("Error to find product in repo", record.Error)
 		return nil, record.Error
 	}
 	if count == 0 {
@@ -65,7 +65,7 @@ func (t productConnection) AllProduct() (*[]entity.Product, error) {
 	var products *[]entity.Product
 	record := t.connection.Find(&products)
 	if record.Error != nil {
-		log.Println("GetProducts: Error get all in package", record.Error)
+		log.Println("GetProducts: Error get all in repo", record.Error)
 		return nil, record.Error
 	}
 	return products, nil

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	product2 "chilindo/pkg/pb/product"
+	product "chilindo/pkg/pb/product"
 	"chilindo/src/auction-service/entity"
 	"chilindo/src/auction-service/service"
 	"github.com/gin-gonic/gin"
@@ -15,10 +15,10 @@ type IAuctionController interface {
 
 type AuctionController struct {
 	AuctionService service.IAuctionService
-	ProductClient  product2.ProductServiceClient
+	ProductClient  product.ProductServiceClient
 }
 
-func NewAuctionController(auctionService service.IAuctionService, productClient product2.ProductServiceClient) *AuctionController {
+func NewAuctionController(auctionService service.IAuctionService, productClient product.ProductServiceClient) *AuctionController {
 	return &AuctionController{AuctionService: auctionService, ProductClient: productClient}
 }
 
@@ -32,7 +32,7 @@ func (a AuctionController) CreateAuction(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	in := product2.GetProductRequest{ProductId: auctionBody.ProductId}
+	in := product.GetProductRequest{ProductId: auctionBody.ProductId}
 	res, errRes := a.ProductClient.GetProduct(c, &in)
 
 	if errRes != nil {

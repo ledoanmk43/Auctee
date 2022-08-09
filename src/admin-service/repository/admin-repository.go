@@ -11,7 +11,7 @@ import (
 type IAdminRepository interface {
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Admin, error)
 	InsertAdmin(admin *entity.Admin) (*entity.Admin, error)
-	UpdateAdmin(admin *entity.Admin) *entity.Admin
+	UpdatePassword(password string, adminId uint) error
 	IsDuplicateUsername(username string) bool
 }
 
@@ -42,17 +42,32 @@ func (a *AdminRepositoryDefault) InsertAdmin(admin *entity.Admin) (*entity.Admin
 	return admin, nil
 }
 
-func (u AdminRepositoryDefault) UpdateAdmin(admin *entity.Admin) *entity.Admin {
-	//if user.Password != "" {
-	//	user.Password, _ = user.HashPassword(user.Password)
-	//} else {
-	//	var tempUser entity.User
-	//	u.db.Find(&tempUser, user.ID)
-	//	user.Password = tempUser.Password
-	//}
-	//
-	//u.db.Save(&user)
-	return admin
+func (a *AdminRepositoryDefault) UpdatePassword(password string, adminId uint) error {
+	if len(password) == 0 {
+		log.Println("Change Password: Error empty field in package repository: empty input")
+		return errors.New("password field must not be empty")
+	}
+
+	var adminToUpdate *entity.Admin
+	result := a.db.Where("id = ?", adminId).Find(&adminToUpdate)
+	if result.Error != nil {
+		log.Println("Update Password: Error in package repository: ", result.Error)
+		return result.Error
+	}
+	if adminToUpdate.CheckPassword(password) == nil { //compare
+		return errors.New("new password must not be the same as old password")
+	}
+	if errHashPassword := adminToUpdate.HashPassword(password); errHashPassword != nil {
+		log.Println("CreateUser: Error in package repository", errHashPassword)
+		return errHashPassword
+	}
+
+	res := a.db.Updates(&adminToUpdate)
+	if res.Error != nil {
+		log.Println("CreateUser: Error in package repository", res.Error)
+		return result.Error
+	}
+	return nil
 }
 
 func (a *AdminRepositoryDefault) IsDuplicateUsername(username string) bool {

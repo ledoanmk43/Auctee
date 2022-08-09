@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("superSecretKey")
+var jwtKey = []byte("123456789")
 
 type IJwtMiddleware interface {
 	GenerateJWT(email string, userid uint) (tokenString string, err error)

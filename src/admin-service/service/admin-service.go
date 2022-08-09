@@ -15,7 +15,7 @@ import (
 )
 
 type IAdminService interface {
-	//Update(admin *dto.AdminUpdateDTO) *entity.Admin
+	UpdatePassword(in *dto.PasswordToUpdate, adminId uint) error
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Admin, error)
 	CreateAdmin(admin *entity.Admin) (*entity.Admin, error)
 	IsDuplicateUsername(username string) bool
@@ -46,7 +46,7 @@ func (a *AdminService) CreateAdmin(admin *entity.Admin) (*entity.Admin, error) {
 		log.Println("Error: Error in package repository: ", err.Error())
 		return nil, err
 	}
-	return newAdmin, err
+	return newAdmin, nil
 }
 
 func (a *AdminService) IsDuplicateUsername(username string) bool {
@@ -54,13 +54,12 @@ func (a *AdminService) IsDuplicateUsername(username string) bool {
 	return res
 }
 
-func (a *AdminService) Update(admin *dto.AdminUpdateDTO) *entity.Admin {
-	//var adminToUpdate *entity.Admin
-	//err := smapping.FillStruct(&adminToUpdate, smapping.MapFields(&admin))
-	//if err != nil {
-	//	log.Fatalf("Failed map %v:", err)
-	//}
-	//updatedAdmin := a.AdminRepository.UpdateAdmin(adminToUpdate)
+func (a *AdminService) UpdatePassword(in *dto.PasswordToUpdate, adminId uint) error {
+	err := a.AdminRepository.UpdatePassword(in.Password, adminId)
+	if err != nil {
+		log.Println("Error: Error in package repository: ", err.Error())
+		return err
+	}
 	return nil
 }
 

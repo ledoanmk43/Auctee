@@ -15,6 +15,9 @@ type AdminUpdateDTO struct {
 	Username string `json:"email" from:"username" binding:"required,username"`
 	Password string `json:"password" from:"password" binding:"required"`
 }
+type PasswordToUpdate struct {
+	Password string
+}
 
 func (admin *AdminLoginDTO) Validate(action string) error {
 	switch strings.ToLower(action) {

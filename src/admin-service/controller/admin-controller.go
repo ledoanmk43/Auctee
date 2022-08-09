@@ -8,12 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type IAdminController interface {
 	SignIn(c *gin.Context)
 	SignUp(c *gin.Context)
-	//Update(c *gin.Context)
+	UpdatePassword(c *gin.Context)
 }
 
 type AdminController struct {
@@ -21,15 +23,11 @@ type AdminController struct {
 	token        *token.Claims
 }
 
-func (a AdminController) Update(c *gin.Context) {
-
-}
-
 func NewAdminControllerDefault(adminService service.IAdminService) *AdminController {
 	return &AdminController{AdminService: adminService}
 }
 
-func (a AdminController) SignUp(ctx *gin.Context) {
+func (a *AdminController) SignUp(ctx *gin.Context) {
 	var newAdmin *entity.Admin
 	errDTO := ctx.ShouldBindJSON(&newAdmin)
 	if errDTO != nil {
@@ -106,5 +104,62 @@ func (a *AdminController) SignIn(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
+	})
+}
+
+func (a *AdminController) UpdatePassword(ctx *gin.Context) {
+	adminId, errGetId := strconv.Atoi(ctx.Param("id"))
+
+	if errGetId != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Message": "Error when get adminId",
+		})
+		ctx.Abort()
+		return
+	}
+
+	rawToken := ctx.GetHeader("Authorization")
+	tokenString := strings.TrimPrefix(rawToken, "Bearer ")
+	claims, errExtract := token.ExtractToken(tokenString)
+
+	if errExtract != nil || len(tokenString) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"Message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	var passwordToUpdate *dto.PasswordToUpdate
+	err := ctx.ShouldBindJSON(&passwordToUpdate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Message": "Error Binding JSON",
+		})
+		log.Println("SignIn: Error ShouldBindJSON in package controller", err)
+		ctx.Abort()
+		return
+	}
+
+	if uint(adminId) != claims.UserId {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"Message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+	errUpdate := a.AdminService.UpdatePassword(passwordToUpdate, claims.UserId)
+	if errUpdate != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": errUpdate.Error(),
+		})
+		log.Println("Update Password: Error in package controller", err)
+		ctx.Abort()
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"Message": "password updated",
 	})
 }
