@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="97c0ee4a-566b-4d6a-bcc3-949eac4e5d28" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/Auctee.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.idea/chilindo.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/docker-compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/go.sum" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/pb/admin/admin.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/pb/admin/admin_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/pb/product/product.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/pb/product/product_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/pb/user/user.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/pb/user/user_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/proto/admin.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/proto/product.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/proto/user.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/ca.crt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/ca.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/server.crt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/server.csr" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/server.key" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/server.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/ssl.ps1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/ssl.ps1.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/ssl/tls.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/token/jwt-token.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pkg/utils/utils.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/cmd/grpc-admin/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/cmd/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/config/const.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/config/database_config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/controller/admin-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/controller/admin-controller_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/dto/admin-dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/entity/admin.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/middleware/jwt-middleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/repository/admin-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/route/admin-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/service/admin-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/service/mocks/admin-service_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/admin-service/utils/utils.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/cmd/grpc-auction/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/cmd/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/config/database_config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/controller/admin-grpc-controller/admin-rpc-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/controller/auction-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/controller/bid-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/dto/auction-dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/entity/auction.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/entity/bid.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/middleware/middleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/repository/auction-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/repository/bid-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/route/auction-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/route/bid-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/service/auction-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/auction-service/service/bid-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/cmd/grpc-product/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/cmd/grpc-product/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/cmd/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/config/database_config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/controller/admin-grpc-controller/admin-rpc-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-controller_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-image-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-option-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/dto/image-dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/dto/option-dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/dto/product-dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/entity/product-image.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/entity/product-option.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/entity/product.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/middleware/middleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/mock/product-option-repository_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/mock/product-option-service_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/mock/product-repository_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/mock/product-service_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/repository/product-image-respository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/repository/product-option-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/repository/product-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/route/product-image.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/route/product-option.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/route/product-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/service/product-image-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/service/product-option-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/service/product-option-service_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/service/product-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/product-service/service/product-service_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/cmd/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/config/const.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/config/database_config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/controller/address-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/controller/address-controller_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/controller/user-controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/controller/user-controller_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/dto/user-dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/entity/address.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/entity/user.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/middleware/jwt-middleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/repository/address-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/repository/user-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/route/address-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/route/user-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/service/address-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/service/mocks/address-service_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/service/mocks/user-service_mock.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/user-service/service/user-service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.history/src/App_19851026151459.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.history/src/App_20220905141811.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.history/src/App_20220905141815.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.history/src/index_19851026151459.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.history/src/index_20220905141435.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/logo192.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/logo512.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/manifest.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/robots.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/reportWebVitals.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/chilindo.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/pb/admin/admin.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/pb/admin/admin_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/pb/product/product.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/pb/product/product_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/proto/admin.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/proto/product.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/ca.crt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/ca.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/server.crt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/server.csr" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/server.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/server.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/ssl.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/ssl.ps1.conf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/ssl/tls.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/token/jwt-token.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/utils/utils.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/cmd/grpc-admin/server.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/cmd/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/config/const.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/config/database_config.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/controller/admin-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/controller/admin-controller_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/dto/admin-dto.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/entity/admin.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/middleware/jwt-middleware.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/repository/admin-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/route/admin-route.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/service/admin-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/service/mocks/admin-service_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/admin-service/utils/utils.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/cmd/grpc-auction/client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/cmd/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/config/database_config.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/controller/admin-grpc-controller/admin-rpc-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/controller/auction-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/dto/auction-dto.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/entity/auction.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/middleware/middleware.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/repository/auction-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/route/auction-route.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auction-service/service/auction-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/cmd/grpc-product/client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/cmd/grpc-product/server.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/cmd/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/config/database_config.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/controller/admin-grpc-controller/admin-rpc-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/controller/product-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/controller/product-controller_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/controller/product-image-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/controller/product-option-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/dto/image-dto.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/dto/option-dto.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/dto/product-dto.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/entity/product-image.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/entity/product-option.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/entity/product.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/middleware/middleware.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/mock/product-option-repository_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/mock/product-option-service_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/mock/product-repository_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/mock/product-service_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/repository/product-image-respository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/repository/product-option-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/repository/product-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/route/product-image.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/route/product-option.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/route/product-route.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/service/product-image-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/service/product-option-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/service/product-option-service_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/service/product-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/product-service/service/product-service_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/cmd/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/config/const.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/config/database_config.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/controller/address-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/controller/address-controller_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/controller/user-controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/controller/user-controller_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/dto/user-dto.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/entity/address.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/entity/user.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/middleware/jwt-middleware.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/repository/address-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/repository/user-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/route/address-route.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/route/user-route.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/service/address-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/service/mocks/address-service_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/service/mocks/user-service_mock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user-service/service/user-service.go" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../Program Files/Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2EL1wmaml34bqLsQezWjUwr7Jps" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "C:/Users/eduku",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="RunManager" selected="Go Build.go build main.go (2)">
+    <configuration name="go build main.go (1)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/product-service/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build main.go (2)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/admin-service/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/auction-service/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build main.go (2)" />
+        <item itemvalue="Go Build.go build main.go (1)" />
+        <item itemvalue="Go Build.go build main.go" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>
