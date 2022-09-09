@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="97c0ee4a-566b-4d6a-bcc3-949eac4e5d28" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/src/account-service/cmd/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/account-service/entity/address.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/account-service/repository/account-repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/account-service/route/account-route.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/account-service/service/account-service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/backend/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pkg/token/jwt-token.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pkg/token/jwt-token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pkg/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pkg/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/cmd/grpc-admin/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/cmd/grpc-admin/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/cmd/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/config/const.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/config/const.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/config/database_config.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/config/database_config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/controller/admin-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/controller/account-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/controller/admin-controller_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/controller/account-controller_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/dto/admin-dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/dto/account-dto.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/entity/admin.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/entity/account.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/middleware/jwt-middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/middleware/jwt-middleware.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/repository/admin-repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/route/admin-route.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/service/admin-service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/service/mocks/admin-service_mock.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/service/mocks/user-service_mock.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/admin-service/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/auction-service/controller/admin-grpc-controller/admin-rpc-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/auction-service/controller/admin-grpc-controller/admin-rpc-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/auction-service/controller/auction-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/auction-service/controller/auction-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/auction-service/controller/bid-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/auction-service/controller/bid-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/product-service/controller/admin-grpc-controller/admin-rpc-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/product-service/controller/admin-grpc-controller/admin-rpc-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/product-service/controller/product-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/product-service/controller/product-image-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-image-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/product-service/controller/product-option-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/product-service/controller/product-option-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/config/const.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/config/const.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/config/database_config.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/config/database_config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/controller/address-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/controller/address-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/controller/address-controller_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/controller/address-controller_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/controller/user-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/controller/user-controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/controller/user-controller_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/controller/user-controller_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/dto/user-dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/dto/user-dto.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/entity/address.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/entity/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/entity/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/middleware/jwt-middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/middleware/jwt-middleware.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/repository/address-repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/repository/address-repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/repository/user-repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/repository/user-repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/route/address-route.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/route/address-route.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/route/user-route.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/route/user-route.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/service/address-service.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/account-service/service/address-service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/service/mocks/address-service_mock.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/service/mocks/address-service_mock.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/service/mocks/user-service_mock.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/service/mocks/user-service_mock.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/user-service/service/user-service.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/user-service-mock/service/user-service.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../Program Files/Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2EL1wmaml34bqLsQezWjUwr7Jps" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/eduku&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\eduku\OneDrive\Desktop\Auctee\backend\src\user-service\controller" />
+      <recent name="C:\Users\eduku\OneDrive\Desktop\Auctee\backend\src\user-service\service" />
+      <recent name="C:\Users\eduku\OneDrive\Desktop\Auctee\backend\src\user-service\route" />
+      <recent name="C:\Users\eduku\OneDrive\Desktop\Auctee\backend\src\user-service\entity" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build main.go">
+    <configuration name="go build main.go (2)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/admin-service/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build main.go (3)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/user-service/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/account-service/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build user-repository.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/account-service/repository/user-repository.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build user-route.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Auctee" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <EXTENSION ID="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+        </ENTRIES>
+      </EXTENSION>
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/backend/src/account-service/route/user-route.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build main.go" />
+        <item itemvalue="Go Build.go build user-route.go" />
+        <item itemvalue="Go Build.go build user-repository.go" />
+        <item itemvalue="Go Build.go build main.go (3)" />
+        <item itemvalue="Go Build.go build main.go (2)" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>
