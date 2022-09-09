@@ -29,7 +29,7 @@ func (p *productController) All(context *gin.Context) {
 	products, err := p.productService.All()
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Fail to get all products",
+			"message": "Fail to get all products",
 		})
 		log.Println("GetProducts: Error get all product in package controller", err)
 		context.Abort()
@@ -45,7 +45,7 @@ func (p *productController) FindByID(context *gin.Context) {
 	product, err := p.productService.FindProductByID(&dto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to get Product ",
+			"message": "Error to get Product ",
 		})
 		log.Println("GetProductById: Error in package controller", err)
 		context.Abort()
@@ -53,7 +53,7 @@ func (p *productController) FindByID(context *gin.Context) {
 	}
 	if product == nil {
 		context.JSON(http.StatusNotFound, gin.H{
-			"Message": "Not found product",
+			"message": "Not found product",
 		})
 		context.Abort()
 		return
@@ -66,7 +66,7 @@ func (p *productController) Insert(ctx *gin.Context) {
 	var productBody *entity.Product
 	if err := ctx.ShouldBindJSON(&productBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Fail to create product",
+			"message": "Fail to create product",
 		})
 		log.Println("Error to ShouldBindJSON controller", err)
 		ctx.Abort()
@@ -80,7 +80,7 @@ func (p *productController) Insert(ctx *gin.Context) {
 	createdProduct, err := p.productService.Insert(productBody)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": err.Error(),
+			"message": err.Error(),
 		})
 		log.Println("Error to create product  controller", err)
 		ctx.Abort()
@@ -94,7 +94,7 @@ func (p *productController) Update(context *gin.Context) {
 	var productUpdateBody *entity.Product
 	if err := context.ShouldBindJSON(&productUpdateBody); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to update product",
+			"message": "Error to update product",
 		})
 		log.Println("UpdateProduct: Error ShouldBindJSON in package controller", err)
 		context.Abort()
@@ -106,7 +106,7 @@ func (p *productController) Update(context *gin.Context) {
 	product, err := p.productService.Update(dtoUpdate)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to update product",
+			"message": "Error to update product",
 		})
 		log.Println("UpdateProduct: Error Update in package controller", err)
 		context.Abort()
@@ -124,7 +124,7 @@ func (p *productController) Delete(ctx *gin.Context) {
 	_, err := p.productService.Delete(ProductId, adminId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": err.Error(),
+			"message": err.Error(),
 		})
 		log.Println("DeleteProduct: Error to get id product in package controller", err)
 		ctx.Abort()
@@ -132,7 +132,7 @@ func (p *productController) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"Message": "product deleted",
+		"message": "product deleted",
 	})
 }
 

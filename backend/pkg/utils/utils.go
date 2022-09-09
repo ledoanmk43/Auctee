@@ -21,7 +21,7 @@ func GetIdFromToken(ctx *gin.Context) uint {
 	if errExtract != nil || len(tokenString) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"Message": "Unauthorized",
+			"message": "Unauthorized",
 		})
 		ctx.Abort()
 		return 0

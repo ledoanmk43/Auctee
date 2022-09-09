@@ -2,10 +2,13 @@ package token
 
 import (
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
+	"log"
+	"os"
 	"time"
 )
 
-var jwtKey = []byte("123456789")
+var jwtKey []byte
 
 type IJwtMiddleware interface {
 	GenerateJWT(email string, userid uint) (tokenString string, err error)
@@ -20,7 +23,12 @@ type Claims struct {
 }
 
 func (j *Claims) GenerateJWT(email string, userid uint, adminUsername string) (tokenString string, err error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
+	if err := godotenv.Load(); err != nil {
+		log.Println("Error loading .env in jwt-token file")
+	}
+	jwtKey = []byte(os.Getenv("SECRET_KEY"))
+
+	expirationTime := time.Now().Add(24 * 7 * time.Hour)
 	claims := &Claims{
 		Email:    email,
 		UserId:   userid, //UserId or AdminId

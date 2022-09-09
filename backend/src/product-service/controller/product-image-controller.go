@@ -26,7 +26,7 @@ func (p productImageController) UpdateImage(c *gin.Context) {
 	var imageUpdateBody *entity.ProductImages
 	if err := c.ShouldBindJSON(&imageUpdateBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to update product",
+			"message": "Error to update product",
 		})
 		log.Println("UpdateProduct: Error ShouldBindJSON in package controller", err)
 		c.Abort()
@@ -35,7 +35,7 @@ func (p productImageController) UpdateImage(c *gin.Context) {
 	oid, errCv := strconv.Atoi(c.Param(imageId))
 	if errCv != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error update image",
+			"message": "Error update image",
 		})
 		log.Println("UpdateImage: Error parse param", errCv)
 		c.Abort()
@@ -47,7 +47,7 @@ func (p productImageController) UpdateImage(c *gin.Context) {
 	product, err := p.productImageService.UpdateImage(dtoUpdate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to update product",
+			"message": "Error to update product",
 		})
 		log.Println("UpdateProduct: Error Update in package controller", err)
 		c.Abort()
@@ -64,7 +64,7 @@ func (p productImageController) GetImageByID(c *gin.Context) {
 	image, err := p.productImageService.GetImageByID(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error get image",
+			"message": "Error get image",
 		})
 		log.Println("GetImageById: Error call service in pkg controller", err)
 		c.Abort()
@@ -72,7 +72,7 @@ func (p productImageController) GetImageByID(c *gin.Context) {
 	}
 	if image == nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"Message": "no image found",
+			"message": "no image found",
 		})
 		c.Abort()
 		return
@@ -86,7 +86,7 @@ func (p productImageController) DeleteImage(c *gin.Context) {
 	image, err := p.productImageService.DeleteImage(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to delete image",
+			"message": "Error to delete image",
 		})
 		log.Println("DeleteImage: Error to parse oId", err)
 		c.Abort()
@@ -102,14 +102,14 @@ func (p productImageController) GetImage(c *gin.Context) {
 	if err != nil {
 		log.Println("GetImages: error in controller package", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Fail to get images",
+			"message": "Fail to get images",
 		})
 		c.Abort()
 		return
 	}
 	if images == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "no image found",
+			"message": "no image found",
 		})
 		c.Abort()
 		return
@@ -121,7 +121,7 @@ func (p productImageController) CreateImage(c *gin.Context) {
 	var imageBody *entity.ProductImages
 	if err := c.ShouldBindJSON(&imageBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Fail to create image",
+			"message": "Fail to create image",
 		})
 		log.Println("CreateImage: Error to ShouldBindJSON in package controller", err)
 		c.Abort()

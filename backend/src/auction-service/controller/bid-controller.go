@@ -32,7 +32,7 @@ func (b *BidController) CreateBid(ctx *gin.Context) {
 	var bidBody *entity.Bid
 	if err := ctx.ShouldBindJSON(&bidBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error when binding JSON",
+			"message": "Error when binding JSON",
 		})
 		log.Println("Error to ShouldBindJSON controller", err)
 		ctx.Abort()

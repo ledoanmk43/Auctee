@@ -41,7 +41,7 @@ func (a *AdminServiceController) MiddlewareCheckIsAuth(adminClient admin.AdminSe
 		}
 		if !(res.IsAuth) {
 			c.JSON(http.StatusForbidden, gin.H{
-				"Message": "Forbidden",
+				"message": "Forbidden",
 			})
 			c.Abort()
 			return

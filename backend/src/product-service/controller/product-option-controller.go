@@ -26,7 +26,7 @@ func (p productOptionController) UpdateOption(c *gin.Context) {
 	var optionUpdateBody *entity.ProductOption
 	if err := c.ShouldBindJSON(&optionUpdateBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to update product",
+			"message": "Error to update product",
 		})
 		log.Println("UpdateProduct: Error ShouldBindJSON in package controller", err)
 		c.Abort()
@@ -35,7 +35,7 @@ func (p productOptionController) UpdateOption(c *gin.Context) {
 	oid, errCv := strconv.Atoi(c.Param(optionId))
 	if errCv != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error update option",
+			"message": "Error update option",
 		})
 		log.Println("UpdateOption: Error parse param", errCv)
 		c.Abort()
@@ -47,7 +47,7 @@ func (p productOptionController) UpdateOption(c *gin.Context) {
 	product, err := p.productOptionService.UpdateOption(dtoUpdate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to update product",
+			"message": "Error to update product",
 		})
 		log.Println("UpdateProduct: Error Update in package controller", err)
 		c.Abort()
@@ -59,7 +59,7 @@ func (p *productOptionController) CreateOption(ctx *gin.Context) {
 	var optionBody *entity.ProductOption
 	if err := ctx.ShouldBindJSON(&optionBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Fail to create option",
+			"message": "Fail to create option",
 		})
 		log.Println("CreateOption: Error to ShouldBindJSON in package controller", err)
 		ctx.Abort()
@@ -70,7 +70,7 @@ func (p *productOptionController) CreateOption(ctx *gin.Context) {
 	createdOption, err := p.productOptionService.CreateOption(optionBody)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": err.Error(),
+			"message": err.Error(),
 		})
 		log.Println("CreateOption: Error to CreateOption in package controller", err)
 		ctx.Abort()
@@ -86,14 +86,14 @@ func (p productOptionController) GetOptions(c *gin.Context) {
 	if err != nil {
 		log.Println("GetOptions: error in controller package", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Fail to get options",
+			"message": "Fail to get options",
 		})
 		c.Abort()
 		return
 	}
 	if options == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Not found options",
+			"message": "Not found options",
 		})
 		c.Abort()
 		return
@@ -108,7 +108,7 @@ func (p productOptionController) GetOptionByID(c *gin.Context) {
 	option, err := p.productOptionService.GetOptionByID(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error get option",
+			"message": "Error get option",
 		})
 		log.Println("GetOptionById: Error call service in pkg controller", err)
 		c.Abort()
@@ -116,7 +116,7 @@ func (p productOptionController) GetOptionByID(c *gin.Context) {
 	}
 	if option == nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"Message": "Option not found",
+			"message": "Option not found",
 		})
 		c.Abort()
 		return
@@ -131,7 +131,7 @@ func (p *productOptionController) DeleteOption(c *gin.Context) {
 	option, err := p.productOptionService.DeleteOption(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Error to delete option",
+			"message": "Error to delete option",
 		})
 		log.Println("DeleteOption: Error to parse oId", err)
 		c.Abort()

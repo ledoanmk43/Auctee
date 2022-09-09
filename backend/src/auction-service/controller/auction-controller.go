@@ -27,7 +27,7 @@ func (a *AuctionController) CreateAuction(ctx *gin.Context) {
 	var auctionBody *entity.Auction
 	if err := ctx.ShouldBindJSON(&auctionBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": err.Error(),
+			"message": err.Error(),
 		})
 		log.Println("Error to ShouldBindJSON controller", err)
 		ctx.Abort()
@@ -39,7 +39,7 @@ func (a *AuctionController) CreateAuction(ctx *gin.Context) {
 
 	if errRes != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Message": errRes.Error(),
+			"message": errRes.Error(),
 		})
 		log.Println("CreateAuction: Error to call productService rpc server", errRes)
 		ctx.Abort()
@@ -48,7 +48,7 @@ func (a *AuctionController) CreateAuction(ctx *gin.Context) {
 
 	if res == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"Message": "no product found",
+			"message": "no product found",
 		})
 		log.Println("CreateAuction: product not found")
 		ctx.Abort()
