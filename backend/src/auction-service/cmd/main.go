@@ -1,14 +1,14 @@
 package main
 
 import (
-	"chilindo/pkg/utils"
-	rpcClientAuction "chilindo/src/auction-service/cmd/grpc-auction"
-	"chilindo/src/auction-service/config"
-	"chilindo/src/auction-service/controller"
-	admin_server_controller "chilindo/src/auction-service/controller/admin-grpc-controller"
-	"chilindo/src/auction-service/repository"
-	"chilindo/src/auction-service/route"
-	"chilindo/src/auction-service/service"
+	"backend/pkg/utils"
+	rpcClientAuction "backend/src/auction-service/cmd/grpc-auction"
+	"backend/src/auction-service/config"
+	"backend/src/auction-service/controller"
+	account_server_controller "backend/src/auction-service/controller/account-grpc-controller"
+	"backend/src/auction-service/repository"
+	"backend/src/auction-service/route"
+	"backend/src/auction-service/service"
 	"fmt"
 )
 
@@ -25,7 +25,7 @@ func main() {
 
 	//Create new gRPC Client
 	grpcClientFromAdminServer := rpcClientAuction.NewRPCClient()
-	adminClient := grpcClientFromAdminServer.SetUpAdminClient(grpcServerPortAdmin)
+	adminClient := grpcClientFromAdminServer.SetUpAccountClient(grpcServerPortAdmin)
 
 	//Product service DB
 	db := config.GetDB()
@@ -35,14 +35,14 @@ func main() {
 	auctionRepository := repository.NewAuctionRepositoryDefault(db)
 	auctionService := service.NewAuctionServiceDefault(auctionRepository)
 	auctionController := controller.NewAuctionController(auctionService, productClient)
-	adminSrvCtrl := admin_server_controller.NewAdminServiceController()
-	auctionRouter := route.NewAuctionRoute(auctionController, newRouter, adminSrvCtrl, adminClient)
+	accountSrvCtrl := account_server_controller.NewAccountServiceController()
+	auctionRouter := route.NewAuctionRoute(auctionController, newRouter, accountSrvCtrl, adminClient)
 	auctionRouter.GetRouter()
 
 	bidRepository := repository.NewBidRepositoryDefault(db, auctionRepository)
 	bidService := service.NewBidServiceDefault(bidRepository, auctionRepository)
 	bidController := controller.NewBidController(bidService)
-	bidRouter := route.NewBidRoute(bidController, newRouter, adminSrvCtrl, adminClient)
+	bidRouter := route.NewBidRoute(bidController, newRouter, accountSrvCtrl, adminClient)
 	bidRouter.GetRouter()
 
 	if err := newRouter.Run(ginPort); err != nil {

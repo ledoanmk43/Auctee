@@ -1,7 +1,7 @@
 package config
 
 import (
-	"chilindo/src/auction-service/entity"
+	"backend/src/auction-service/entity"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"

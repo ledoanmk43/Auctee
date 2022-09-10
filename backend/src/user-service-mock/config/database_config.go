@@ -1,8 +1,8 @@
 package config
 
 import (
-	entity2 "chilindo/src/account-service/entity"
-	"chilindo/src/user-service-mock/entity"
+	entity2 "backend/src/account-service/entity"
+	"backend/src/user-service-mock/entity"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -17,7 +17,7 @@ var (
 	port     string = "3306"
 	username string = "root"
 	password string = "A1231230"
-	database string = "chilindo"
+	database string = "backend"
 )
 var connectString = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 	username,

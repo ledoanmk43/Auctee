@@ -1,11 +1,11 @@
 package service
 
 import (
-	"chilindo/pkg/pb/admin"
-	"chilindo/pkg/token"
-	"chilindo/src/account-service/dto"
-	"chilindo/src/account-service/entity"
-	"chilindo/src/account-service/repository"
+	"backend/pkg/pb/account"
+	"backend/pkg/token"
+	"backend/src/account-service/dto"
+	"backend/src/account-service/entity"
+	"backend/src/account-service/repository"
 	"errors"
 	"strings"
 
@@ -20,7 +20,7 @@ type IAccountService interface {
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Account, error)
 	CreateUser(user *entity.Account) (*entity.Account, error)
 	IsDuplicateUsername(username string) (bool, error)
-	CheckIsAuth(req *admin.CheckIsAuthRequest) (*admin.CheckIsAuthResponse, error)
+	CheckIsAuth(req *account.CheckIsAuthRequest) (*account.CheckIsAuthResponse, error)
 	GetUserByUserId(userId uint) (*entity.Account, error)
 	UpdateProfileByUserId(userId uint, updateBody *dto.UpdateProfileDTO) error
 }
@@ -92,7 +92,7 @@ func (a *AccountService) GetUserByUserId(userId uint) (*entity.Account, error) {
 	return user, nil
 }
 
-func (u AccountService) CheckIsAuth(req *admin.CheckIsAuthRequest) (*admin.CheckIsAuthResponse, error) {
+func (u AccountService) CheckIsAuth(req *account.CheckIsAuthRequest) (*account.CheckIsAuthResponse, error) {
 	isAuth := false
 	tokenString := req.Token
 
@@ -108,7 +108,7 @@ func (u AccountService) CheckIsAuth(req *admin.CheckIsAuthRequest) (*admin.Check
 		isAuth = true
 	}
 
-	return &admin.CheckIsAuthResponse{
+	return &account.CheckIsAuthResponse{
 		IsAuth: isAuth,
 	}, nil
 }

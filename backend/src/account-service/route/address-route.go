@@ -1,9 +1,8 @@
 package route
 
 import (
-	"chilindo/src/account-service/controller"
-
-	"chilindo/src/user-service-mock/middleware"
+	"backend/src/account-service/controller"
+	"backend/src/account-service/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,12 +21,12 @@ func NewAddressRouteDefault(addressController controller.IAddressController, rou
 }
 
 func (a AddressRoute) GetRouter() {
-	addressRoute := a.Router.Group("/chilindo/user/address").Use(a.JWTMiddleware.IsAuthenticated())
+	addressRoute := a.Router.Group("/auctee")
 	{
-		addressRoute.POST("/create", a.AddressController.CreateAddress)
-		addressRoute.PUT("/update/:id", a.AddressController.UpdateAddress)
-		addressRoute.DELETE("/delete/:id", a.AddressController.DeleteAddress)
-		addressRoute.GET("/getaddress", a.AddressController.GetAddress)
-		addressRoute.GET("/getaddress/:id", a.AddressController.GetAddressById)
+		addressRoute.POST("/user/address", a.AddressController.CreateAddress)
+		addressRoute.GET("/user/address/id=:id", a.AddressController.GetAddressByAddressId)
+		addressRoute.GET("/user/address", a.AddressController.GetAllAddresses)
+		addressRoute.PUT("/user/address/id=:id", a.AddressController.UpdateAddressByAddressId)
+		addressRoute.DELETE("/user/address/id=:id", a.AddressController.DeleteAddressByAddressId)
 	}
 }

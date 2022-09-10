@@ -2,8 +2,8 @@ package controller
 
 import (
 	"bytes"
-	"chilindo/src/account-service/entity"
-	service "chilindo/src/account-service/service/mocks"
+	"backend/src/account-service/entity"
+	service "backen/src/account-service/service/mocks"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"gorm.io/gorm"
@@ -34,7 +34,7 @@ func TestAdminController_SignIn(t *testing.T) {
 
 	body := []byte("{}")
 
-	req, err := http.NewRequest("POST", "chilindo/admin/sign-in", bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", "backen/admin/sign-in", bytes.NewBuffer(body))
 
 	if err != nil {
 		t.Fatalf("Error")
@@ -66,7 +66,7 @@ func TestAdminController_SignUp(t *testing.T) {
 
 	bodyRequest := `{"username":""}`
 
-	req, err := http.NewRequest("POST", "chilindo/admin/sign-up", strings.NewReader(bodyRequest))
+	req, err := http.NewRequest("POST", "backen/admin/sign-up", strings.NewReader(bodyRequest))
 	if err != nil {
 		t.Fatalf("error %v", err)
 	}

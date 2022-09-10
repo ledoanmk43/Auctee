@@ -8,9 +8,9 @@ RUN go mod download
 
 COPY pkg/ /pkg/
 
-COPY src/admin-service/ /src/admin-service/
+COPY src/account-service/ /src/account-service/
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /main /src/admin-service/cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /main /src/account-service/cmd/main.go
 
 FROM scratch
 
@@ -22,6 +22,6 @@ COPY --from=build /main /main
 EXPOSE 1001
 EXPOSE 50051
 
-#CMD [ "/admin-service" ]
+#CMD [ "/account-service" ]
 
 ENTRYPOINT ["/main"]

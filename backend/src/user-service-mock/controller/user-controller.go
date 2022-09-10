@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"chilindo/pkg/token"
-	"chilindo/src/user-service-mock/dto"
-	"chilindo/src/user-service-mock/entity"
-	"chilindo/src/user-service-mock/service"
+	"backend/pkg/token"
+	"backend/src/user-service-mock/dto"
+	"backend/src/user-service-mock/entity"
+	"backend/src/user-service-mock/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

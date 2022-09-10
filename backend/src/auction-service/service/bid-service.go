@@ -1,8 +1,8 @@
 package service
 
 import (
-	"chilindo/src/auction-service/entity"
-	"chilindo/src/auction-service/repository"
+	"backend/src/auction-service/entity"
+	"backend/src/auction-service/repository"
 	"errors"
 	"log"
 )

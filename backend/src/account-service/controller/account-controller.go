@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"chilindo/pkg/token"
-	"chilindo/src/account-service/config"
-	"chilindo/src/account-service/dto"
-	"chilindo/src/account-service/entity"
-	"chilindo/src/account-service/service"
+	"backend/pkg/token"
+	"backend/pkg/utils"
+	"backend/src/account-service/config"
+	"backend/src/account-service/dto"
+	"backend/src/account-service/entity"
+	"backend/src/account-service/service"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -72,10 +73,15 @@ func (a *AccountController) SignUp(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
+	//Create Session with token
 	createdUser.Token = tokenString
 	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
 	newSession.Set(config.CookieAuth, tokenString)
-	newSession.Save()
+	if errSave := newSession.Save(); errSave != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
+
 	ctx.JSON(http.StatusCreated, gin.H{"message": "register successfully"})
 }
 
@@ -112,6 +118,7 @@ func (a *AccountController) SignIn(ctx *gin.Context) {
 		return
 	}
 
+	//Create Session with token
 	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
 	newSession.Set(config.CookieAuth, tokenString)
 	if errSave := newSession.Save(); errSave != nil {
@@ -202,10 +209,13 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 }
 
 func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
-	tokenFromCookie := newSession.Get(config.CookieAuth)
-	if tokenFromCookie == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
 		return
 	}
 
@@ -218,8 +228,8 @@ func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
-	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -250,10 +260,13 @@ func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
 }
 
 func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
-	tokenFromCookie := newSession.Get(config.CookieAuth)
-	if tokenFromCookie == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
 		return
 	}
 
@@ -277,8 +290,8 @@ func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
-	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",

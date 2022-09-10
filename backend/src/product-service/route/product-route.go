@@ -1,9 +1,9 @@
 package route
 
 import (
-	"chilindo/pkg/pb/admin"
+	"chilindo/pkg/pb/account"
+	account_server_controller "chilindo/src/auction-service/controller/account-grpc-controller"
 	"chilindo/src/product-service/controller"
-	admin_server_controller "chilindo/src/product-service/controller/admin-grpc-controller"
 	"chilindo/src/product-service/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -13,23 +13,23 @@ type IProductRoute interface {
 }
 
 type ProductRoute struct {
-	ProductController  controller.ProductController
-	Router             *gin.Engine
-	AdminSrvController admin_server_controller.IAdminServiceController
-	AdminClient        admin.AdminServiceClient
+	ProductController    controller.ProductController
+	Router               *gin.Engine
+	AccountSrvController account_server_controller.IAccountServiceController
+	AccountClient        account.AccountServiceClient
 }
 
-func NewProductRoute(productController controller.ProductController, router *gin.Engine, adminSrvController admin_server_controller.IAdminServiceController, adminClient admin.AdminServiceClient) *ProductRoute {
-	return &ProductRoute{ProductController: productController, Router: router, AdminSrvController: adminSrvController, AdminClient: adminClient}
+func NewProductRoute(productController controller.ProductController, router *gin.Engine, accountSrvController account_server_controller.IAccountServiceController, accountClient account.AccountServiceClient) *ProductRoute {
+	return &ProductRoute{ProductController: productController, Router: router, AccountSrvController: accountSrvController, AccountClient: accountClient}
 }
 
 func (p ProductRoute) GetRouter() {
-	productRoutes := p.Router.Group("chilindo/product")
+	productRoutes := p.Router.Group("auctee/product")
 	productRoutes.Use(middleware.Logger())
 	{
-		productRoutes.POST("/create", p.AdminSrvController.MiddlewareCheckIsAuth(p.AdminClient), p.ProductController.Insert)
+		productRoutes.POST("/create", p.AccountSrvController.MiddlewareCheckIsAuth(p.AccountClient), p.ProductController.Insert)
 		productRoutes.PUT("/:productId", p.ProductController.Update)
-		productRoutes.DELETE("/:productId", p.AdminSrvController.MiddlewareCheckIsAuth(p.AdminClient), p.ProductController.Delete)
+		productRoutes.DELETE("/:productId", p.AccountSrvController.MiddlewareCheckIsAuth(p.AccountClient), p.ProductController.Delete)
 		productRoutes.GET("/:productId", p.ProductController.FindByID)
 		productRoutes.GET("/", p.ProductController.All)
 

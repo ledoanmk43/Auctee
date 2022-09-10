@@ -1,7 +1,8 @@
 package grpc_product
 
 import (
-	"chilindo/pkg/pb/admin"
+	"chilindo/pkg/pb/account"
+
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
@@ -9,16 +10,16 @@ import (
 )
 
 const (
-	adminClientPort = ":50051"
+	accountClientPort = ":50051"
 )
 
 type IRPCClient interface {
-	SetUpProductClient() admin.AdminServiceClient
+	SetUpProductClient() account.AccountServiceClient
 }
 
 type RPCClient struct{}
 
-func (r RPCClient) SetUpAdminClient() admin.AdminServiceClient {
+func (r RPCClient) SetUpAccountClient() account.AccountServiceClient {
 	//var opts []grpc.DialOption
 	//creds, tlsErr := ssl.LoadTLSCredentials()
 	//
@@ -40,9 +41,9 @@ func (r RPCClient) SetUpAdminClient() admin.AdminServiceClient {
 		log.Fatalf("failed to connect: %v", dialErr)
 	}
 
-	adminClient := admin.NewAdminServiceClient(conn)
-	fmt.Println("Listen to AdminService on port", adminClientPort)
-	return adminClient
+	accountClient := account.NewAccountServiceClient(conn)
+	fmt.Println("Listen to Account-service on port", accountClientPort)
+	return accountClient
 }
 
 func NewRPCClient() *RPCClient {

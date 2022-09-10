@@ -2,8 +2,8 @@ package controller
 
 import (
 	"bytes"
-	"chilindo/src/user-service-mock/entity"
-	service "chilindo/src/user-service-mock/service/mocks"
+	"backend/src/user-service-mock/entity"
+	service "backend/src/user-service-mock/service/mocks"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"gorm.io/gorm"

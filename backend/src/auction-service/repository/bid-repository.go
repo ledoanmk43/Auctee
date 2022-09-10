@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"chilindo/src/auction-service/entity"
+	"backend/src/auction-service/entity"
 	"gorm.io/gorm"
 	"log"
 	"time"

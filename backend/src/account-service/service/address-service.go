@@ -1,16 +1,16 @@
 package service
 
 import (
-	"chilindo/src/account-service/entity"
-	"chilindo/src/user-service-mock/dto"
-	"chilindo/src/user-service-mock/repository"
+	"backend/src/account-service/entity"
+	"backend/src/account-service/repository"
+	"backend/src/user-service-mock/dto"
 	"log"
 )
 
 type IAddressService interface {
-	CreateAddress(address *entity.Address) (*entity.Address, error)
+	CreateAddress(address *entity.Address) error
 	UpdateAddress(address *entity.Address) (*entity.Address, error)
-	GetAddress(dto *dto.GetAddressDTO) (*[]entity.Address, error)
+	GetAllAddresses(dto *dto.GetAddressDTO) (*[]entity.Address, error)
 	GetAddressById(dto *dto.GetAddressByIdDTO) (*entity.Address, error)
 	DeleteAddress(dto *dto.GetAddressByIdDTO) error
 }
@@ -23,13 +23,13 @@ func NewAddressServiceDefault(addressRepository repository.IAddressRepository) *
 	return &AddressService{AddressRepository: addressRepository}
 }
 
-func (a *AddressService) CreateAddress(address *entity.Address) (*entity.Address, error) {
-	newAddress, err := a.AddressRepository.CreateAddress(address)
+func (a *AddressService) CreateAddress(address *entity.Address) error {
+	err := a.AddressRepository.CreateAddress(address)
 	if err != nil {
 		log.Println("CreateAddress: Error Create address in package service", err)
-		return nil, err
+		return err
 	}
-	return newAddress, nil
+	return nil
 }
 
 func (a *AddressService) UpdateAddress(address *entity.Address) (*entity.Address, error) {
@@ -41,8 +41,8 @@ func (a *AddressService) UpdateAddress(address *entity.Address) (*entity.Address
 	return updateAddress, nil
 }
 
-func (a *AddressService) GetAddress(dto *dto.GetAddressDTO) (*[]entity.Address, error) {
-	address, err := a.AddressRepository.GetAddress(dto)
+func (a *AddressService) GetAllAddresses(dto *dto.GetAddressDTO) (*[]entity.Address, error) {
+	address, err := a.AddressRepository.GetAllAddresses(dto)
 	if err != nil {
 		log.Println("GetAddress: Error GetAddress in package address-service", err)
 		return nil, err
