@@ -37,7 +37,7 @@ func GetTokenFromCookie(ctx *gin.Context, cookieName string) (string, error) {
 	newSession := sessions.DefaultMany(ctx, cookieName)
 	tokenFromCookie := newSession.Get(cookieName)
 	if tokenFromCookie == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return "", errors.New("no cookie")
 	}
 	return tokenFromCookie.(string), nil

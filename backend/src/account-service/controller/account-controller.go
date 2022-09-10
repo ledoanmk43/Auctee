@@ -151,11 +151,11 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
 	tokenFromCookie := newSession.Get(config.CookieAuth)
 	if tokenFromCookie == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
-	userId, errGetId := strconv.Atoi(ctx.Param("id"))
+	userId, errGetId := strconv.Atoi(ctx.Param(config.UserId))
 	if errGetId != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error when get id in url",
@@ -212,15 +212,13 @@ func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
 	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
 	if errGetToken != nil {
 		log.Println("Error when get token in controller: ", errGetToken)
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-		})
 		ctx.Abort()
 		return
 	}
 
-	userId, errGetId := strconv.Atoi(ctx.Param("id"))
+	userId, errGetId := strconv.Atoi(ctx.Param(config.UserId))
 	if errGetId != nil {
+		log.Println("error in get user by userId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error when get id in url",
 		})
@@ -270,7 +268,7 @@ func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
 		return
 	}
 
-	userId, errGetId := strconv.Atoi(ctx.Param("id"))
+	userId, errGetId := strconv.Atoi(ctx.Param(config.UserId))
 	if errGetId != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error when get id in url",
@@ -321,5 +319,4 @@ func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "profile updated",
 	})
-
 }

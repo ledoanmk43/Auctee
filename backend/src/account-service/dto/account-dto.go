@@ -21,10 +21,18 @@ type UpdateProfileDTO struct {
 	Language  string
 }
 
-type AdminUpdateDTO struct {
-	Id       uint   `json:"id" form:"id"`
-	Username string `json:"email" from:"username" binding:"required,username"`
-	Password string `json:"password" from:"password" binding:"required"`
+type UpdateAddressDTO struct {
+	Id          uint
+	Firstname   string
+	Lastname    string
+	Phone       string
+	Email       string
+	Province    string
+	District    string
+	SubDistrict string `json:"sub_district" gorm:"type:nvarchar(100);not null"`
+	Address     string
+	TypeAddress string `json:"type_address" gorm:"type:nvarchar(100)"`
+	UserId      uint
 }
 type PasswordToUpdate struct {
 	Password  string
@@ -58,4 +66,29 @@ func (admin *AdminLoginDTO) Validate(action string) error {
 		}
 		return nil
 	}
+}
+func (address *UpdateAddressDTO) Validate() error {
+
+	if len(strings.TrimSpace(address.Firstname)) == 0 {
+		return errors.New("required firstname")
+	}
+	if len(strings.TrimSpace(address.Lastname)) == 0 {
+		return errors.New("required lastname")
+	}
+	if len(strings.TrimSpace(address.Phone)) == 0 {
+		return errors.New("required phone")
+	}
+	if len(strings.TrimSpace(address.Email)) == 0 {
+		return errors.New("required email")
+	}
+	if len(strings.TrimSpace(address.Province)) == 0 {
+		return errors.New("required province")
+	}
+	if len(strings.TrimSpace(address.District)) == 0 {
+		return errors.New("required district")
+	}
+	if len(strings.TrimSpace(address.Address)) == 0 {
+		return errors.New("required address")
+	}
+	return nil
 }
