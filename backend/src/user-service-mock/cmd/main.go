@@ -1,11 +1,12 @@
 package main
 
 import (
-	"chilindo/pkg/utils"
-	controller2 "chilindo/src/account-service/controller"
-	route2 "chilindo/src/account-service/route"
-	service2 "chilindo/src/account-service/service"
-	"chilindo/src/user-service-mock/config"
+	"backend/pkg/utils"
+	controller2 "backend/src/account-service/controller"
+	repository2 "backend/src/account-service/repository"
+	route2 "backend/src/account-service/route"
+	service2 "backend/src/account-service/service"
+	"backend/src/user-service-mock/config"
 	"chilindo/src/user-service-mock/controller"
 	"chilindo/src/user-service-mock/repository"
 	"chilindo/src/user-service-mock/route"
@@ -23,7 +24,7 @@ func main() {
 	userRouter := route.NewUserRouteDefault(userController, newRouter)
 	userRouter.GetRouter()
 
-	addressRepo := repository.NewAddressRepositoryDefault(db)
+	addressRepo := repository2.NewAddressRepositoryDefault(db)
 	addressService := service2.NewAddressServiceDefault(addressRepo)
 	addressController := controller2.NewAddressControllerDefault(addressService)
 	addressRouter := route2.NewAddressRouteDefault(addressController, newRouter)

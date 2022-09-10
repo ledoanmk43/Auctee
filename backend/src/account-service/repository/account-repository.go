@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"chilindo/src/account-service/dto"
-	"chilindo/src/account-service/entity"
+	"backend/src/account-service/dto"
+	"backend/src/account-service/entity"
 	"errors"
 	"gorm.io/gorm"
 	"log"

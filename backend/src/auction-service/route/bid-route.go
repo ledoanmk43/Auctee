@@ -1,9 +1,9 @@
 package route
 
 import (
-	"chilindo/pkg/pb/admin"
-	"chilindo/src/auction-service/controller"
-	admin_server_controller "chilindo/src/auction-service/controller/admin-grpc-controller"
+	"backend/pkg/pb/account"
+	"backend/src/auction-service/controller"
+	account_server_controller "backend/src/product-service/controller/account-grpc-controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,19 +12,19 @@ type IBidRoute interface {
 }
 
 type BidRoute struct {
-	BidController      controller.IBidController
-	Router             *gin.Engine
-	AdminSrvController admin_server_controller.IAdminServiceController
-	AdminClient        admin.AdminServiceClient
+	BidController        controller.IBidController
+	Router               *gin.Engine
+	AccountSrvController account_server_controller.IAccountServiceController
+	AccountClient        account.AccountServiceClient
 }
 
-func NewBidRoute(bidController controller.IBidController, router *gin.Engine, adminSrvController admin_server_controller.IAdminServiceController, adminClient admin.AdminServiceClient) *BidRoute {
-	return &BidRoute{BidController: bidController, Router: router, AdminSrvController: adminSrvController, AdminClient: adminClient}
+func NewBidRoute(bidController controller.IBidController, router *gin.Engine, accountSrvController account_server_controller.IAccountServiceController, accountClient account.AccountServiceClient) *BidRoute {
+	return &BidRoute{BidController: bidController, Router: router, AccountSrvController: accountSrvController, AccountClient: accountClient}
 }
 
 func (b BidRoute) GetRouter() {
-	bidRoute := b.Router.Group("/chilindo/bid/productId=:productId/auctionId=:auctionId")
+	bidRoute := b.Router.Group("auctee/bid/productId=:productId/auctionId=:auctionId")
 	{
-		bidRoute.POST("/create", b.AdminSrvController.CheckIsAuth(b.AdminClient), b.BidController.CreateBid)
+		bidRoute.POST("/create", b.AccountSrvController.MiddlewareCheckIsAuth(b.AccountClient), b.BidController.CreateBid)
 	}
 }

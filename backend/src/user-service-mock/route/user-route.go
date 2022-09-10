@@ -1,7 +1,7 @@
 package route
 
 import (
-	"chilindo/src/user-service-mock/controller"
+	"backend/src/user-service-mock/controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,12 +19,12 @@ func (u *UserRouteDefault) GetRouter() {
 }
 
 func newUserRoute(controller controller.IUserController, group *gin.Engine) {
-	userRoute := group.Group("/chilindo/user")
+	userRoute := group.Group("/backend/user")
 	{
 		userRoute.POST("/sign-up", controller.SignUp)
 		userRoute.POST("/sign-in", controller.SignIn)
 	}
-	//userAuthRoute := group.Group("/chilindo/user").Use(middleware.AuthorizeJWT())
+	//userAuthRoute := group.Group("/backend/user").Use(middleware.AuthorizeJWT())
 	//{
 	//	userAuthRoute.PUT("/update", controller.Update)
 	//}

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	product "chilindo/pkg/pb/product"
-	"chilindo/src/auction-service/entity"
-	"chilindo/src/auction-service/service"
+	product "backend/pkg/pb/product"
+	"backend/src/auction-service/entity"
+	"backend/src/auction-service/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

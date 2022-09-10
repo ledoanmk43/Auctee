@@ -1,6 +1,6 @@
 package dto
 
-import "chilindo/src/product-service/entity"
+import "backend/src/product-service/entity"
 
 type CreateImageDTO struct {
 	Image *entity.ProductImages

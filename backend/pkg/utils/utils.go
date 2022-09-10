@@ -1,7 +1,9 @@
 package utils
 
 import (
-	"chilindo/pkg/token"
+	"backend/pkg/token"
+	"errors"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -27,6 +29,16 @@ func GetIdFromToken(ctx *gin.Context) uint {
 		return 0
 	}
 
-	adminId := claims.UserId
-	return adminId
+	id := claims.UserId
+	return id
+}
+
+func GetTokenFromCookie(ctx *gin.Context, cookieName string) (string, error) {
+	newSession := sessions.DefaultMany(ctx, cookieName)
+	tokenFromCookie := newSession.Get(cookieName)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return "", errors.New("no cookie")
+	}
+	return tokenFromCookie.(string), nil
 }

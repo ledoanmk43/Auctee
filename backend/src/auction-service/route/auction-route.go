@@ -1,9 +1,9 @@
 package route
 
 import (
-	"chilindo/pkg/pb/admin"
-	"chilindo/src/auction-service/controller"
-	admin_server_controller "chilindo/src/auction-service/controller/admin-grpc-controller"
+	"backend/pkg/pb/account"
+	"backend/src/auction-service/controller"
+	account_server_controller "backend/src/product-service/controller/account-grpc-controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,19 +12,19 @@ type IAuctionRoute interface {
 }
 
 type AuctionRoute struct {
-	AuctionController  controller.IAuctionController
-	Router             *gin.Engine
-	AdminSrvController admin_server_controller.IAdminServiceController
-	AdminClient        admin.AdminServiceClient
+	AuctionController    controller.IAuctionController
+	Router               *gin.Engine
+	AccountSrvController account_server_controller.IAccountServiceController
+	AccountClient        account.AccountServiceClient
 }
 
-func NewAuctionRoute(auctionController controller.IAuctionController, router *gin.Engine, adminSrvController admin_server_controller.IAdminServiceController, adminClient admin.AdminServiceClient) *AuctionRoute {
-	return &AuctionRoute{AuctionController: auctionController, Router: router, AdminSrvController: adminSrvController, AdminClient: adminClient}
+func NewAuctionRoute(auctionController controller.IAuctionController, router *gin.Engine, accountSrvController account_server_controller.IAccountServiceController, accountClient account.AccountServiceClient) *AuctionRoute {
+	return &AuctionRoute{AuctionController: auctionController, Router: router, AccountSrvController: accountSrvController, AccountClient: accountClient}
 }
 
 func (a AuctionRoute) GetRouter() {
-	auctionRoute := a.Router.Group("/chilindo/auction/")
+	auctionRoute := a.Router.Group("/backend/auction/")
 	{
-		auctionRoute.POST("/create", a.AdminSrvController.CheckIsAuth(a.AdminClient), a.AuctionController.CreateAuction)
+		auctionRoute.POST("/create", a.AccountSrvController.MiddlewareCheckIsAuth(a.AccountClient), a.AuctionController.CreateAuction)
 	}
 }

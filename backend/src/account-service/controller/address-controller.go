@@ -1,10 +1,12 @@
 package controller
 
 import (
-	"chilindo/src/account-service/entity"
-	"chilindo/src/account-service/service"
-	"chilindo/src/user-service-mock/config"
-	"chilindo/src/user-service-mock/dto"
+	"backend/pkg/token"
+	"backend/pkg/utils"
+	"backend/src/account-service/config"
+	"backend/src/account-service/entity"
+	"backend/src/account-service/service"
+	"backend/src/user-service-mock/dto"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -14,10 +16,10 @@ import (
 
 type IAddressController interface {
 	CreateAddress(c *gin.Context)
-	UpdateAddress(c *gin.Context)
-	GetAddress(c *gin.Context)
-	GetAddressById(c *gin.Context)
-	DeleteAddress(c *gin.Context)
+	UpdateAddressByAddressId(c *gin.Context)
+	GetAddressByAddressId(c *gin.Context)
+	GetAllAddresses(c *gin.Context)
+	DeleteAddressByAddressId(c *gin.Context)
 }
 
 type AddressController struct {
@@ -40,30 +42,40 @@ func (a *AddressController) CreateAddress(ctx *gin.Context) {
 		return
 	}
 
-	userId, ok := ctx.Get(config.UserId)
-	if !ok {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error create address",
-		})
-		log.Println("CreateAddress: Error Get User ID in package controller")
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
 		ctx.Abort()
 		return
 	}
 
-	newAddress.UserId = userId.(uint)
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
 
-	createdAddress, errCreateAddress := a.AddressService.CreateAddress(newAddress)
+	newAddress.UserId = claims.UserId
+	errCreateAddress := a.AddressService.CreateAddress(newAddress)
 	if errCreateAddress != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errCreateAddress.Error(),
 		})
 		log.Println("CreateAddress: Error create new address in package controller")
+		ctx.Abort()
 		return
 	}
-	ctx.JSON(http.StatusOK, createdAddress)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "address created",
+	})
 }
 
-func (a *AddressController) UpdateAddress(c *gin.Context) {
+func (a *AddressController) UpdateAddressByAddressId(c *gin.Context) {
 	var updateAddress *entity.Address
 	if err := c.ShouldBindJSON(&updateAddress); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -113,7 +125,7 @@ func (a *AddressController) UpdateAddress(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedAddress)
 }
 
-func (a *AddressController) GetAddress(c *gin.Context) {
+func (a *AddressController) GetAllAddresses(c *gin.Context) {
 	var dTo dto.GetAddressDTO
 	userId, oke := c.Get(config.UserId)
 	dTo.UserId = userId.(uint)
@@ -125,7 +137,7 @@ func (a *AddressController) GetAddress(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	address, err := a.AddressService.GetAddress(&dTo)
+	address, err := a.AddressService.GetAllAddresses(&dTo)
 	if err != nil {
 		c.JSONP(http.StatusBadRequest, gin.H{
 			"Message": "Get Address is fail",
@@ -137,7 +149,7 @@ func (a *AddressController) GetAddress(c *gin.Context) {
 	c.JSONP(http.StatusOK, address)
 }
 
-func (a *AddressController) DeleteAddress(c *gin.Context) {
+func (a *AddressController) DeleteAddressByAddressId(c *gin.Context) {
 	var dTo dto.GetAddressByIdDTO
 	userId, ok := c.Get(config.UserId)
 	if !ok {
@@ -173,7 +185,7 @@ func (a *AddressController) DeleteAddress(c *gin.Context) {
 	})
 }
 
-func (a *AddressController) GetAddressById(c *gin.Context) {
+func (a *AddressController) GetAddressByAddressId(c *gin.Context) {
 	var dTo dto.GetAddressByIdDTO
 	userId, ok := c.Get(config.UserId)
 	if !ok {

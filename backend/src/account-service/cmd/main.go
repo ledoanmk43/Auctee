@@ -1,13 +1,13 @@
 package main
 
 import (
-	grpc_server "chilindo/src/account-service/cmd/grpc-admin"
-	"chilindo/src/account-service/config"
-	"chilindo/src/account-service/controller"
-	"chilindo/src/account-service/repository"
-	"chilindo/src/account-service/route"
-	"chilindo/src/account-service/service"
-	"chilindo/src/account-service/utils"
+	grpc_server "backend/src/account-service/cmd/grpc-account"
+	"backend/src/account-service/config"
+	"backend/src/account-service/controller"
+	"backend/src/account-service/repository"
+	"backend/src/account-service/route"
+	"backend/src/account-service/service"
+	"backend/src/account-service/utils"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"log"
@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	userPortForClients = ":50051"
+	accountPortForClientsGRPC = ":50051"
 )
 
 func main() {
@@ -32,6 +32,12 @@ func main() {
 	accountRouter := route.NewAccountRouteDefault(accountController, newRouter)
 	accountRouter.GetRouter()
 
+	addressRepo := repository.NewAddressRepositoryDefault(db)
+	addressService := service.NewAddressServiceDefault(addressRepo)
+	addressController := controller.NewAddressControllerDefault(addressService)
+	addressRouter := route.NewAddressRouteDefault(addressController, newRouter)
+	addressRouter.GetRouter()
+
 	go func() {
 		if err := newRouter.Run(":1001"); err != nil {
 			fmt.Println("Open port is fail")
@@ -40,7 +46,7 @@ func main() {
 		fmt.Println("Server is opened on port 1001")
 
 	}()
-	lis, err := net.Listen("tcp", userPortForClients)
+	lis, err := net.Listen("tcp", accountPortForClientsGRPC)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

@@ -1,9 +1,9 @@
 package service
 
 import (
-	"chilindo/src/user-service-mock/dto"
-	"chilindo/src/user-service-mock/entity"
-	"chilindo/src/user-service-mock/repository"
+	"backend/src/user-service-mock/dto"
+	"backend/src/user-service-mock/entity"
+	"backend/src/user-service-mock/repository"
 	"github.com/mashingan/smapping"
 	"log"
 )
