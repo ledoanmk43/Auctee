@@ -1,6 +1,7 @@
 package config
 
 const (
-	UserId = "UserId"
-	ID     = "id"
+	UserId    = "userId"
+	ID        = "id"
+	AddressId = "addressId"
 )

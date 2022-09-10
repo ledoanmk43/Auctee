@@ -16,7 +16,7 @@ type Address struct {
 	District    string `json:"district" gorm:"type:nvarchar(100); not null"`
 	SubDistrict string `json:"sub_district" gorm:"type:nvarchar(100);not null"`
 	Address     string `json:"address" gorm:"type:nvarchar(200); not null"`
-	TypeAddress string `gorm:"type_address" gorm:"type:nvarchar(100); not null"`
+	TypeAddress string `json:"type_address" gorm:"type:nvarchar(100); not null"`
 	UserId      uint   `gorm:"not null" json:"-"`
 }
 

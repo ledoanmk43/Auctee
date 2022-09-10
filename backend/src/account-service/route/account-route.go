@@ -22,9 +22,9 @@ func (a *AccountRouteDefault) GetRouter() {
 		userRoute.POST("/register", a.AccountController.SignUp)
 		userRoute.POST("/login", a.AccountController.SignIn)
 		userRoute.POST("/logout", a.AccountController.SignOut)
-		userRoute.GET("/user/profile/id=:id", a.AccountController.GetUserByUserId)
-		userRoute.PUT("/user/profile/id=:id", a.AccountController.UpdatePassword)
-		userRoute.PUT("/user/profile/update/id=:id", a.AccountController.UpdateProfileByUserId)
+		userRoute.GET("/user/profile/id=:userId", a.AccountController.GetUserByUserId)
+		userRoute.PUT("/user/profile/id=:userId", a.AccountController.UpdatePassword)
+		userRoute.PUT("/user/profile/update/id=:userId", a.AccountController.UpdateProfileByUserId)
 
 	}
 }
