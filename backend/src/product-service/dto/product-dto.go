@@ -1,6 +1,9 @@
 package dto
 
-import "chilindo/src/product-service/entity"
+import (
+	"backend/src/product-service/entity"
+	"gorm.io/gorm"
+)
 
 type ProductCreatedDTO struct {
 	Product *entity.Product
@@ -15,10 +18,13 @@ type ProductUpdateDTO struct {
 	Product   *entity.Product
 }
 
-func NewProductUpdateDTO(product *entity.Product) *ProductUpdateDTO {
-	return &ProductUpdateDTO{Product: product}
-}
-
 type ProductDTO struct {
-	ProductId string
+	gorm.Model  `json:"-"`
+	Id          string  `json:"id" gorm:"primary_key;type:varchar(20);not null;unique"`
+	Name        string  `json:"name" gorm:"type:nvarchar(100);not null"`
+	MinPrice    float64 `json:"min_price" gorm:"type:double;not null"`
+	Description string  `json:"description" gorm:"type:nvarchar(500);not null"`
+	Quantity    int     `json:"quantity" gorm:"type:nvarchar(500);not null"`
+	ExpectPrice float64 `json:"expect_price" gorm:"type:double;not null"`
+	UserId      uint    `gorm:"not null" json:"-"`
 }

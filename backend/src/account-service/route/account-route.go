@@ -2,7 +2,6 @@ package route
 
 import (
 	"backend/src/account-service/controller"
-	"backend/src/account-service/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +12,6 @@ type IAccountRoute interface {
 type AccountRouteDefault struct {
 	AccountController controller.IAccountController
 	Router            *gin.Engine
-	JWTMiddleware     *middleware.SMiddleWare
 }
 
 func (a *AccountRouteDefault) GetRouter() {

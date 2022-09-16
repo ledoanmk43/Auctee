@@ -1,7 +1,7 @@
 package config
 
 import (
-	"chilindo/src/product-service/entity"
+	"backend/src/product-service/entity"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -11,8 +11,10 @@ import (
 	"os"
 )
 
-var DB *gorm.DB
-var err error
+var (
+	DB  *gorm.DB
+	err error
+)
 
 func ConnectDatabase() {
 	if err := godotenv.Load(); err != nil {
@@ -31,7 +33,7 @@ func ConnectDatabase() {
 	if err != nil {
 		log.Println(err.Error())
 	}
-	if errConnect := DB.AutoMigrate(&entity.ProductOption{}, &entity.Product{}, &entity.ProductImages{}); errConnect != nil {
+	if errConnect := DB.AutoMigrate(&entity.Product{}, &entity.ProductOption{}, &entity.ProductImage{}); errConnect != nil {
 		panic(errConnect.Error())
 	}
 }

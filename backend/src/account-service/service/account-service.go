@@ -7,8 +7,6 @@ import (
 	"backend/src/account-service/entity"
 	"backend/src/account-service/repository"
 	"errors"
-	"strings"
-
 	//"github.com/mashingan/smapping"
 
 	//"github.com/mashingan/smapping"
@@ -16,7 +14,7 @@ import (
 )
 
 type IAccountService interface {
-	UpdatePassword(in *dto.PasswordToUpdate, adminId uint) error
+	UpdatePassword(in *dto.PasswordToUpdate, userId uint) error
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Account, error)
 	CreateUser(user *entity.Account) (*entity.Account, error)
 	IsDuplicateUsername(username string) (bool, error)
@@ -44,6 +42,10 @@ func (a *AccountService) VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.
 }
 
 func (a *AccountService) CreateUser(user *entity.Account) (*entity.Account, error) {
+	if len(user.Password) < 6 {
+		log.Println("Update Password: Error empty field in package repository: empty input")
+		return nil, errors.New("password too short")
+	}
 	newUser, err := a.AccountRepository.InsertUser(user)
 	if err != nil {
 		log.Println("Error: Error in package service: ", err.Error())
@@ -65,7 +67,10 @@ func (a *AccountService) UpdatePassword(in *dto.PasswordToUpdate, userId uint) e
 		log.Println("Update Password: Error empty field in package repository: empty input")
 		return errors.New("password field must not be empty")
 	}
-
+	if len(in.Password) < 6 {
+		log.Println("Update Password: Error empty field in package repository: empty input")
+		return errors.New("password too short")
+	}
 	err := a.AccountRepository.UpdatePassword(in.Password, userId)
 	if err != nil {
 		log.Println("Error: Error in package service: ", err.Error())
@@ -96,9 +101,7 @@ func (u AccountService) CheckIsAuth(req *account.CheckIsAuthRequest) (*account.C
 	isAuth := false
 	tokenString := req.Token
 
-	tokenResult := strings.TrimPrefix(tokenString, "Bearer ")
-	claims, err := token.ExtractToken(tokenResult)
-
+	claims, err := token.ExtractToken(tokenString)
 	if err != nil {
 		log.Println("CheckIsAuth: ", err)
 		return nil, err

@@ -2,14 +2,16 @@ package main
 
 import (
 	"backend/pkg/utils"
+	config_account "backend/src/account-service/config"
 	rpcClientAuction "backend/src/auction-service/cmd/grpc-auction"
-	"backend/src/auction-service/config"
+	config_auction "backend/src/auction-service/config"
 	"backend/src/auction-service/controller"
 	account_server_controller "backend/src/auction-service/controller/account-grpc-controller"
 	"backend/src/auction-service/repository"
 	"backend/src/auction-service/route"
 	"backend/src/auction-service/service"
 	"fmt"
+	"github.com/gin-contrib/sessions"
 )
 
 const (
@@ -28,21 +30,24 @@ func main() {
 	adminClient := grpcClientFromAdminServer.SetUpAccountClient(grpcServerPortAdmin)
 
 	//Product service DB
-	db := config.GetDB()
-	defer config.CloseDatabase(db)
+	db := config_auction.GetDB()
+	defer config_auction.CloseDatabase(db)
 	newRouter := utils.Router()
+
+	//Cookie
+	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
 
 	auctionRepository := repository.NewAuctionRepositoryDefault(db)
 	auctionService := service.NewAuctionServiceDefault(auctionRepository)
 	auctionController := controller.NewAuctionController(auctionService, productClient)
-	accountSrvCtrl := account_server_controller.NewAccountServiceController()
+	accountSrvCtrl := account_server_controller.NewAccountServiceController(adminClient)
 	auctionRouter := route.NewAuctionRoute(auctionController, newRouter, accountSrvCtrl, adminClient)
 	auctionRouter.GetRouter()
 
 	bidRepository := repository.NewBidRepositoryDefault(db, auctionRepository)
 	bidService := service.NewBidServiceDefault(bidRepository, auctionRepository)
 	bidController := controller.NewBidController(bidService)
-	bidRouter := route.NewBidRoute(bidController, newRouter, accountSrvCtrl, adminClient)
+	bidRouter := route.NewBidRoute(bidController, newRouter, accountSrvCtrl)
 	bidRouter.GetRouter()
 
 	if err := newRouter.Run(ginPort); err != nil {

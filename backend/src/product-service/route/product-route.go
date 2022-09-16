@@ -1,10 +1,8 @@
 package route
 
 import (
-	"chilindo/pkg/pb/account"
-	account_server_controller "chilindo/src/auction-service/controller/account-grpc-controller"
-	"chilindo/src/product-service/controller"
-	"chilindo/src/product-service/middleware"
+	account_server_controller "backend/src/auction-service/controller/account-grpc-controller"
+	"backend/src/product-service/controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,25 +11,24 @@ type IProductRoute interface {
 }
 
 type ProductRoute struct {
-	ProductController    controller.ProductController
+	ProductController    controller.IProductController
 	Router               *gin.Engine
 	AccountSrvController account_server_controller.IAccountServiceController
-	AccountClient        account.AccountServiceClient
+	//AccountClient        account.AccountServiceClient
 }
 
-func NewProductRoute(productController controller.ProductController, router *gin.Engine, accountSrvController account_server_controller.IAccountServiceController, accountClient account.AccountServiceClient) *ProductRoute {
-	return &ProductRoute{ProductController: productController, Router: router, AccountSrvController: accountSrvController, AccountClient: accountClient}
+func NewProductRoute(productController controller.IProductController, router *gin.Engine, accountSrvController account_server_controller.IAccountServiceController) *ProductRoute {
+	return &ProductRoute{ProductController: productController, Router: router, AccountSrvController: accountSrvController}
 }
 
-func (p ProductRoute) GetRouter() {
-	productRoutes := p.Router.Group("auctee/product")
-	productRoutes.Use(middleware.Logger())
+func (p *ProductRoute) GetRouter() {
+	productRoutes := p.Router.Group("/auctee")
 	{
-		productRoutes.POST("/create", p.AccountSrvController.MiddlewareCheckIsAuth(p.AccountClient), p.ProductController.Insert)
-		productRoutes.PUT("/:productId", p.ProductController.Update)
-		productRoutes.DELETE("/:productId", p.AccountSrvController.MiddlewareCheckIsAuth(p.AccountClient), p.ProductController.Delete)
-		productRoutes.GET("/:productId", p.ProductController.FindByID)
-		productRoutes.GET("/", p.ProductController.All)
+		productRoutes.POST("/user/product", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.CreateProduct)
+		productRoutes.GET("/products", p.ProductController.GetAllProducts)
+		productRoutes.GET("/product/detail/id=:productId", p.ProductController.GetProductByProductId)
+		productRoutes.PUT("/user/product/detail/id=:productId", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.UpdateProductByProductId)
+		productRoutes.DELETE("/user/product/detail/id=:productId", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.DeleteProductByProductId)
 
 	}
 }

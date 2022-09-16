@@ -1,45 +1,75 @@
 package repository
 
 import (
-	"chilindo/src/product-service/dto"
-	"chilindo/src/product-service/entity"
+	"backend/src/product-service/dto"
+	"backend/src/product-service/entity"
 	"errors"
 	"gorm.io/gorm"
 	"log"
 )
 
-type ProductImageRepository interface {
-	CreateImage(b *dto.CreateImageDTO) (*entity.ProductImages, error)
-	GetImage(b *dto.ProductIdDTO) (*[]entity.ProductImages, error)
-	ProductImageByID(b *dto.ProductDTO) (int64, error)
-	GetImageByID(b *dto.ImageDTO) (*entity.ProductImages, error)
-	DeleteImage(b *dto.ImageDTO) (*entity.ProductImages, error)
-	UpdateImage(b *dto.UpdateImageDTO) (*entity.ProductImages, error)
+type IProductImageRepository interface {
+	CreateImage(image *entity.ProductImage, userId uint) error
+	UpdateImage(image *entity.ProductImage, userId uint) error
+	DeleteImage(image *entity.ProductImage, userId uint) error
+	GetDefaultImageByProductId(productId string) (*entity.ProductImage, error)
+	ProductImageByID(productId string) (int64, error)
+	GetAllImages(productId, imageId uint) (*[]entity.ProductImage, error)
+	GetImageByID(b *dto.ImageDTO) (*entity.ProductImage, error)
 }
 
-func (p productImageRepository) UpdateImage(b *dto.UpdateImageDTO) (*entity.ProductImages, error) {
-	var count int64
-	var updateImage *entity.ProductImages
-	record := p.connection.Where("id = ?", b.Image.ID).Find(&updateImage).Count(&count)
+type ProductImageRepository struct {
+	connection *gorm.DB
+}
 
-	if record.Error != nil {
-		log.Println("Error to find product repo", record.Error)
-		return nil, record.Error
+func NewProductImageRepository(dbConn *gorm.DB) *ProductImageRepository {
+	return &ProductImageRepository{
+		connection: dbConn,
 	}
-	if count == 0 {
+}
+
+func (p *ProductImageRepository) GetDefaultImageByProductId(productId string) (*entity.ProductImage, error) {
+	var image *entity.ProductImage
+	var countImg int64
+	res := p.connection.Where("product_id = ? AND is_default = ?", productId, 1).Find(&image).Count(&countImg)
+
+	if res.Error != nil || countImg == 0 {
+		log.Println("line 44")
 		return nil, errors.New("image not found")
 	}
-	updateImage = b.Image
-	recordSave := p.connection.Updates(&updateImage)
-	if recordSave.Error != nil {
-		log.Println("Error to update produce repo", recordSave.Error)
-		return nil, recordSave.Error
+
+	return image, nil
+}
+func (p *ProductImageRepository) UpdateImage(imageBody *entity.ProductImage, userId uint) error {
+	var countPro int64
+	var product *entity.Product
+	var image *entity.ProductImage
+	record := p.connection.Where("id = ? AND user_id = ? ", imageBody.ProductId, userId).Find(&product).Count(&countPro)
+	if record.Error != nil || countPro == 0 {
+		log.Println("line 36")
+		return errors.New("image not found")
 	}
-	return updateImage, nil
+
+	var countImg int64
+	res := p.connection.Where("product_id = ? AND id = ?", imageBody.ProductId, imageBody.ID).Find(&image).Count(&countImg)
+
+	if res.Error != nil || countImg == 0 {
+		log.Println("line 44")
+		return errors.New("image not found")
+	}
+
+	image.Path = imageBody.Path
+	image.IsDefault = imageBody.IsDefault
+	resUpdate := p.connection.Updates(&image)
+	if resUpdate.Error != nil {
+		return errors.New("image not found")
+	}
+
+	return nil
 }
 
-func (p productImageRepository) GetImageByID(b *dto.ImageDTO) (*entity.ProductImages, error) {
-	var image *entity.ProductImages
+func (p *ProductImageRepository) GetImageByID(b *dto.ImageDTO) (*entity.ProductImage, error) {
+	var image *entity.ProductImage
 	var count int64
 	record := p.connection.Where("id = ?", b.ImageId).Find(&image).Count(&count)
 	if record.Error != nil {
@@ -53,39 +83,45 @@ func (p productImageRepository) GetImageByID(b *dto.ImageDTO) (*entity.ProductIm
 	return image, nil
 }
 
-func (p productImageRepository) DeleteImage(b *dto.ImageDTO) (*entity.ProductImages, error) {
-	var images *entity.ProductImages
-	record := p.connection.Where("id = ?", b.ImageId).Find(&images)
-	if record.Error != nil {
-		log.Println("DeleteOption: Error to find option", record.Error)
-		return nil, record.Error
+func (p *ProductImageRepository) DeleteImage(image *entity.ProductImage, userId uint) error {
+	var countPro int64
+	var product *entity.Product
+	record := p.connection.Where("id = ? AND user_id = ? ", image.ProductId, userId).Find(&product).Count(&countPro)
+	if record.Error != nil || countPro == 0 {
+		return errors.New("image not found")
 	}
-	recordDelete := p.connection.Delete(&images)
-	if recordDelete.Error != nil {
-		log.Println("DeleteOption: Error to delete option", record.Error)
-		return nil, recordDelete.Error
+
+	var countImg int64
+	res := p.connection.Where("product_id = ? AND id = ?", image.ProductId, image.ID).Find(&image).Count(&countImg)
+	if res.Error != nil || countImg == 0 {
+		return errors.New("image not found")
 	}
-	return images, nil
+
+	resDel := p.connection.Delete(&image)
+	if resDel.Error != nil {
+		return errors.New("image not found")
+	}
+	return nil
 }
 
-func (p productImageRepository) GetImage(b *dto.ProductIdDTO) (*[]entity.ProductImages, error) {
-	var images *[]entity.ProductImages
+func (p *ProductImageRepository) GetAllImages(productId, imageId uint) (*[]entity.ProductImage, error) {
+	var images *[]entity.ProductImage
 	var count int64
-	record := p.connection.Where("product_id = ?", b.ProductId).Find(&images).Count(&count)
+	record := p.connection.Where("product_id = ? AND id = ?", productId, imageId).Find(&images)
 	if record.Error != nil {
-		log.Println("GetOptions : Error to get all option", record.Error)
+		log.Println("GetOptions : Error to get all images", record.Error)
 		return nil, record.Error
 	}
 	if count == 0 {
-		log.Println("GetOptions : Not found Options", count)
+		log.Println("GetOptions : Not found images", count)
 		return nil, nil
 	}
 	return images, nil
 }
 
-func (p productImageRepository) ProductImageByID(b *dto.ProductDTO) (int64, error) {
+func (p *ProductImageRepository) ProductImageByID(productId string) (int64, error) {
 	var count int64
-	record := p.connection.Model(&entity.Product{}).Where("id = ?", b.ProductId).Count(&count)
+	record := p.connection.Model(&entity.Product{}).Where("id = ?", productId).Count(&count)
 	if record.Error != nil {
 		log.Println("CountProductById: Get product by ID", record.Error)
 		return count, record.Error
@@ -93,20 +129,22 @@ func (p productImageRepository) ProductImageByID(b *dto.ProductDTO) (int64, erro
 	return count, nil
 }
 
-func (p productImageRepository) CreateImage(b *dto.CreateImageDTO) (*entity.ProductImages, error) {
-	//TODO implement me
-	record := p.connection.Create(&b.Image)
+func (p *ProductImageRepository) CreateImage(image *entity.ProductImage, userId uint) error {
+	var count int64
+	record := p.connection.Model(&entity.Product{}).Where("id = ? AND user_id = ? ", image.ProductId, userId).Count(&count)
 	if record.Error != nil {
-		log.Println("CreateOption: Error to create repository")
-		return nil, record.Error
+		return errors.New("product not found")
 	}
-	return b.Image, nil
-}
 
-type productImageRepository struct {
-	connection *gorm.DB
-}
+	if count == 0 {
+		log.Println("image not found")
+		return errors.New("product not found")
+	}
 
-func NewProductImageRepository(connection *gorm.DB) *productImageRepository {
-	return &productImageRepository{connection: connection}
+	record = p.connection.Create(&image)
+	if record.Error != nil {
+		log.Println("Create image: Error to create repository")
+		return record.Error
+	}
+	return nil
 }

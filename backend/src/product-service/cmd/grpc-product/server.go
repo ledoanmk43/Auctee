@@ -1,11 +1,10 @@
 package grpc_product
 
 import (
-	"chilindo/pkg/pb/product"
-	"chilindo/src/product-service/config"
-	"chilindo/src/product-service/dto"
-	"chilindo/src/product-service/repository"
-	"chilindo/src/product-service/service"
+	"backend/pkg/pb/product"
+	"backend/src/product-service/config"
+	"backend/src/product-service/repository"
+	"backend/src/product-service/service"
 	"context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -23,7 +22,8 @@ const (
 
 type ProductServer struct {
 	product.ProductServiceServer
-	productService service.ProductService
+	productService service.IProductService
+	imageService   service.IProductImageService
 }
 
 func RunGRPCServer(enabledTLS bool, lis net.Listener) error {
@@ -38,39 +38,66 @@ func RunGRPCServer(enabledTLS bool, lis net.Listener) error {
 
 	s := grpc.NewServer(opts...)
 	db := config.GetDB()
-	repoProduct := repository.NewProductRepository(db)
-	serviceProduct := service.NewProductService(repoProduct)
+	productRepo := repository.NewProductRepositoryDefault(db)
+	ProductService := service.NewProductService(productRepo)
 
+	imageRepo := repository.NewProductImageRepository(db)
+	ProductImageService := service.NewProductImageService(imageRepo)
 	product.RegisterProductServiceServer(s, &ProductServer{
-		productService: serviceProduct,
+		productService: ProductService,
+		imageService:   ProductImageService,
 	})
 
 	log.Printf("  Product Server is on port  %s\n", grpcServerPort)
 	return s.Serve(lis)
 }
 
-func (p *ProductServer) GetProduct(ctx context.Context, in *product.GetProductRequest) (*product.GetProductResponse, error) {
-	log.Printf("Login request: %v\n", in)
-
-	pid := in.GetProductId()
-	if pid == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "InvalidArgument productId= %v", pid)
+func (p *ProductServer) GetProductById(ctx context.Context, in *product.GetProductByIdRequest) (*product.GetProductByIdResponse, error) {
+	productId := in.GetProductId()
+	if productId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "InvalidArgument productId= %v", productId)
 	}
-	var dto dto.ProductDTO
-	dto.ProductId = in.GetProductId()
+	//var productId string
+	//productId = in.GetProductId()
 
-	prod, err := p.productService.FindProductByID(&dto)
-
+	prod, err := p.productService.GetProductByProductId(productId)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "Not found: %v", err)
 	}
+	var imagePath string
+	image, _ := p.imageService.GetDefaultImageByProductId(productId)
+	if image == nil {
+		imagePath = ""
+	} else {
+		imagePath = image.Path
+	}
 
-	response := &product.GetProductResponse{
+	response := &product.GetProductByIdResponse{
 		Id:          prod.Id,
 		Name:        prod.Name,
 		MinPrice:    float32(prod.MinPrice),
 		Description: prod.Description,
 		Quantity:    int32(prod.Quantity),
+		ExpectPrice: float32(prod.ExpectPrice),
+		UserId:      uint32(prod.UserId),
+		Path:        imagePath, //default image
+	}
+	return response, nil
+}
+
+func (p *ProductServer) GetProductByProductName(ctx context.Context, in *product.GetProductByProductNameRequest) (*product.GetProductByProductNameResponse, error) {
+	productName := in.GetProductName()
+	if productName == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "InvalidArgument productId= %v", productName)
+	}
+
+	productList, err := p.productService.GetProductsByProductName(productName)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Not found: %v", err)
+	}
+	response := &product.GetProductByProductNameResponse{
+		IdList:      productList.IdList,
+		ProductName: productList.ProductName,
 	}
 	return response, nil
 }

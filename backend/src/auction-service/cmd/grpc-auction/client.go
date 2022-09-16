@@ -1,8 +1,8 @@
 package grpc_auction
 
 import (
-	"chilindo/pkg/pb/account"
-	"chilindo/pkg/pb/product"
+	"backend/pkg/pb/account"
+	"backend/pkg/pb/product"
 	"google.golang.org/grpc"
 	"log"
 )

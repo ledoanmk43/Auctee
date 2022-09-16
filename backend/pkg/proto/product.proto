@@ -3,25 +3,33 @@ syntax="proto3";
 option go_package = "./pkg/pb/product";
 
 service ProductService {
-  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  rpc GetProductById(GetProductByIdRequest) returns (GetProductByIdResponse);
+  rpc GetProductByProductName(GetProductByProductNameRequest) returns (GetProductByProductNameResponse);
 }
-
-message GetProductRequest {
+//By Id
+message GetProductByIdRequest {
   string ProductId = 1;
 }
 
-message GetProductResponse {
+message GetProductByIdResponse {
   string Id = 1;
   string Name = 2;
   float MinPrice = 3;
   string Description = 4;
   int32 Quantity = 5;
-  uint32 AdminId = 6;
+  uint32 UserId = 6;
+  float ExpectPrice = 7;
+  string Path = 8;
 }
-//    Id          string  `json:"id" gorm:"primary_key;type:varchar(20);not null;unique"`
-//    Name        string  `json:"name" gorm:"type:nvarchar(100);not null"`
-//    MinPrice    float64 `json:"min_price" gorm:"type:double);not null"`
-//    Description string  `json:"description" gorm:"type:nvarchar(500);not null"`
-//    Quantity    int     `json:"quantity" gorm:"type:nvarchar(500);not null"`
-//    AdminId     uint    `json:"admin_id"`
+
+//By productName
+message GetProductByProductNameRequest {
+  string ProductName = 1;
+}
+
+message GetProductByProductNameResponse {
+  repeated string IdList = 1;
+  repeated string ProductName = 2;
+}
+
 

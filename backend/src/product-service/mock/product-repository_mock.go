@@ -5,8 +5,8 @@
 package service
 
 import (
-	dto "chilindo/src/product-service/dto"
-	entity "chilindo/src/product-service/entity"
+	dto "backend/src/product-service/dto"
+	entity "backend/src/product-service/entity"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
