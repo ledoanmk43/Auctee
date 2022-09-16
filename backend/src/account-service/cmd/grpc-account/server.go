@@ -1,7 +1,7 @@
 package grpc_account
 
 import (
-	account "backend/pkg/pb/account"
+	"backend/pkg/pb/account"
 	"backend/src/account-service/config"
 	"backend/src/account-service/repository"
 	"backend/src/account-service/service"

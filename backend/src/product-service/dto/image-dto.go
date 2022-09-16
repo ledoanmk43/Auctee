@@ -3,10 +3,10 @@ package dto
 import "backend/src/product-service/entity"
 
 type CreateImageDTO struct {
-	Image *entity.ProductImages
+	Image *entity.ProductImage
 }
 
-func NewCreateImageDTO(image *entity.ProductImages) *CreateImageDTO {
+func NewCreateImageDTO(image *entity.ProductImage) *CreateImageDTO {
 	return &CreateImageDTO{Image: image}
 }
 
@@ -14,10 +14,10 @@ type ImageDTO struct {
 	ImageId string
 }
 type UpdateImageDTO struct {
-	Image   *entity.ProductImages
+	Image   *entity.ProductImage
 	ImageId string
 }
 
-func NewUpdateImageDTO(image *entity.ProductImages) *UpdateImageDTO {
+func NewUpdateImageDTO(image *entity.ProductImage) *UpdateImageDTO {
 	return &UpdateImageDTO{Image: image}
 }

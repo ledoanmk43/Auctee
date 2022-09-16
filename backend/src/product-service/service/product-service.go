@@ -1,68 +1,87 @@
 package service
 
 import (
-	"chilindo/src/product-service/dto"
-	"chilindo/src/product-service/entity"
-	"chilindo/src/product-service/repository"
+	"backend/src/product-service/entity"
+	"backend/src/product-service/repository"
 	"log"
 )
 
-type ProductService interface {
-	Insert(b *entity.Product) (*entity.Product, error)
-	Update(b *dto.ProductUpdateDTO) (*entity.Product, error)
-	Delete(proId string, adminId uint) (*entity.Product, error)
-	All() (*[]entity.Product, error)
-	FindProductByID(b *dto.ProductDTO) (*entity.Product, error)
+type IProductService interface {
+	Insert(b *entity.Product) error
+	Update(b *entity.Product) error
+	Delete(proId string, userId uint) error
+	GetAllProducts() (*[]entity.Product, error)
+	GetProductByProductId(productId string) (*entity.Product, error)
+	GetProductsByProductName(productName string) (*entity.ProductResponse, error)
+	GetProductDetailByProductId(productId string) (*entity.Product, error)
 }
 
-type productService struct {
-	ProductRepository repository.ProductRepository
+type ProductService struct {
+	ProductRepository repository.IProductRepository
 }
 
-func NewProductService(productRepository repository.ProductRepository) *productService {
-	return &productService{ProductRepository: productRepository}
+func NewProductService(productRepository repository.IProductRepository) *ProductService {
+	return &ProductService{ProductRepository: productRepository}
 }
 
-func (t *productService) Insert(b *entity.Product) (*entity.Product, error) {
-	createProduct, err := t.ProductRepository.InsertProduct(b)
+func (p *ProductService) Insert(b *entity.Product) error {
+	err := p.ProductRepository.InsertProduct(b)
 	if err != nil {
 		log.Println("Error in create product in service", err)
-		return nil, err
+		return err
 	}
-	return createProduct, nil
+	return nil
 }
 
-func (t *productService) Update(b *dto.ProductUpdateDTO) (*entity.Product, error) {
-	updateProduct, err := t.ProductRepository.UpdateProduct(b)
+func (p *ProductService) Update(b *entity.Product) error {
+	err := p.ProductRepository.UpdateProduct(b)
 	if err != nil {
 		log.Println("Error in package service", err)
-		return nil, err
+		return err
 	}
-	return updateProduct, nil
+	return nil
 }
 
-func (t *productService) Delete(proId string, adminId uint) (*entity.Product, error) {
-	product, err := t.ProductRepository.DeleteProduct(proId, adminId)
+func (p *ProductService) Delete(proId string, userId uint) error {
+	err := p.ProductRepository.DeleteProduct(proId, userId)
 	if err != nil {
 		log.Println("Error in package service", err)
-		return nil, err
+		return err
 	}
-	return product, nil
+	return nil
 }
 
-func (t *productService) All() (*[]entity.Product, error) {
-	products, err := t.ProductRepository.AllProduct()
+func (p *ProductService) GetAllProducts() (*[]entity.Product, error) {
+	products, err := p.ProductRepository.GetAllProducts()
 	if err != nil {
 		log.Println("GetProducts : Error get products in package service", err)
 	}
 	return products, nil
 }
 
-func (t *productService) FindProductByID(b *dto.ProductDTO) (*entity.Product, error) {
-	product, err := t.ProductRepository.FindProductByID(b)
+func (p *ProductService) GetProductDetailByProductId(productId string) (*entity.Product, error) {
+	Product, err := p.ProductRepository.GetProductDetailByProductId(productId)
+	if err != nil {
+		log.Println("GetProductById: Error in get product by Id", err)
+		return nil, err
+	}
+	return Product, nil
+}
+
+func (p *ProductService) GetProductByProductId(productId string) (*entity.Product, error) {
+	product, err := p.ProductRepository.GetProductByProductId(productId)
 	if err != nil {
 		log.Println("GetProductById: Error in get product by Id", err)
 		return nil, err
 	}
 	return product, nil
+}
+
+func (p *ProductService) GetProductsByProductName(productName string) (*entity.ProductResponse, error) {
+	idList, err := p.ProductRepository.GetProductsByProductName(productName)
+	if err != nil {
+		log.Println("GetProductById: Error in get product by Id", err)
+		return nil, err
+	}
+	return idList, nil
 }

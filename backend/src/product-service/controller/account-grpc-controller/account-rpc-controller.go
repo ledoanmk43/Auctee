@@ -1,51 +1,55 @@
 package account_grpc_controller
 
 import (
-	"chilindo/pkg/pb/account"
+	"backend/pkg/pb/account"
+	"backend/pkg/utils"
+	"backend/src/account-service/config"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
 
 type IAccountServiceController interface {
-	MiddlewareCheckIsAuth(accountClient account.AccountServiceClient) gin.HandlerFunc
+	MiddlewareCheckIsAuth() gin.HandlerFunc
 }
 
 type AccountServiceController struct {
+	AccountClient account.AccountServiceClient
 }
 
-func NewAccountServiceController() *AccountServiceController {
-	return &AccountServiceController{}
+func NewAccountServiceController(accountClient account.AccountServiceClient) *AccountServiceController {
+	return &AccountServiceController{AccountClient: accountClient}
 }
 
-func (a *AccountServiceController) MiddlewareCheckIsAuth(accountClient account.AccountServiceClient) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		if token == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"Error": "Unauthorized",
-			})
-			c.Abort()
+func (a *AccountServiceController) MiddlewareCheckIsAuth() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
+		if errGetToken != nil {
+			log.Println("Error when get token in account-rpc-controller: ", errGetToken)
+			//ctx.JSON(http.StatusUnauthorized, gin.H{
+			//	"message": "Unauthorized",
+			//})
+			ctx.Abort()
 			return
 		}
-		res, err := accountClient.CheckIsAuth(c, &account.CheckIsAuthRequest{
-			Token: token,
+		res, err := a.AccountClient.CheckIsAuth(ctx, &account.CheckIsAuthRequest{
+			Token: tokenFromCookie,
 		})
 		if err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Error": err.Error(),
 			})
-			c.Abort()
+			ctx.Abort()
 			return
 		}
 		if !(res.IsAuth) {
-			c.JSON(http.StatusForbidden, gin.H{
+			ctx.JSON(http.StatusForbidden, gin.H{
 				"message": "Forbidden",
 			})
-			c.Abort()
+			ctx.Abort()
 			return
 		}
-		c.Next()
+		ctx.Next()
 	}
 }

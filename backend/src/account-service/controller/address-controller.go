@@ -14,11 +14,11 @@ import (
 )
 
 type IAddressController interface {
-	CreateAddress(c *gin.Context)
-	UpdateAddressByAddressId(c *gin.Context)
-	GetAddressByAddressId(c *gin.Context)
-	GetAllAddresses(c *gin.Context)
-	DeleteAddressByAddressId(c *gin.Context)
+	CreateAddress(ctx *gin.Context)
+	UpdateAddressByAddressId(ctx *gin.Context)
+	GetAddressByAddressId(ctx *gin.Context)
+	GetAllAddresses(ctx *gin.Context)
+	DeleteAddressByAddressId(ctx *gin.Context)
 }
 
 type AddressController struct {
@@ -78,9 +78,6 @@ func (a *AddressController) UpdateAddressByAddressId(ctx *gin.Context) {
 	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
 	if errGetToken != nil {
 		log.Println("Error when get token in controller: ", errGetToken)
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-		})
 		ctx.Abort()
 		return
 	}
@@ -166,9 +163,6 @@ func (a *AddressController) DeleteAddressByAddressId(ctx *gin.Context) {
 	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
 	if errGetToken != nil {
 		log.Println("Error when get token in controller: ", errGetToken)
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-		})
 		ctx.Abort()
 		return
 	}

@@ -2,12 +2,14 @@ package utils
 
 import (
 	"backend/pkg/token"
+	"backend/src/auction-service/config"
 	"errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func Router() *gin.Engine {
@@ -41,4 +43,21 @@ func GetTokenFromCookie(ctx *gin.Context, cookieName string) (string, error) {
 		return "", errors.New("no cookie")
 	}
 	return tokenFromCookie.(string), nil
+}
+
+func GetMoment() (time.Time, error) {
+	now, err := time.Parse(config.DATEFORMAT, time.Now().Format(config.DATEFORMAT))
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return now, nil
+}
+
+func StringToTime(timeString string) (time.Time, error) {
+	result, err := time.Parse(config.DATEFORMAT, timeString)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return result, nil
 }

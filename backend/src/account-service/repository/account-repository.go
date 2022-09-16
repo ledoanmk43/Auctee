@@ -11,7 +11,7 @@ import (
 type IAccountRepository interface {
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Account, error)
 	InsertUser(user *entity.Account) (*entity.Account, error)
-	UpdatePassword(password string, adminId uint) error
+	UpdatePassword(password string, userId uint) error
 	IsDuplicateUsername(username string) (*entity.Account, error)
 	GetUserByUserId(userId uint) (*entity.Account, error)
 	UpdateProfileByUserId(userId uint, updateBody *dto.UpdateProfileDTO) error

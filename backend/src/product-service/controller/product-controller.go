@@ -1,127 +1,192 @@
 package controller
 
 import (
-	"chilindo/pkg/utils"
-	"chilindo/src/product-service/dto"
-	"chilindo/src/product-service/entity"
-	"chilindo/src/product-service/service"
+	"backend/pkg/token"
+	"backend/pkg/utils"
+	account "backend/src/account-service/config"
+	product "backend/src/product-service/config"
+	"backend/src/product-service/entity"
+	"backend/src/product-service/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
 
-const (
-	productId = "productId"
-)
-
-type ProductController interface {
-	All(context *gin.Context)
-	FindByID(context *gin.Context)
-	Insert(context *gin.Context)
-	Update(context *gin.Context)
-	Delete(context *gin.Context)
+type IProductController interface {
+	CreateProduct(c *gin.Context)
+	UpdateProductByProductId(c *gin.Context)
+	GetProductByProductId(c *gin.Context)
+	GetAllProducts(c *gin.Context)
+	DeleteProductByProductId(c *gin.Context)
 }
-type productController struct {
-	productService service.ProductService
+type ProductController struct {
+	ProductService service.IProductService
 }
 
-func (p *productController) All(context *gin.Context) {
-	products, err := p.productService.All()
+func NewProductController(productService service.IProductService) *ProductController {
+	return &ProductController{ProductService: productService}
+}
+
+func (p *ProductController) GetAllProducts(ctx *gin.Context) {
+	products, err := p.ProductService.GetAllProducts()
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "Fail to get all products",
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "fail to get all products",
 		})
-		log.Println("GetProducts: Error get all product in package controller", err)
-		context.Abort()
+		log.Println("GetProducts: Error get all products in package controller", err)
+		ctx.Abort()
 	}
-	context.JSON(http.StatusOK, products)
 
+	ctx.JSON(http.StatusOK, products)
 }
 
-func (p *productController) FindByID(context *gin.Context) {
-	var dto dto.ProductDTO
-	dto.ProductId = context.Param(productId)
-	context.Set(productId, dto.ProductId)
-	product, err := p.productService.FindProductByID(&dto)
+func (p *ProductController) GetProductByProductId(ctx *gin.Context) {
+	productId := ctx.Param(product.ProductId)
+	if len(productId) == 0 {
+		log.Println("error in get product by productId: nil productId")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error when get id in url",
+		})
+		ctx.Abort()
+		return
+	}
+
+	productDetail, err := p.ProductService.GetProductDetailByProductId(productId)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error to get Product ",
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "product not found",
 		})
 		log.Println("GetProductById: Error in package controller", err)
-		context.Abort()
+		ctx.Abort()
 		return
 	}
-	if product == nil {
-		context.JSON(http.StatusNotFound, gin.H{
-			"message": "Not found product",
-		})
-		context.Abort()
-		return
-	}
-	context.JSON(http.StatusOK, product)
+	ctx.JSON(http.StatusOK, productDetail)
 
 }
 
-func (p *productController) Insert(ctx *gin.Context) {
+func (p *ProductController) CreateProduct(ctx *gin.Context) {
 	var productBody *entity.Product
 	if err := ctx.ShouldBindJSON(&productBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Fail to create product",
+			"message": "Error binding JSON",
 		})
 		log.Println("Error to ShouldBindJSON controller", err)
 		ctx.Abort()
 		return
 	}
 
-	adminId := utils.GetIdFromToken(ctx)
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
 
-	productBody.AdminId = adminId
-	//dto := dto.NewProductCreatedDTO(productBody)
-	createdProduct, err := p.productService.Insert(productBody)
+	productBody.UserId = claims.UserId
+	errCreate := p.ProductService.Insert(productBody)
+	if errCreate != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errCreate.Error(),
+		})
+		log.Println("Error to create product  controller", errCreate)
+		ctx.Abort()
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message": "product created",
+	})
+}
+
+func (p *ProductController) UpdateProductByProductId(ctx *gin.Context) {
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	productId := ctx.Param(product.ProductId)
+	if len(productId) == 0 {
+		log.Println("error in update product by productId: nil productId")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error when get id in url",
+		})
+		ctx.Abort()
+		return
+	}
+
+	var updateBody *entity.Product
+	if err := ctx.ShouldBindJSON(&updateBody); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error to update product",
+		})
+		log.Println("UpdateProduct: Error ShouldBindJSON in package controller", err)
+		ctx.Abort()
+		return
+	}
+	updateBody.Id = productId
+	updateBody.UserId = claims.UserId
+	err := p.ProductService.Update(updateBody)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
-		log.Println("Error to create product  controller", err)
+		log.Println("UpdateProduct: Error Update in package controller", err)
 		ctx.Abort()
 		return
 	}
-	ctx.JSON(http.StatusCreated, createdProduct)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "product updated",
+	})
 }
 
-func (p *productController) Update(context *gin.Context) {
-	productId := context.Param(productId)
-	var productUpdateBody *entity.Product
-	if err := context.ShouldBindJSON(&productUpdateBody); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error to update product",
+func (p *ProductController) DeleteProductByProductId(ctx *gin.Context) {
+
+	ProductId := ctx.Param(product.ProductId)
+	if len(ProductId) == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "missing param",
 		})
-		log.Println("UpdateProduct: Error ShouldBindJSON in package controller", err)
-		context.Abort()
+		ctx.Abort()
 		return
 	}
-	dtoUpdate := dto.NewProductUpdateDTO(productUpdateBody)
-	dtoUpdate.ProductId = productId
-	dtoUpdate.Product.Id = productId
-	product, err := p.productService.Update(dtoUpdate)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error to update product",
-		})
-		log.Println("UpdateProduct: Error Update in package controller", err)
-		context.Abort()
+
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.Abort()
 		return
 	}
-	context.JSON(http.StatusOK, product)
 
-}
-
-func (p *productController) Delete(ctx *gin.Context) {
-
-	ProductId := ctx.Param(productId)
-
-	adminId := utils.GetIdFromToken(ctx)
-	_, err := p.productService.Delete(ProductId, adminId)
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+	err := p.ProductService.Delete(ProductId, claims.UserId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -134,10 +199,4 @@ func (p *productController) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "product deleted",
 	})
-}
-
-func NewProductController(productServ service.ProductService) ProductController {
-	return &productController{
-		productService: productServ,
-	}
 }

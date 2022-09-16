@@ -1,24 +1,25 @@
 package main
 
 import (
+	"backend/pkg/utils"
 	grpc_server "backend/src/account-service/cmd/grpc-account"
 	"backend/src/account-service/config"
 	"backend/src/account-service/controller"
 	"backend/src/account-service/repository"
 	"backend/src/account-service/route"
 	"backend/src/account-service/service"
-	"backend/src/account-service/utils"
-	"fmt"
 	"github.com/gin-contrib/sessions"
 	"log"
 	"net"
 )
 
 const (
+	ginPort                   = ":1001"
 	accountPortForClientsGRPC = ":50051"
 )
 
 func main() {
+	//Account service DB
 	db := config.GetDB()
 	defer config.CloseDatabase(db)
 	newRouter := utils.Router()
@@ -39,11 +40,11 @@ func main() {
 	addressRouter.GetRouter()
 
 	go func() {
-		if err := newRouter.Run(":1001"); err != nil {
-			fmt.Println("Open port is fail")
+		if err := newRouter.Run(ginPort); err != nil {
+			log.Println("Open port is fail")
 			return
 		}
-		fmt.Println("Server is opened on port 1001")
+		log.Println("Server is opened on port 1001")
 
 	}()
 	lis, err := net.Listen("tcp", accountPortForClientsGRPC)

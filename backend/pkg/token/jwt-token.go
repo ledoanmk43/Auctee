@@ -17,12 +17,12 @@ type IJwtMiddleware interface {
 
 type Claims struct {
 	Email    string
-	UserId   uint   //UserId or AdminId
-	Username string //admin's username
+	UserId   uint
+	Username string
 	jwt.StandardClaims
 }
 
-func (j *Claims) GenerateJWT(email string, userid uint, adminUsername string) (tokenString string, err error) {
+func (j *Claims) GenerateJWT(email string, userid uint, userName string) (tokenString string, err error) {
 	if err := godotenv.Load(); err != nil {
 		log.Println("Error loading .env in jwt-token file")
 	}
@@ -31,8 +31,8 @@ func (j *Claims) GenerateJWT(email string, userid uint, adminUsername string) (t
 	expirationTime := time.Now().Add(24 * 7 * time.Hour)
 	claims := &Claims{
 		Email:    email,
-		UserId:   userid, //UserId or AdminId
-		Username: adminUsername,
+		UserId:   userid,
+		Username: userName,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -43,12 +43,14 @@ func (j *Claims) GenerateJWT(email string, userid uint, adminUsername string) (t
 }
 
 func ExtractToken(signedToken string) (*Claims, error) {
+	jwtKey = []byte(os.Getenv("SECRET_KEY"))
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&Claims{},
 		func(token *jwt.Token) (interface{}, error) {
 			return []byte(jwtKey), nil
 		})
+
 	if err != nil {
 		return nil, err
 	}

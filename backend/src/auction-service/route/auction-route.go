@@ -22,9 +22,14 @@ func NewAuctionRoute(auctionController controller.IAuctionController, router *gi
 	return &AuctionRoute{AuctionController: auctionController, Router: router, AccountSrvController: accountSrvController, AccountClient: accountClient}
 }
 
-func (a AuctionRoute) GetRouter() {
-	auctionRoute := a.Router.Group("/backend/auction/")
+func (a *AuctionRoute) GetRouter() {
+	auctionRoute := a.Router.Group("/auctee")
 	{
-		auctionRoute.POST("/create", a.AccountSrvController.MiddlewareCheckIsAuth(a.AccountClient), a.AuctionController.CreateAuction)
+		auctionRoute.POST("/user/auction", a.AccountSrvController.MiddlewareCheckIsAuth(), a.AuctionController.CreateAuction)
+		auctionRoute.PUT("/user/auction/detail/id=:auctionId", a.AccountSrvController.MiddlewareCheckIsAuth(), a.AuctionController.UpdateAuctionByAuctionId)
+		auctionRoute.DELETE("/user/auction/detail/id=:auctionId", a.AccountSrvController.MiddlewareCheckIsAuth(), a.AuctionController.DeleteAuctionByAuctionId)
+		auctionRoute.GET("/auctions", a.AuctionController.GetAllAuctions)
+		auctionRoute.GET("/auctions/product_name=:productName", a.AuctionController.GetAllAuctionsByProductName)
+		auctionRoute.GET("/auction/detail/id=:auctionId", a.AuctionController.GetAuctionByAuctionId)
 	}
 }
