@@ -61,3 +61,8 @@ func StringToTime(timeString string) (time.Time, error) {
 	}
 	return result, nil
 }
+
+func BoolAddr(b bool) *bool {
+	boolVar := b
+	return &boolVar
+}

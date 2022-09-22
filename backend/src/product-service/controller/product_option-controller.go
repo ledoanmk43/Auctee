@@ -56,7 +56,7 @@ func (p *ProductOptionController) UpdateOption(ctx *gin.Context) {
 		return
 	}
 
-	optionId, errGetId := strconv.Atoi(ctx.Param(product.OptionId))
+	optionId, errGetId := strconv.Atoi(ctx.Query(product.Id))
 	if errGetId != nil {
 		log.Println("error in get image by optionId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -189,7 +189,7 @@ func (p *ProductOptionController) DeleteOption(ctx *gin.Context) {
 		return
 	}
 
-	optionId, errGetId := strconv.Atoi(ctx.Param(product.OptionId))
+	optionId, errGetId := strconv.Atoi(ctx.Query(product.Id))
 	if errGetId != nil {
 		log.Println("error in get option by optionId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{

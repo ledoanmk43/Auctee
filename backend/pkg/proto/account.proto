@@ -4,8 +4,11 @@ option go_package = "src/pkg/pb/account";
 
 service AccountService {
   rpc CheckIsAuth(CheckIsAuthRequest) returns (CheckIsAuthResponse);
+  rpc GetAddressByUserId(GetAddressByUserIdRequest) returns (GetAddressByUserIdResponse);
+
 }
 
+//Authenticate account
 message CheckIsAuthRequest {
   string Token = 1;
 }
@@ -13,3 +16,30 @@ message CheckIsAuthRequest {
 message CheckIsAuthResponse {
   bool isAuth = 1;
 }
+
+//Address
+message GetAddressByUserIdRequest{
+  uint32 UserId = 1;
+  uint32 AddressId = 2;
+}
+
+message GetAddressByUserIdResponse{
+  string Firstname = 1;
+  string Lastname = 2;
+  string Phone = 3;
+  string Email = 4;
+  string Province = 5;
+  string District = 6;
+  string SubDistrict = 7;
+  string Address = 8;
+  string TypeAddress = 9;
+}
+//    Firstname   string `json:"firstname" gorm:"type:nvarchar(100);not null"`
+//    Lastname    string `json:"lastname" gorm:"type:nvarchar(100);not null"`
+//    Phone       string `json:"phone" gorm:"type:nvarchar(100);not null"`
+//    Email       string `json:"email" gorm:"type:nvarchar(100); not null"`
+//    Province    string `json:"province" gorm:"type:nvarchar(100); not null"`
+//    District    string `json:"district" gorm:"type:nvarchar(100); not null"`
+//    SubDistrict string `json:"sub_district" gorm:"type:nvarchar(100);not null"`
+//    Address     string `json:"address" gorm:"type:nvarchar(200); not null"`
+//    TypeAddress string `json:"type_address" gorm:"type:nvarchar(100); not null"`

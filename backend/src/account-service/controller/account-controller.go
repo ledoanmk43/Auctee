@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type IAccountController interface {
@@ -155,15 +154,6 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
-	userId, errGetId := strconv.Atoi(ctx.Param(config.UserId))
-	if errGetId != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error when get id in url",
-		})
-		ctx.Abort()
-		return
-	}
-
 	var passwordToUpdate *dto.PasswordToUpdate
 	err := ctx.ShouldBindJSON(&passwordToUpdate)
 	if err != nil {
@@ -185,18 +175,10 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
-	if uint(userId) != claims.UserId {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-		})
-		ctx.Abort()
-		return
-	}
-
 	errUpdate := a.AccountService.UpdatePassword(passwordToUpdate, claims.UserId)
 	if errUpdate != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": errUpdate.Error(),
+			"message": errUpdate.Error(),
 		})
 		log.Println("Update Password: Error in package controller: ", errUpdate)
 		ctx.Abort()
@@ -216,16 +198,6 @@ func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
 		return
 	}
 
-	userId, errGetId := strconv.Atoi(ctx.Param(config.UserId))
-	if errGetId != nil {
-		log.Println("error in get user by userId: ", errGetId)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error when get id in url",
-		})
-		ctx.Abort()
-		return
-	}
-
 	claims, errExtract := token.ExtractToken(tokenFromCookie)
 	if errExtract != nil || len(tokenFromCookie) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
@@ -236,18 +208,10 @@ func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
 		return
 	}
 
-	if uint(userId) != claims.UserId {
+	user, errGet := a.AccountService.GetUserByUserId(claims.UserId)
+	if errGet != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
-		})
-		ctx.Abort()
-		return
-	}
-
-	user, errGet := a.AccountService.GetUserByUserId(uint(userId))
-	if errGet != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": errGet.Error(),
 		})
 		log.Println("Get User: Error in package controller", errGet)
 		ctx.Abort()
@@ -261,18 +225,6 @@ func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
 	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
 	if errGetToken != nil {
 		log.Println("Error when get token in controller: ", errGetToken)
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-		})
-		ctx.Abort()
-		return
-	}
-
-	userId, errGetId := strconv.Atoi(ctx.Param(config.UserId))
-	if errGetId != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error when get id in url",
-		})
 		ctx.Abort()
 		return
 	}
@@ -298,15 +250,7 @@ func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
 		return
 	}
 
-	if uint(userId) != claims.UserId {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized",
-		})
-		ctx.Abort()
-		return
-	}
-
-	errUpdate := a.AccountService.UpdateProfileByUserId(uint(userId), updateBody)
+	errUpdate := a.AccountService.UpdateProfileByUserId(claims.UserId, updateBody)
 	if errUpdate != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errUpdate.Error(),

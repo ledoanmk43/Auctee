@@ -50,7 +50,7 @@ func (a *AccountRepositoryDefault) UpdatePassword(password string, userId uint) 
 	result := a.db.Where("id = ?", userId).Find(&userToUpdate)
 	if result.Error != nil {
 		log.Println("Update Password: Error in package repository: ", result.Error)
-		return result.Error
+		return errors.New("Unauthorized")
 	}
 	if userToUpdate.CheckPassword(password) == nil { //compare
 		return errors.New("new password must not be the same as old password")
@@ -74,7 +74,7 @@ func (a *AccountRepositoryDefault) UpdateProfileByUserId(userId uint, updateBody
 	result := a.db.Where("id = ?", userId).Find(&userToUpdate)
 	if result.Error != nil {
 		log.Println("Update Password: Error in package repository: ", result.Error)
-		return result.Error
+		return errors.New("Unauthorized")
 	}
 	userToUpdate.Firstname = updateBody.Firstname
 	userToUpdate.Lastname = updateBody.Lastname

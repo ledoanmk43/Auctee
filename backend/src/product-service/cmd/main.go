@@ -2,9 +2,10 @@ package main
 
 import (
 	"backend/pkg/utils"
-	"backend/src/account-service/config"
+	config_account "backend/src/account-service/config"
 	grpc_product "backend/src/product-service/cmd/grpc-product"
 	rpcClient "backend/src/product-service/cmd/grpc-product"
+	config_product "backend/src/product-service/config"
 	"backend/src/product-service/controller"
 	account_server_controller "backend/src/product-service/controller/account-grpc-controller"
 	"backend/src/product-service/repository"
@@ -28,12 +29,12 @@ func main() {
 	//adminClient := admin.NewAdminServiceClient(conn)
 
 	//Product service DB
-	db := config.GetDB()
-	defer config.CloseDatabase(db)
+	db := config_product.GetDB()
+	defer config_product.CloseDatabase(db)
 	newRouter := utils.Router()
 
 	//Cookie
-	newRouter.Use(sessions.SessionsMany(config.NewSessions, config.CookieStore))
+	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
 
 	productRepository := repository.NewProductRepositoryDefault(db)
 	productService := service.NewProductService(productRepository)

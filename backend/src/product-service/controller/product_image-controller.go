@@ -55,7 +55,7 @@ func (p *ProductImageController) UpdateImage(ctx *gin.Context) {
 		return
 	}
 
-	imageId, errGetId := strconv.Atoi(ctx.Param(product.ImageId))
+	imageId, errGetId := strconv.Atoi(ctx.Query(product.Id))
 	if errGetId != nil {
 		log.Println("error in get image by imageId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -67,12 +67,12 @@ func (p *ProductImageController) UpdateImage(ctx *gin.Context) {
 
 	imageBody.ProductId = ctx.Param(product.ProductId)
 	imageBody.ID = uint(imageId)
-	errDelete := p.ProductImageService.UpdateImage(&imageBody, claims.UserId)
-	if errDelete != nil {
+	errUpdate := p.ProductImageService.UpdateImage(&imageBody, claims.UserId)
+	if errUpdate != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": errDelete.Error(),
+			"message": errUpdate.Error(),
 		})
-		log.Println("CreateImage: Error to CreateImage in package controller", errDelete)
+		log.Println("CreateImage: Error to CreateImage in package controller", errUpdate)
 		ctx.Abort()
 		return
 	}
@@ -190,7 +190,7 @@ func (p *ProductImageController) DeleteImage(ctx *gin.Context) {
 		return
 	}
 
-	imageId, errGetId := strconv.Atoi(ctx.Param(product.ImageId))
+	imageId, errGetId := strconv.Atoi(ctx.Query(product.Id))
 	if errGetId != nil {
 		log.Println("error in get image by imageId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{

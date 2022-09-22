@@ -62,7 +62,7 @@ func (a *AddressService) DeleteAddress(userId, addressId uint) error {
 func (a *AddressService) GetAddressByAddressId(addressId, userId uint) (*entity.Address, error) {
 	address, err := a.AddressRepository.GetAddressByAddressId(addressId, userId)
 	if err != nil {
-		log.Println("GetAddressById: Error in get address by id in package uer-service", err)
+		log.Println("GetAddressById: Error in get address by id in package service", err)
 		return nil, err
 	}
 	return address, nil

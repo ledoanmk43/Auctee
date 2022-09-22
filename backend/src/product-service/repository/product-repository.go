@@ -85,7 +85,6 @@ func (p *ProductRepositoryDefault) UpdateProduct(updateBody *entity.Product) err
 		return errors.New("expect price should be larger than minimum price")
 	}
 
-	productToUpdate.Id = updateBody.Id
 	productToUpdate.Name = updateBody.Name
 	productToUpdate.MinPrice = updateBody.MinPrice
 	productToUpdate.Description = updateBody.Description
@@ -137,7 +136,6 @@ func (p *ProductRepositoryDefault) GetProductsByProductName(productName string) 
 		productList.IdList = append(productList.IdList, products[i].Id)
 		productList.ProductName = append(productList.ProductName, products[i].Name)
 	}
-
 	return &productList, nil
 }
 

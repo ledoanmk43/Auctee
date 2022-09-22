@@ -21,12 +21,10 @@ func NewImageRoute(productImageController controller.IProductImageController, ro
 }
 
 func (i *ImageRoute) GetRouter() {
-	imageRoutes := i.Router.Group("/auctee") //http://localhost:1002/auctee/shirt-1/image/id=1
+	imageRoutes := i.Router.Group("/auctee/user/:productId") //http://localhost:1002/auctee/shirt-1/image/id=1
 	{
-		imageRoutes.POST("/:productId/image", i.AccountSrvController.MiddlewareCheckIsAuth(), i.ProductImageController.CreateImage)
-		imageRoutes.PUT("/:productId/image/id=:imageId", i.AccountSrvController.MiddlewareCheckIsAuth(), i.ProductImageController.UpdateImage)
-		imageRoutes.DELETE("/:productId/image/id=:imageId", i.AccountSrvController.MiddlewareCheckIsAuth(), i.ProductImageController.DeleteImage)
-		//imageRoutes.GET("/id=:productId", i.ProductImageController.GetImage)
-		//imageRoutes.GET("/imageId=:imageId", i.ProductImageController.GetImageByID)
+		imageRoutes.POST("/image", i.AccountSrvController.MiddlewareCheckIsAuth(), i.ProductImageController.CreateImage)
+		imageRoutes.PUT("/image", i.AccountSrvController.MiddlewareCheckIsAuth(), i.ProductImageController.UpdateImage)
+		imageRoutes.DELETE("/image", i.AccountSrvController.MiddlewareCheckIsAuth(), i.ProductImageController.DeleteImage)
 	}
 }
