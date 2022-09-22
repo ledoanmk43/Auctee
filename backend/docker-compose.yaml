@@ -55,3 +55,21 @@ services:
       - GIN_PORT=1009
       - ACCOUNT_SRV_HOST=account:50051
       - PRODUCT_SRV_HOST=product:50052
+
+  payment:
+    container_name: payment
+    image: auctee/payment
+    build:
+      context: .
+      dockerfile: ./src/payment-service/dockerfile
+    ports:
+      - "1003:1003"
+    environment:
+      - DB_USER=root
+      - DB_PASS=Ledoan070899
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - DB_NAME=auctee
+      - GIN_PORT=1009
+      - ACCOUNT_SRV_HOST=account:50051
+      - AUCTION_SRV_HOST=auction:50053
