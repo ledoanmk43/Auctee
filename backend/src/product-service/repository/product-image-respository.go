@@ -1,11 +1,16 @@
 package repository
 
 import (
+	"backend/pkg/utils"
 	"backend/src/product-service/dto"
 	"backend/src/product-service/entity"
 	"errors"
 	"gorm.io/gorm"
 	"log"
+)
+
+const (
+	inactive = false
 )
 
 type IProductImageRepository interface {
@@ -46,20 +51,28 @@ func (p *ProductImageRepository) UpdateImage(imageBody *entity.ProductImage, use
 	var image *entity.ProductImage
 	record := p.connection.Where("id = ? AND user_id = ? ", imageBody.ProductId, userId).Find(&product).Count(&countPro)
 	if record.Error != nil || countPro == 0 {
-		log.Println("line 36")
+		log.Println("line 49")
 		return errors.New("image not found")
 	}
 
 	var countImg int64
 	res := p.connection.Where("product_id = ? AND id = ?", imageBody.ProductId, imageBody.ID).Find(&image).Count(&countImg)
-
 	if res.Error != nil || countImg == 0 {
-		log.Println("line 44")
+		log.Println("line 56")
 		return errors.New("image not found")
 	}
 
 	image.Path = imageBody.Path
 	image.IsDefault = imageBody.IsDefault
+
+	var imageCheckDefault *entity.ProductImage
+	var countDefault int64
+	_ = p.connection.Where("product_id = ? AND id != ? AND is_default = ?", imageBody.ProductId, imageBody.ID, true).Find(&imageCheckDefault).Count(&countDefault)
+	if imageCheckDefault != nil {
+		imageCheckDefault.IsDefault = utils.BoolAddr(false)
+		_ = p.connection.Where("product_id = ? AND id != ? AND is_default = ?", imageBody.ProductId, imageBody.ID, true).Updates(&imageCheckDefault)
+	}
+
 	resUpdate := p.connection.Updates(&image)
 	if resUpdate.Error != nil {
 		return errors.New("image not found")

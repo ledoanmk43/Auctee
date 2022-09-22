@@ -55,12 +55,10 @@ func RunGRPCServer(enabledTLS bool, lis net.Listener) error {
 func (p *ProductServer) GetProductById(ctx context.Context, in *product.GetProductByIdRequest) (*product.GetProductByIdResponse, error) {
 	productId := in.GetProductId()
 	if productId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "InvalidArgument productId= %v", productId)
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument productId= %v", productId)
 	}
-	//var productId string
-	//productId = in.GetProductId()
 
-	prod, err := p.productService.GetProductByProductId(productId)
+	prod, err := p.productService.GetProductDetailByProductId(productId)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "Not found: %v", err)
 	}

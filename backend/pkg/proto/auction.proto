@@ -1,0 +1,48 @@
+syntax="proto3";
+
+option go_package = "./pkg/pb/auction";
+
+
+service AuctionService {
+  rpc GetAuctionById(GetAuctionByIdRequest) returns (GetAuctionByIdResponse);
+  rpc GetProductByProductName(GetProductByProductNameRequest) returns (GetProductByProductNameResponse);
+}
+
+//By Id - this is for query a product
+message GetAuctionByIdRequest {
+  uint32 AuctionId = 1;
+}
+
+message GetAuctionByIdResponse {
+  string ProductId = 1;
+  string ProductName = 2;
+  string EndTime = 3;
+  int32 Quantity = 4;
+  uint32 UserId = 5;
+  uint32 WinnerId =6;
+  float CurrentBid = 7;
+}
+
+//    ProductId    string  `json:"product_id" gorm:"type:varchar(20);not null"`
+//    ProductName  string  `json:"name" gorm:"type:nvarchar(100);not null"`
+//    StartTime    string  `json:"start_time" gorm:"type:datetime;not null"`
+//    EndTime      string  `json:"end_time" gorm:"type:datetime;not null"`
+//    CurrentBid   float64 `json:"current_bid" gorm:"type:double;not null"`
+//    IsActive     bool    `json:"is_active" gorm:"default:false"`
+//    Quantity     int     `json:"quantity" gorm:"type:nvarchar(100);not null"`
+//    PricePerStep float64 `json:"price_per_step" gorm:"type:double;not null"`
+//    UserId       uint    `gorm:"not null" json:"-"`
+//    WinnerId     uint    `json:"winner_id"`
+//    ImagePath    string  `json:"image_path" gorm:"type:varchar(100)"`
+//
+//By productName - this is for search function
+message GetProductByProductNameRequest {
+  string ProductName = 1;
+}
+
+message GetProductByProductNameResponse {
+  repeated string IdList = 1;
+  repeated string ProductName = 2;
+}
+
+

@@ -13,8 +13,8 @@ type IAuctionService interface {
 	Update(b *entity.Auction) error
 	Delete(auctionId, userId uint) error
 	GetAuctionById(auctionId uint) (*entity.Auction, error)
-	GetAllAuctions() (*[]entity.Auction, error)
-	GetAllAuctionsByIdList(idList []string) (*[]entity.Auction, error)
+	GetAllAuctions(page int) (*[]entity.Auction, error)
+	GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error)
 }
 
 type AuctionServiceDefault struct {
@@ -25,8 +25,8 @@ func NewAuctionServiceDefault(auctionRepository repository.IAuctionRepository) *
 	return &AuctionServiceDefault{AuctionRepository: auctionRepository}
 }
 
-func (a *AuctionServiceDefault) GetAllAuctionsByIdList(idList []string) (*[]entity.Auction, error) {
-	auctions, err := a.AuctionRepository.GetAllAuctionsByIdList(idList)
+func (a *AuctionServiceDefault) GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error) {
+	auctions, err := a.AuctionRepository.GetAllAuctionsByProductName(nameList)
 	if err != nil {
 		log.Println("Get auctions : Error get auctions in package service", err)
 		return nil, err
@@ -34,8 +34,8 @@ func (a *AuctionServiceDefault) GetAllAuctionsByIdList(idList []string) (*[]enti
 	return auctions, nil
 }
 
-func (a *AuctionServiceDefault) GetAllAuctions() (*[]entity.Auction, error) {
-	auctions, err := a.AuctionRepository.GetAllAuctions()
+func (a *AuctionServiceDefault) GetAllAuctions(page int) (*[]entity.Auction, error) {
+	auctions, err := a.AuctionRepository.GetAllAuctions(page)
 	if err != nil {
 		log.Println("Get auctions : Error get auctions in package service", err)
 	}

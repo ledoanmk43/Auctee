@@ -41,7 +41,7 @@ func (p *ProductController) GetAllProducts(ctx *gin.Context) {
 }
 
 func (p *ProductController) GetProductByProductId(ctx *gin.Context) {
-	productId := ctx.Param(product.ProductId)
+	productId := ctx.Query(product.Id)
 	if len(productId) == 0 {
 		log.Println("error in get product by productId: nil productId")
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -123,7 +123,7 @@ func (p *ProductController) UpdateProductByProductId(ctx *gin.Context) {
 		return
 	}
 
-	productId := ctx.Param(product.ProductId)
+	productId := ctx.Query(product.Id)
 	if len(productId) == 0 {
 		log.Println("error in update product by productId: nil productId")
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -160,9 +160,8 @@ func (p *ProductController) UpdateProductByProductId(ctx *gin.Context) {
 }
 
 func (p *ProductController) DeleteProductByProductId(ctx *gin.Context) {
-
-	ProductId := ctx.Param(product.ProductId)
-	if len(ProductId) == 0 {
+	productId := ctx.Query(product.Id)
+	if len(productId) == 0 {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "missing param",
 		})
@@ -186,7 +185,7 @@ func (p *ProductController) DeleteProductByProductId(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	err := p.ProductService.Delete(ProductId, claims.UserId)
+	err := p.ProductService.Delete(productId, claims.UserId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

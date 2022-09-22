@@ -92,7 +92,7 @@ func (a *AddressController) UpdateAddressByAddressId(ctx *gin.Context) {
 		return
 	}
 
-	addressId, errGetId := strconv.Atoi(ctx.Param(config.AddressId))
+	addressId, errGetId := strconv.Atoi(ctx.Query(config.Id))
 	if errGetId != nil {
 		log.Println("error in get address by addressId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -177,7 +177,7 @@ func (a *AddressController) DeleteAddressByAddressId(ctx *gin.Context) {
 		return
 	}
 
-	addressId, errGetId := strconv.Atoi(ctx.Param(config.AddressId))
+	addressId, errGetId := strconv.Atoi(ctx.Query(config.Id))
 	if errGetId != nil {
 		log.Println("error in get address by addressId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -210,7 +210,7 @@ func (a *AddressController) GetAddressByAddressId(ctx *gin.Context) {
 		return
 	}
 
-	addressId, errGetId := strconv.Atoi(ctx.Param(config.AddressId))
+	addressId, errGetId := strconv.Atoi(ctx.Query(config.Id))
 	if errGetId != nil {
 		log.Println("error in get address by addressId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{

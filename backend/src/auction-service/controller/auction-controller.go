@@ -1,7 +1,7 @@
 package controller
 
 import (
-	product "backend/pkg/pb/product"
+	"backend/pkg/pb/product"
 	"backend/pkg/token"
 	"backend/pkg/utils"
 	account "backend/src/account-service/config"
@@ -133,9 +133,9 @@ func (a *AuctionController) UpdateAuctionByAuctionId(ctx *gin.Context) {
 		return
 	}
 
-	auctionId, errGetId := strconv.Atoi(ctx.Param(auction.AuctionId))
+	auctionId, errGetId := strconv.Atoi(ctx.Query(auction.Id))
 	if errGetId != nil {
-		log.Println("error in get image by optionId: ", errGetId)
+		log.Println("error in get auction by auctionId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error when get id in url",
 		})
@@ -187,7 +187,7 @@ func (a *AuctionController) DeleteAuctionByAuctionId(ctx *gin.Context) {
 		return
 	}
 
-	auctionId, errGetId := strconv.Atoi(ctx.Param(auction.AuctionId))
+	auctionId, errGetId := strconv.Atoi(ctx.Query(auction.Id))
 	if errGetId != nil {
 		log.Println("error when get auctionId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -212,7 +212,7 @@ func (a *AuctionController) DeleteAuctionByAuctionId(ctx *gin.Context) {
 	})
 }
 func (a *AuctionController) GetAuctionByAuctionId(ctx *gin.Context) {
-	auctionId, errGetId := strconv.Atoi(ctx.Param(auction.AuctionId))
+	auctionId, errGetId := strconv.Atoi(ctx.Query(auction.Id))
 	if errGetId != nil {
 		log.Println("error when get auctionId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -235,7 +235,16 @@ func (a *AuctionController) GetAuctionByAuctionId(ctx *gin.Context) {
 
 }
 func (a *AuctionController) GetAllAuctions(ctx *gin.Context) {
-	auctions, err := a.AuctionService.GetAllAuctions()
+	page, errGetPage := strconv.Atoi(ctx.Query(auction.Page))
+	if errGetPage != nil {
+		log.Println("error when get auctionId: ", errGetPage)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error when get id in url",
+		})
+		ctx.Abort()
+		return
+	}
+	auctions, err := a.AuctionService.GetAllAuctions(page)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "fail to get all auctions",
@@ -247,8 +256,8 @@ func (a *AuctionController) GetAllAuctions(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, auctions)
 }
 
-func (a *AuctionController) GetAllAuctionsByProductName(ctx *gin.Context) {
-	productName := ctx.Param(auction.ProductName)
+func (a *AuctionController) GetAllAuctionsByProductName(ctx *gin.Context) { //Search auction by productName
+	productName := ctx.Query(auction.ProductName)
 	in := product.GetProductByProductNameRequest{ProductName: productName}
 	res, errRes := a.ProductClient.GetProductByProductName(ctx, &in)
 	if errRes != nil {
@@ -268,7 +277,9 @@ func (a *AuctionController) GetAllAuctionsByProductName(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	auctions, err := a.AuctionService.GetAllAuctionsByIdList(res.IdList)
+
+	log.Println("list ne: ", res.ProductName)
+	auctions, err := a.AuctionService.GetAllAuctionsByProductName(res.ProductName)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
 			"message": err.Error(),

@@ -22,15 +22,10 @@ func NewOptionRoute(productOptionController controller.IProductOptionController,
 }
 
 func (o *OptionRoute) GetRouter() {
-	optionRoutes := o.Router.Group("/auctee")
+	optionRoutes := o.Router.Group("/auctee/user/:productId")
 	{
-		optionRoutes.POST("/:productId/option", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.CreateOption)
-		optionRoutes.PUT("/:productId/option/id=:optionId", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.UpdateOption)
-		optionRoutes.DELETE("/:productId/option/id=:optionId", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.DeleteOption)
-		//optionRoutes.POST("/id=:productId", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.CreateOption)
-		//optionRoutes.GET("/id=:productId", o.ProductOptionController.GetOptions)
-		//optionRoutes.DELETE("/:optionId", o.ProductOptionController.DeleteOption)
-		//optionRoutes.GET("/optionId=:optionId", o.ProductOptionController.GetOptionByID)
-		//optionRoutes.PUT("/:optionId", o.ProductOptionController.UpdateOption)
+		optionRoutes.POST("/option", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.CreateOption)
+		optionRoutes.PUT("/option", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.UpdateOption)
+		optionRoutes.DELETE("/option", o.AccountSrvController.MiddlewareCheckIsAuth(), o.ProductOptionController.DeleteOption)
 	}
 }

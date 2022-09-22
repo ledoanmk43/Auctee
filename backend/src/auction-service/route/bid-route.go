@@ -23,6 +23,9 @@ func NewBidRoute(bidController controller.IBidController, router *gin.Engine, ac
 func (b *BidRoute) GetRouter() {
 	bidRoute := b.Router.Group("/auctee")
 	{
-		bidRoute.POST("/product/productId=:productId&auctionId=auctionId", b.AccountSrvController.MiddlewareCheckIsAuth(), b.BidController.CreateBid)
+
+		bidRoute.POST("/auction", b.BidController.CreateBid)
+		bidRoute.POST("/bot/auction", b.BidController.AutoBid)
+		bidRoute.GET("/all-bids/auction", b.BidController.GetAllBidsByAuctionId)
 	}
 }

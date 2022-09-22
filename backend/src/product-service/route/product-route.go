@@ -26,9 +26,9 @@ func (p *ProductRoute) GetRouter() {
 	{
 		productRoutes.POST("/user/product", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.CreateProduct)
 		productRoutes.GET("/products", p.ProductController.GetAllProducts)
-		productRoutes.GET("/product/detail/id=:productId", p.ProductController.GetProductByProductId)
-		productRoutes.PUT("/user/product/detail/id=:productId", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.UpdateProductByProductId)
-		productRoutes.DELETE("/user/product/detail/id=:productId", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.DeleteProductByProductId)
+		productRoutes.GET("/product/detail", p.ProductController.GetProductByProductId)
+		productRoutes.PUT("/user/product/detail", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.UpdateProductByProductId)
+		productRoutes.DELETE("/user/product/detail", p.AccountSrvController.MiddlewareCheckIsAuth(), p.ProductController.DeleteProductByProductId)
 
 	}
 }

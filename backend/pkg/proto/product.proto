@@ -1,12 +1,14 @@
 syntax="proto3";
 
 option go_package = "./pkg/pb/product";
+import "google/protobuf/struct.proto";
+
 
 service ProductService {
   rpc GetProductById(GetProductByIdRequest) returns (GetProductByIdResponse);
   rpc GetProductByProductName(GetProductByProductNameRequest) returns (GetProductByProductNameResponse);
 }
-//By Id
+//By Id - this is for query a product
 message GetProductByIdRequest {
   string ProductId = 1;
 }
@@ -22,7 +24,7 @@ message GetProductByIdResponse {
   string Path = 8;
 }
 
-//By productName
+//By productName - this is for search function
 message GetProductByProductNameRequest {
   string ProductName = 1;
 }

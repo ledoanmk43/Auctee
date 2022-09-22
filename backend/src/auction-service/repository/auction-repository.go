@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"backend/pkg/utils"
+	auction "backend/src/auction-service/config"
 	"backend/src/auction-service/entity"
 	"errors"
 	"gorm.io/gorm"
@@ -12,10 +14,10 @@ type IAuctionRepository interface {
 	UpdateAuction(product *entity.Auction) error
 	DeleteAuction(auctionId, userIdId uint) error
 	GetAuctionById(auctionId uint) (*entity.Auction, error)
-	GetAllAuctions() (*[]entity.Auction, error)
+	GetAllAuctions(page int) (*[]entity.Auction, error)
 	UpdateCurrentBidByAuctionId(bid *entity.Bid) error
 	CheckIfUserIsWinner(userId, auctionId uint) bool
-	GetAllAuctionsByIdList(idList []string) (*[]entity.Auction, error)
+	GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error)
 }
 
 type AuctionRepositoryDefault struct {
@@ -26,30 +28,21 @@ func NewAuctionRepositoryDefault(dbConn *gorm.DB) *AuctionRepositoryDefault {
 	return &AuctionRepositoryDefault{connection: dbConn}
 }
 
-func (a *AuctionRepositoryDefault) GetAllAuctionsByIdList(idList []string) (*[]entity.Auction, error) {
-	var auctions []entity.Auction
-	var count int64
-	for _, id := range idList {
-		var auction *entity.Auction
-		res := a.connection.Where("product_id LIKE ?", "%"+id+"%").Find(&auction).Count(&count)
-		if res.Error != nil {
-			log.Println("Get auctions : Error get auctions in package service", res.Error)
-			return nil, res.Error
-		}
-		if len(auction.ProductId) != 0 {
-			auctions = append(auctions, *auction)
-		}
-	}
-	if count == 0 {
-		return nil, errors.New("no auction found")
-	}
+func (a *AuctionRepositoryDefault) GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error) {
+	var auctions *[]entity.Auction
+	_ = a.connection.Where("product_name IN ?", nameList).Find(&auctions)
+	//if len(auction.ProductId) != 0 {
+	//	auctions = append(auctions, *auction)
+	//}
 
-	return &auctions, nil
+	return auctions, nil
 }
 
-func (a *AuctionRepositoryDefault) GetAllAuctions() (*[]entity.Auction, error) {
+func (a *AuctionRepositoryDefault) GetAllAuctions(page int) (*[]entity.Auction, error) {
 	var auctions *[]entity.Auction
-	record := a.connection.Find(&auctions)
+	//Maybe lazy load will require about 20 auctions at a time
+	//Or search about lazy load API
+	record := a.connection.Limit(auction.PerPage).Offset((page - 1) * auction.PerPage).Find(&auctions)
 	if record.Error != nil {
 		log.Println("Get auctions: Error get all auctions in repo", record.Error)
 		return nil, record.Error
@@ -79,32 +72,11 @@ func (a *AuctionRepositoryDefault) UpdateAuction(updateBody *entity.Auction) err
 	if count == 0 {
 		return errors.New("auction not found")
 	}
-	//auctionToUpdateStartTime, err := utils.StringToTime(auctionToUpdate.StartTime)
-	//if err != nil {
-	//	return err
-	//}
-	//auctionToUpdateEndTime, err := utils.StringToTime(auctionToUpdate.EndTime)
-	//if err != nil {
-	//	return err
-	//}
-	//updateBodyStartTime, err := utils.StringToTime(updateBody.StartTime)
-	//if err != nil {
-	//	return err
-	//}
-	//updateBodyEndTime, err := utils.StringToTime(updateBody.EndTime)
-	//if err != nil {
-	//	return err
-	//}
-	//if updateBodyEndTime.Before(auctionToUpdateStartTime) {
-	//	return errors.New("invalid end time")
-	//}
-	//if updateBodyStartTime.After(auctionToUpdateEndTime) {
-	//	return errors.New("invalid start time")
-	//}
+
 	auctionToUpdate.StartTime = updateBody.StartTime
 	auctionToUpdate.EndTime = updateBody.EndTime
 	auctionToUpdate.CurrentBid = updateBody.CurrentBid
-	auctionToUpdate.IsActive = updateBody.IsActive
+	auctionToUpdate.IsActive = utils.BoolAddr(*updateBody.IsActive)
 	auctionToUpdate.Quantity = updateBody.Quantity
 	auctionToUpdate.PricePerStep = updateBody.PricePerStep
 	auctionToUpdate.ImagePath = updateBody.ImagePath
@@ -161,10 +133,9 @@ func (a *AuctionRepositoryDefault) UpdateCurrentBidByAuctionId(newBid *entity.Bi
 }
 
 func (a *AuctionRepositoryDefault) CheckIfUserIsWinner(userId, auctionId uint) bool {
-	var newBid *entity.Bid
-	res := a.connection.Where("winner_id = ? AND id = ?", userId, auctionId).First(&newBid)
-
-	if res.Error != nil {
+	var auction *entity.Auction
+	res := a.connection.Where("winner_id = ? AND id = ?", userId, auctionId).First(&auction)
+	if res.Error != nil || auction == nil {
 		log.Println("Error: ", res.Error)
 		return false
 	}
