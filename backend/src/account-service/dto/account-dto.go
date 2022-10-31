@@ -11,32 +11,38 @@ type AdminLoginDTO struct {
 }
 
 type UpdateProfileDTO struct {
-	Firstname string
-	Lastname  string
-	Birthday  string
-	Phone     string
-	Email     string
-	Gender    bool
-	Country   string
-	Language  string
+	Firstname      string `json:"firstname"`
+	Lastname       string `json:"lastname"`
+	Birthday       string `json:"birthday"`
+	Phone          string `json:"phone"`
+	Email          string `json:"email"`
+	Gender         *bool  `json:"gender"`
+	Country        string `json:""`
+	Language       string `json:"language"`
+	Shopname       string `json:"shopname"`
+	Avatar         string `json:"avatar"`
+	Nickname       string `json:"nickname"`
+	PresentAuction string `json:"present_auction"`
 }
 
 type UpdateAddressDTO struct {
 	Id          uint
-	Firstname   string
-	Lastname    string
-	Phone       string
-	Email       string
-	Province    string
-	District    string
-	SubDistrict string `json:"sub_district" gorm:"type:nvarchar(100);not null"`
-	Address     string
-	TypeAddress string `json:"type_address" gorm:"type:nvarchar(100)"`
-	UserId      uint
+	Firstname   string `json:"firstname"`
+	Lastname    string `json:"lastname"`
+	Phone       string `json:"phone"`
+	Email       string `json:"email"`
+	Province    string `json:"province"`
+	District    string `json:"district"`
+	SubDistrict string `json:"sub_district"`
+	Address     string `json:"address"`
+	TypeAddress string `json:"type_address"`
+	UserId      uint   `json:"user_id"`
+	IsDefault   *bool  `json:"is_default"`
 }
 type PasswordToUpdate struct {
-	Password  string
-	KeepLogin bool
+	OldPassword string `json:"old_password" gorm:"type:nvarchar(100);not null"`
+	NewPassword string `json:"new_password" gorm:"type:nvarchar(100);not null"`
+	KeepLogin   bool
 }
 
 func (admin *AdminLoginDTO) Validate(action string) error {

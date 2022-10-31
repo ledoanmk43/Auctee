@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"backend/pkg/utils"
 	"backend/src/account-service/dto"
 	"backend/src/account-service/entity"
 	"errors"
@@ -28,6 +29,17 @@ func (a *AddressRepositoryDefault) CreateAddress(address *entity.Address) error 
 	if errCheckEmptyField := address.Validate(); errCheckEmptyField != nil {
 		log.Println("CreateAddress: Error empty field in package repository", errCheckEmptyField)
 		return errCheckEmptyField
+	}
+
+	if *address.IsDefault {
+		//Check if any address of an user has default tag and switch to false
+		var addressCheckDefault *entity.Address
+		var countDefault int64
+		_ = a.db.Where("user_id = ? AND is_default = ?", address.UserId, true).Find(&addressCheckDefault).Count(&countDefault)
+		if addressCheckDefault != nil || countDefault != 0 {
+			addressCheckDefault.IsDefault = utils.BoolAddr(false)
+			_ = a.db.Updates(&addressCheckDefault)
+		}
 	}
 	result := a.db.Create(&address)
 	if result.Error != nil {
@@ -64,6 +76,19 @@ func (a *AddressRepositoryDefault) UpdateAddress(userId uint, updateBody *dto.Up
 	addressToUpdate.Address = updateBody.Address
 	addressToUpdate.TypeAddress = updateBody.TypeAddress
 
+	if addressToUpdate.IsDefault != nil {
+		addressToUpdate.IsDefault = utils.BoolAddr(*updateBody.IsDefault)
+	}
+	if *addressToUpdate.IsDefault == true {
+		var addressCheckDefault *entity.Address
+		var countDefault int64
+		_ = a.db.Where("id != ? AND is_default = ?", updateBody.Id, true).Find(&addressCheckDefault).Count(&countDefault)
+		if addressCheckDefault != nil || countDefault != 0 {
+			addressCheckDefault.IsDefault = utils.BoolAddr(false)
+			_ = a.db.Updates(&addressCheckDefault)
+		}
+	}
+
 	res := a.db.Updates(&addressToUpdate)
 	if res.Error != nil {
 		log.Println("Update Address: Error in package repository", res.Error)
@@ -74,7 +99,7 @@ func (a *AddressRepositoryDefault) UpdateAddress(userId uint, updateBody *dto.Up
 
 func (a *AddressRepositoryDefault) GetAllAddresses(userId uint) (*[]entity.Address, error) {
 	var addresses *[]entity.Address
-	result := a.db.Where("user_id = ?", userId).Find(&addresses)
+	result := a.db.Where("user_id = ?", userId).Order("is_default desc").Order("created_at desc").Find(&addresses)
 	if result.Error != nil {
 		log.Println("GetAddress: Error Find in package repository", result.Error)
 		return nil, result.Error

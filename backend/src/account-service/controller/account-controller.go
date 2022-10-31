@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type IAccountController interface {
@@ -19,7 +20,9 @@ type IAccountController interface {
 	SignOut(c *gin.Context)
 	UpdatePassword(c *gin.Context)
 	GetUserByUserId(c *gin.Context)
+	GetUserAsGuestByUserId(c *gin.Context)
 	UpdateProfileByUserId(c *gin.Context)
+	RefreshToken(c *gin.Context)
 }
 
 type AccountController struct {
@@ -42,11 +45,10 @@ func (a *AccountController) SignUp(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-
 	isDuplicated, errChecking := a.AccountService.IsDuplicateUsername(newUser.Username)
 	if isDuplicated {
 		ctx.JSON(http.StatusConflict, gin.H{
-			"error": "username existed",
+			"message": "email has already been taken",
 		})
 		log.Println("SignUp: ", errChecking)
 		ctx.Abort()
@@ -56,7 +58,7 @@ func (a *AccountController) SignUp(ctx *gin.Context) {
 	createdUser, errCreate := a.AccountService.CreateUser(newUser)
 	if errCreate != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": errCreate.Error(),
+			"message": errCreate.Error(),
 		})
 		log.Println("SignUp: Error in package controller", errCreate)
 		ctx.Abort()
@@ -65,7 +67,7 @@ func (a *AccountController) SignUp(ctx *gin.Context) {
 
 	tokenString, errGenToken := a.token.GenerateJWT("", createdUser.Id, createdUser.Username)
 	if errGenToken != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": errGenToken.Error(),
 		})
 		log.Println("SignIn: Error in GenerateJWT in package controller")
@@ -131,6 +133,58 @@ func (a *AccountController) SignIn(ctx *gin.Context) {
 
 }
 
+func (a *AccountController) RefreshToken(ctx *gin.Context) {
+	//Checking session whether use is logged in
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.Abort()
+		return
+	}
+
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	user, errGet := a.AccountService.GetUserByUserId(claims.UserId)
+	if errGet != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		log.Println("Get User: Error in package controller", errGet)
+		ctx.Abort()
+		return
+	}
+	user.Password = ""
+	tokenString, errGenToken := a.token.GenerateJWT("", user.Id, user.Username)
+	if errGenToken != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errGenToken.Error(),
+		})
+		log.Println("SignIn: Error in GenerateJWT in package controller")
+		ctx.Abort()
+		return
+	}
+
+	//Create Session with token
+	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
+	newSession.Set(config.CookieAuth, tokenString)
+	if errSave := newSession.Save(); errSave != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "session extended",
+	})
+}
+
 func (a *AccountController) SignOut(ctx *gin.Context) {
 	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
 	tokenFromCookie := newSession.Get(config.CookieAuth)
@@ -138,6 +192,7 @@ func (a *AccountController) SignOut(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
 		return
 	}
+	newSession.Options(sessions.Options{MaxAge: -1})
 	newSession.Delete(config.CookieAuth)
 	if err := newSession.Save(); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
@@ -176,13 +231,22 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 	}
 
 	errUpdate := a.AccountService.UpdatePassword(passwordToUpdate, claims.UserId)
+
 	if errUpdate != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": errUpdate.Error(),
-		})
-		log.Println("Update Password: Error in package controller: ", errUpdate)
-		ctx.Abort()
-		return
+		if errUpdate.Error() == "wrong password" {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": errUpdate.Error(),
+			})
+			ctx.Abort()
+			return
+		}
+		if errUpdate.Error() == "new password must not be the same as old password" {
+			ctx.JSON(http.StatusConflict, gin.H{
+				"message": errUpdate.Error(),
+			})
+			ctx.Abort()
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -212,6 +276,21 @@ func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
 	if errGet != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
+		})
+		log.Println("Get User: Error in package controller", errGet)
+		ctx.Abort()
+		return
+	}
+	user.Password = ""
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (a *AccountController) GetUserAsGuestByUserId(ctx *gin.Context) {
+	userId, _ := strconv.Atoi(ctx.Query("id"))
+	user, errGet := a.AccountService.GetUserByUserId(uint(userId))
+	if errGet != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errGet.Error(),
 		})
 		log.Println("Get User: Error in package controller", errGet)
 		ctx.Abort()

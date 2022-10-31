@@ -14,7 +14,7 @@ import (
 )
 
 type IAccountService interface {
-	UpdatePassword(in *dto.PasswordToUpdate, userId uint) error
+	UpdatePassword(dto *dto.PasswordToUpdate, userId uint) error
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Account, error)
 	CreateUser(user *entity.Account) (*entity.Account, error)
 	IsDuplicateUsername(username string) (bool, error)
@@ -43,7 +43,7 @@ func (a *AccountService) VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.
 
 func (a *AccountService) CreateUser(user *entity.Account) (*entity.Account, error) {
 	if len(user.Password) < 6 {
-		log.Println("Update Password: Error empty field in package repository: empty input")
+		log.Println("Create Password: Error empty field in package repository: empty input")
 		return nil, errors.New("password too short")
 	}
 	newUser, err := a.AccountRepository.InsertUser(user)
@@ -62,16 +62,16 @@ func (a *AccountService) IsDuplicateUsername(username string) (bool, error) {
 	return false, err
 }
 
-func (a *AccountService) UpdatePassword(in *dto.PasswordToUpdate, userId uint) error {
-	if len(in.Password) == 0 {
+func (a *AccountService) UpdatePassword(dto *dto.PasswordToUpdate, userId uint) error {
+	if len(dto.OldPassword) == 0 || len(dto.NewPassword) == 0 {
 		log.Println("Update Password: Error empty field in package repository: empty input")
 		return errors.New("password field must not be empty")
 	}
-	if len(in.Password) < 6 {
+	if len(dto.NewPassword) < 6 {
 		log.Println("Update Password: Error empty field in package repository: empty input")
 		return errors.New("password too short")
 	}
-	err := a.AccountRepository.UpdatePassword(in.Password, userId)
+	err := a.AccountRepository.UpdatePassword(dto, userId)
 	if err != nil {
 		log.Println("Error: Error in package service: ", err.Error())
 		return err

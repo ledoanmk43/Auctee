@@ -18,6 +18,7 @@ type Address struct {
 	Address     string `json:"address" gorm:"type:nvarchar(200); not null"`
 	TypeAddress string `json:"type_address" gorm:"type:nvarchar(100); not null"`
 	UserId      uint   `gorm:"not null" json:"-"`
+	IsDefault   *bool  `json:"is_default" gorm:"type:boolean;default:false"`
 }
 
 func (address *Address) Validate() error {

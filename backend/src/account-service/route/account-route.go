@@ -19,8 +19,10 @@ func (a *AccountRouteDefault) GetRouter() {
 	{
 		userRoute.POST("/register", a.AccountController.SignUp)
 		userRoute.POST("/login", a.AccountController.SignIn)
+		userRoute.POST("/refreshToken", a.AccountController.RefreshToken)
 		userRoute.POST("/logout", a.AccountController.SignOut)
 		userRoute.GET("/user/profile", a.AccountController.GetUserByUserId)
+		userRoute.GET("/user", a.AccountController.GetUserAsGuestByUserId)
 		userRoute.PUT("/user/profile", a.AccountController.UpdatePassword)
 		userRoute.PUT("/user/profile/setting", a.AccountController.UpdateProfileByUserId)
 

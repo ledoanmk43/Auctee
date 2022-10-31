@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -52,7 +53,12 @@ func init() {
 	//Create store for sessions
 	keyPairs := []byte(os.Getenv("KEY_PAIRS"))
 	CookieStore = cookie.NewStore(keyPairs)
-	CookieStore.Options(sessions.Options{MaxAge: 60 * 60 * 24 * 7}) // 7 days
+	CookieStore.Options(sessions.Options{
+		MaxAge:   60 * 60 * 24 * 7,
+		HttpOnly: true, // prevent from FE to be accessed from client using script
+		//Secure:   true, //use in https. It means enable this line when deploying the project
+		SameSite: http.SameSiteStrictMode,
+	}) // 7 days
 
 	//List of cookies
 	CookieAuth = os.Getenv("COOKIE_AUTH")
