@@ -211,6 +211,7 @@ func (a *AuctionController) DeleteAuctionByAuctionId(ctx *gin.Context) {
 		"message": "auction deleted",
 	})
 }
+
 func (a *AuctionController) GetAuctionByAuctionId(ctx *gin.Context) {
 	auctionId, errGetId := strconv.Atoi(ctx.Query(auction.Id))
 	if errGetId != nil {
@@ -246,7 +247,7 @@ func (a *AuctionController) GetAllAuctions(ctx *gin.Context) {
 	}
 	auctions, err := a.AuctionService.GetAllAuctions(page)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "fail to get all auctions",
 		})
 		log.Println("Get auctions: Error get all auctions in package controller", err)

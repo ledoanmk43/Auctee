@@ -8,19 +8,24 @@ import (
 )
 
 type Account struct {
-	gorm.Model `json:"-"`
-	Id         uint   `json:"id" gorm:"primaryKey"`
-	Username   string `json:"username" gorm:"type:nvarchar(100);not null"`
-	Password   string `json:"password,omitempty" gorm:"type:nvarchar(100);not null"`
-	Firstname  string `json:"firstname" gorm:"type:nvarchar(100);not null"`
-	Lastname   string `json:"lastname" gorm:"type:nvarchar(100);not null"`
-	Birthday   string `json:"birthday" gorm:"type:nvarchar(100)"`
-	Phone      string `json:"phone" gorm:"type:nvarchar(100)"`
-	Email      string `json:"email" gorm:"type:nvarchar(100)"`
-	Gender     bool   `json:"gender" gorm:"type:boolean"`
-	Country    string `json:"country" gorm:"type:nvarchar(100)"`
-	Language   string `json:"language" gorm:"type:nvarchar(100)"`
-	Token      string `gorm:"-" json:"token,omitempty"`
+	gorm.Model     `json:"-"`
+	Id             uint    `json:"id" gorm:"primaryKey"`
+	Username       string  `json:"username" gorm:"type:nvarchar(100);not null"`
+	Password       string  `json:"password,omitempty" gorm:"type:nvarchar(100);not null"`
+	Firstname      string  `json:"firstname" gorm:"type:nvarchar(100);not null"`
+	Lastname       string  `json:"lastname" gorm:"type:nvarchar(100);not null"`
+	Birthday       string  `json:"birthday" gorm:"type:nvarchar(100)"`
+	Phone          string  `json:"phone" gorm:"type:nvarchar(100)"`
+	Email          string  `json:"email" gorm:"type:nvarchar(100)"`
+	Gender         *bool   `json:"gender" gorm:"type:boolean;default:true"`
+	Country        string  `json:"country" gorm:"type:nvarchar(100)"`
+	Language       string  `json:"language" gorm:"type:nvarchar(100)"`
+	Token          string  `gorm:"-" json:"token,omitempty"`
+	Shopname       string  `json:"shopname" gorm:"type:nvarchar(100);not null"`
+	TotalIncome    float64 `json:"total_income" gorm:"type:double;not null"`
+	Avatar         string  `json:"avatar" gorm:"type:varchar(100)"`
+	Nickname       string  `json:"nickname" gorm:"type:nvarchar(100);not null"`
+	PresentAuction uint    `json:"present_auction"`
 }
 
 func (user *Account) HashPassword(password string) error {

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 type IAuctionRepository interface {
@@ -30,10 +31,11 @@ func NewAuctionRepositoryDefault(dbConn *gorm.DB) *AuctionRepositoryDefault {
 
 func (a *AuctionRepositoryDefault) GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error) {
 	var auctions *[]entity.Auction
-	_ = a.connection.Where("product_name IN ?", nameList).Find(&auctions)
-	//if len(auction.ProductId) != 0 {
-	//	auctions = append(auctions, *auction)
-	//}
+	var count int64
+	_ = a.connection.Where("product_name IN ? AND end_time >= ?", nameList, time.Now()).Find(&auctions).Count(&count)
+	if count == 0 {
+		return nil, errors.New("no auction found")
+	}
 
 	return auctions, nil
 }
@@ -42,7 +44,7 @@ func (a *AuctionRepositoryDefault) GetAllAuctions(page int) (*[]entity.Auction, 
 	var auctions *[]entity.Auction
 	//Maybe lazy load will require about 20 auctions at a time
 	//Or search about lazy load API
-	record := a.connection.Limit(auction.PerPage).Offset((page - 1) * auction.PerPage).Find(&auctions)
+	record := a.connection.Limit(auction.PerPage).Offset((page-1)*auction.PerPage).Order("end_time asc").Where("end_time >= ?", time.Now()).Find(&auctions)
 	if record.Error != nil {
 		log.Println("Get auctions: Error get all auctions in repo", record.Error)
 		return nil, record.Error

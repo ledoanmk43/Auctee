@@ -4,6 +4,7 @@ import (
 	"backend/pkg/token"
 	"backend/src/auction-service/config"
 	"errors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -14,6 +15,18 @@ import (
 
 func Router() *gin.Engine {
 	router := gin.Default()
+	corsConfig := cors.DefaultConfig()
+
+	corsConfig.AllowOrigins = []string{"http://localhost:3000"}
+	// To be able to send tokens to the server.
+	corsConfig.AllowCredentials = true
+
+	// OPTIONS method for ReactJS
+	corsConfig.AddAllowMethods("OPTIONS")
+
+	// Register the middleware
+	router.Use(cors.New(corsConfig))
+	//router.Use(cors.Default())
 	return router
 }
 

@@ -1,17 +1,19 @@
 package repository
 
 import (
+	"backend/pkg/utils"
 	"backend/src/account-service/dto"
 	"backend/src/account-service/entity"
 	"errors"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
 type IAccountRepository interface {
 	VerifyCredential(loginDTO *dto.AdminLoginDTO) (*entity.Account, error)
 	InsertUser(user *entity.Account) (*entity.Account, error)
-	UpdatePassword(password string, userId uint) error
+	UpdatePassword(dto *dto.PasswordToUpdate, userId uint) error
 	IsDuplicateUsername(username string) (*entity.Account, error)
 	GetUserByUserId(userId uint) (*entity.Account, error)
 	UpdateProfileByUserId(userId uint, updateBody *dto.UpdateProfileDTO) error
@@ -35,7 +37,7 @@ func (a *AccountRepositoryDefault) InsertUser(user *entity.Account) (*entity.Acc
 		log.Println("CreateUser: Error in package repository", errHashPassword)
 		return nil, errHashPassword
 	}
-
+	user.Email = user.Username
 	result := a.db.Create(&user)
 	if result.Error != nil {
 		log.Println("Create User: Error in package repository", result.Error)
@@ -44,7 +46,7 @@ func (a *AccountRepositoryDefault) InsertUser(user *entity.Account) (*entity.Acc
 	return user, nil
 }
 
-func (a *AccountRepositoryDefault) UpdatePassword(password string, userId uint) error {
+func (a *AccountRepositoryDefault) UpdatePassword(dto *dto.PasswordToUpdate, userId uint) error {
 
 	var userToUpdate *entity.Account
 	result := a.db.Where("id = ?", userId).Find(&userToUpdate)
@@ -52,10 +54,13 @@ func (a *AccountRepositoryDefault) UpdatePassword(password string, userId uint) 
 		log.Println("Update Password: Error in package repository: ", result.Error)
 		return errors.New("Unauthorized")
 	}
-	if userToUpdate.CheckPassword(password) == nil { //compare
+	if userToUpdate.CheckPassword(dto.OldPassword) != nil { //compare
+		return errors.New("wrong password")
+	}
+	if userToUpdate.CheckPassword(dto.NewPassword) == nil { //compare
 		return errors.New("new password must not be the same as old password")
 	}
-	if errHashPassword := userToUpdate.HashPassword(password); errHashPassword != nil {
+	if errHashPassword := userToUpdate.HashPassword(dto.NewPassword); errHashPassword != nil {
 		log.Println("CreateUser: Error in package repository", errHashPassword)
 		return errHashPassword
 	}
@@ -69,21 +74,29 @@ func (a *AccountRepositoryDefault) UpdatePassword(password string, userId uint) 
 }
 
 func (a *AccountRepositoryDefault) UpdateProfileByUserId(userId uint, updateBody *dto.UpdateProfileDTO) error {
-	log.Println(updateBody)
 	var userToUpdate *entity.Account
 	result := a.db.Where("id = ?", userId).Find(&userToUpdate)
 	if result.Error != nil {
 		log.Println("Update Password: Error in package repository: ", result.Error)
 		return errors.New("Unauthorized")
 	}
+
 	userToUpdate.Firstname = updateBody.Firstname
 	userToUpdate.Lastname = updateBody.Lastname
 	userToUpdate.Phone = updateBody.Phone
 	userToUpdate.Email = updateBody.Email
 	userToUpdate.Birthday = updateBody.Birthday
-	userToUpdate.Gender = updateBody.Gender
+	if updateBody.Gender != nil {
+		userToUpdate.Gender = utils.BoolAddr(*updateBody.Gender)
+	}
 	userToUpdate.Country = updateBody.Country
 	userToUpdate.Language = updateBody.Language
+	userToUpdate.Shopname = updateBody.Shopname
+	userToUpdate.Avatar = updateBody.Avatar
+	userToUpdate.Nickname = updateBody.Nickname
+	id, _ := strconv.Atoi(updateBody.PresentAuction)
+	userToUpdate.PresentAuction = uint(id)
+
 	res := a.db.Where("id = ?", userId).Updates(&userToUpdate)
 	if res.Error != nil {
 		log.Println("Update User: Error in package repository", res.Error)

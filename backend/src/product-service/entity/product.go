@@ -10,15 +10,15 @@ import (
 type Product struct {
 	//Deleted     gorm.DeletedAt
 	gorm.Model    `json:"-"`
-	Id            string  `json:"id" gorm:"primary_key;type:varchar(20);not null;unique"`
-	Name          string  `json:"name" gorm:"type:nvarchar(100);not null"`
-	MinPrice      float64 `json:"min_price" gorm:"type:double;not null"`
-	Description   string  `json:"description" gorm:"type:nvarchar(500);not null"`
-	Quantity      int     `json:"quantity" gorm:"type:bigint;not null"`
-	ExpectPrice   float64 `json:"expect_price" gorm:"type:double;not null"`
-	UserId        uint    `gorm:"not null" json:"-"`
-	ProductImage  []ProductImage
-	ProductOption []ProductOption
+	Id            string          `json:"id" gorm:"primary_key;type:varchar(20);not null;unique"`
+	Name          string          `json:"name" gorm:"type:nvarchar(100);not null"`
+	MinPrice      float64         `json:"min_price" gorm:"type:double;not null"`
+	Description   string          `json:"description" gorm:"type:nvarchar(1500);not null"`
+	Quantity      int             `json:"quantity" gorm:"type:bigint;not null"`
+	ExpectPrice   float64         `json:"expect_price" gorm:"type:double;not null"`
+	UserId        uint            `gorm:"not null" json:"-"`
+	ProductImage  []ProductImage  `json:"product_images"`
+	ProductOption []ProductOption `json:"product_options"`
 }
 
 type ProductResponse struct {
