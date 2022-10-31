@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"backend/internal/auction-service/config"
 	"backend/pkg/token"
-	"backend/src/auction-service/config"
 	"errors"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
