@@ -70,7 +70,7 @@ function NavItem({ item, active }) {
         </ListItemStyle>
 
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <List sx={{ mt: -2 }} component="div" disablePadding>
+          <List sx={{ mt: -1.5 }} component="div" disablePadding>
             {children.map((item) => {
               const { title, path } = item;
               const isActiveSub = active(path);
