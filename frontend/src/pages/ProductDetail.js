@@ -36,7 +36,7 @@ export default function ProductDetail() {
   const [isFetching, setIsFetching] = useState(true);
 
   const handleFetchOwnerData = async (id) => {
-    await fetch(`http://localhost:1001/auctee/user?id=${id}`, {
+    await fetch(`http://localhost:1001/auctee/user?id=${id && id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => {
@@ -50,14 +50,13 @@ export default function ProductDetail() {
   };
 
   const handleFetchAuctionData = async (id) => {
-    await fetch(`http://localhost:1009/auctee/auction/detail?id=${id}`, {
+    await fetch(`http://localhost:1009/auctee/auction/detail?id=${id && id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          handleFetchOwnerData(data.user_id);
           setAuction(data);
         });
       }
@@ -69,14 +68,13 @@ export default function ProductDetail() {
   };
 
   const handleFetchProductData = async (id) => {
-    await fetch(`http://localhost:1002/auctee/product/detail?id=${id}`, {
+    await fetch(`http://localhost:1002/auctee/product/detail?id=${id && id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          handleFetchOwnerData(data.user_id);
           setProduct(data);
           setIsFetching(false);
         });
@@ -95,6 +93,12 @@ export default function ProductDetail() {
     }
   }, [isFetching]);
 
+  useEffect(() => {
+    if (auction && auction.user_id) {
+      handleFetchOwnerData(auction.user_id);
+    }
+  }, [product, isFetching]);
+  console.log(product);
   return isFetching ? (
     <></>
   ) : (

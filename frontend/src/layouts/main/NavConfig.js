@@ -20,7 +20,7 @@ const navConfig = [
     title: 'Phiên đấu giá',
     icon: getIcon('ri:auction-line'),
     children: [
-      { title: 'Kho', path: '/auctee/user/inventory' },
+      { title: 'Danh sách sản phẩm', path: '/auctee/user/product-list' },
       { title: 'Thống kê', path: '/auctee/user/dashboard' },
       { title: 'Đơn thanh toán', path: '/auctee/user/order' },
     ],

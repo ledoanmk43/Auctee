@@ -88,7 +88,7 @@ export default function ChangePasswordForm() {
       sx={{ width: '50%', justifyContent: 'center' }}
     >
       {/* Old password */}
-      <Stack alignItems="center" direction="row" sx={{ maxWidth: '570px', pb: 3, minHeight: '86px' }}>
+      <Stack alignItems="center" direction="row" sx={{ maxWidth: '570px', pb: 3, minHeight: '64px', mt: 2 }}>
         <Typography textAlign="right" variant="body2" sx={{ color: 'black', opacity: 0.8, minWidth: '200px' }}>
           Mật khẩu cũ
         </Typography>

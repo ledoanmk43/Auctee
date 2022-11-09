@@ -3,12 +3,12 @@ module backend
 go 1.18
 
 require (
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/mock v1.6.0
 	github.com/joho/godotenv v1.4.0
-	github.com/mashingan/smapping v0.1.14
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
@@ -17,7 +17,6 @@ require (
 )
 
 require (
-	github.com/gin-contrib/cors v1.4.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

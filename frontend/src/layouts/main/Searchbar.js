@@ -43,10 +43,10 @@ export default function Searchbar() {
   const [keyword, setKeyWord] = useState('');
   const [recent, setRecent] = useState([]);
   const handleSearch = (e) => {
-    e?.preventDefault();
+    e.preventDefault();
     if (keyword?.length > 0) {
       /* eslint-disable-next-line no-plusplus */
-      for (let i = 0; i < recent.length; i++) {
+      for (let i = 0; i < recent?.length; i++) {
         if (recent[i] === keyword) {
           recent.splice(i, 1);
         }
@@ -64,7 +64,11 @@ export default function Searchbar() {
 
   useEffect(() => {
     setKeyWord(kwd);
-    setRecent(JSON.parse(window.localStorage.getItem('recent')));
+    if (recent.length === 0) {
+      window.localStorage.setItem('recent', JSON.stringify('Giá ưu đãi hôm nay'));
+    } else {
+      setRecent(JSON.parse(window.localStorage.getItem('recent')));
+    }
   }, [kwd, open]);
 
   return (
@@ -133,32 +137,29 @@ export default function Searchbar() {
                 bgcolor: 'white',
               }}
             >
-              {recent.map((item, index) => {
-                console.log(item);
-                return (
-                  <Button
-                    type="submit"
-                    onClick={() => {
-                      setKeyWord(item);
-                      handleSearch();
-                    }}
-                    sx={{
-                      justifyContent: 'flex-start',
-                      color: 'black',
-                      px: 2,
-                      borderRadius: '0',
-                      fontWeight: 500,
-                      opacity: 0.7,
-                      '&:hover': {
-                        opacity: 0.9,
-                      },
-                    }}
-                    key={index}
-                  >
-                    {item}
-                  </Button>
-                );
-              })}
+              {recent?.map((item, index) => (
+                <Button
+                  type="submit"
+                  onClick={() => {
+                    setKeyWord(item);
+                    handleSearch();
+                  }}
+                  sx={{
+                    justifyContent: 'flex-start',
+                    color: 'black',
+                    px: 2,
+                    borderRadius: '0',
+                    fontWeight: 500,
+                    opacity: 0.7,
+                    '&:hover': {
+                      opacity: 0.9,
+                    },
+                  }}
+                  key={index}
+                >
+                  {item}
+                </Button>
+              ))}
             </Stack>
           )}
         </SearchbarStyle>

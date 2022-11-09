@@ -6,7 +6,7 @@ services:
     image: auctee/account
     build:
       context: .
-      dockerfile: ./src/account-service/dockerfile
+      dockerfile: ./internal/account-service/Dockerfile
     ports:
       - "1001:1001"
       - "50051:50051"
@@ -21,10 +21,10 @@ services:
 
   product:
     container_name: product
-    image: backend/product
+    image: auctee/product
     build:
       context: .
-      dockerfile: ./src/product-service/dockerfile
+      dockerfile: ./internal/product-service/Dockerfile
     ports:
       - "1002:1002"
       - "50052:50052"
@@ -43,7 +43,7 @@ services:
     image: auctee/auction
     build:
       context: .
-      dockerfile: ./src/auction-service/dockerfile
+      dockerfile: ./internal/auction-service/Dockerfile
     ports:
       - "1009:1009"
     environment:
@@ -61,7 +61,7 @@ services:
     image: auctee/payment
     build:
       context: .
-      dockerfile: ./src/payment-service/dockerfile
+      dockerfile: ./internal/payment-service/Dockerfile
     ports:
       - "1003:1003"
     environment:
@@ -70,6 +70,6 @@ services:
       - DB_HOST=host.docker.internal
       - DB_PORT=3306
       - DB_NAME=auctee
-      - GIN_PORT=1009
+      - GIN_PORT=1003
       - ACCOUNT_SRV_HOST=account:50051
       - AUCTION_SRV_HOST=auction:50053

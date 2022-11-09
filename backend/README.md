@@ -2,4 +2,4 @@
  An online aucting site
 
 //Docker
-> docker compose up
+> docker compose up --build

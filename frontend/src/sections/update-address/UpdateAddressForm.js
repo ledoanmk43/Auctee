@@ -158,7 +158,7 @@ export default function UpdateAddressForm({ address, handleDelete, handleUpdateD
     state.selectedCity = address.province;
     state.selectedDistrict = address.district;
     state.selectedWard = address.sub_district;
-  }, [address]);
+  }, [address, isReloading]);
 
   return (
     <>
