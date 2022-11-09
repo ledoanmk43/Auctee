@@ -11,19 +11,23 @@ type IProductRepository interface {
 	InsertProduct(product *entity.Product) error
 	UpdateProduct(product *entity.Product) error
 	DeleteProduct(productId string, userIdId uint) error
-	GetAllProducts() (*[]entity.Product, error)
+	GetAllProducts(userId uint) (*[]entity.Product, error)
 	GetProductByProductId(productId string) (*entity.Product, error)
 	GetProductsByProductName(productName string) (*entity.ProductResponse, error)
 	GetProductDetailByProductId(productId string) (*entity.Product, error)
 }
 
 type ProductRepositoryDefault struct {
-	connection *gorm.DB
+	connection        *gorm.DB
+	ProductOptionRepo IProductOptionRepository
+	ProductImageRepo  IProductImageRepository
 }
 
-func NewProductRepositoryDefault(dbConn *gorm.DB) *ProductRepositoryDefault {
+func NewProductRepositoryDefault(dbConn *gorm.DB, optionRepo IProductOptionRepository, imageRepo IProductImageRepository) *ProductRepositoryDefault {
 	return &ProductRepositoryDefault{
-		connection: dbConn,
+		connection:        dbConn,
+		ProductOptionRepo: optionRepo,
+		ProductImageRepo:  imageRepo,
 	}
 }
 
@@ -66,13 +70,30 @@ func (p *ProductRepositoryDefault) InsertProduct(pro *entity.Product) error {
 		log.Println("Error to create product in repo")
 		return record.Error
 	}
+
+	//for i := 0; i < len(pro.ProductOption); i++ {
+	//	pro.ProductOption[i].ProductId = pro.Id
+	//	errOption := p.ProductOptionRepo.CreateOption(&pro.ProductOption[i], pro.UserId)
+	//	if errOption != nil {
+	//		log.Println("Error to create product in repo")
+	//		return errOption
+	//	}
+	//}
+	//for i := 0; i < len(pro.ProductImage); i++ {
+	//	pro.ProductImage[i].ProductId = pro.Id
+	//	errImage := p.ProductImageRepo.CreateImage(&pro.ProductImage[i], pro.UserId)
+	//	if errImage != nil {
+	//		log.Println("Error to create product in repo")
+	//		return errImage
+	//	}
+	//}
 	return nil
 }
 
-func (p *ProductRepositoryDefault) UpdateProduct(updateBody *entity.Product) error {
+func (p *ProductRepositoryDefault) UpdateProduct(productBody *entity.Product) error {
 	var productToUpdate *entity.Product
 	var count int64
-	record := p.connection.Where("id = ? AND user_id = ?", updateBody.Id, updateBody.UserId).Find(&productToUpdate).Count(&count)
+	record := p.connection.Where("id = ? AND user_id = ?", productBody.Id, productBody.UserId).Find(&productToUpdate).Count(&count)
 
 	if record.Error != nil {
 		log.Println("Error to find product in repo", record.Error)
@@ -81,15 +102,46 @@ func (p *ProductRepositoryDefault) UpdateProduct(updateBody *entity.Product) err
 	if count == 0 {
 		return errors.New("product not found")
 	}
-	if updateBody.ExpectPrice < productToUpdate.MinPrice || updateBody.MinPrice >= updateBody.ExpectPrice {
+	if productBody.ExpectPrice < productToUpdate.MinPrice || productBody.MinPrice >= productBody.ExpectPrice {
 		return errors.New("expect price should be larger than minimum price")
 	}
 
-	productToUpdate.Name = updateBody.Name
-	productToUpdate.MinPrice = updateBody.MinPrice
-	productToUpdate.Description = updateBody.Description
-	productToUpdate.Quantity = updateBody.Quantity
-	productToUpdate.ExpectPrice = updateBody.ExpectPrice
+	errImage := p.ProductImageRepo.DeleteAllImages(productBody.Id)
+	if errImage != nil {
+		log.Println("Error to delete image in product repo")
+	}
+
+	for i := 0; i < len(productBody.ProductImage); i++ {
+		productBody.ProductImage[i].ProductId = productBody.Id
+		if productBody.ProductImage[i].Id > 0 {
+			productBody.ProductImage[i].Id = 0
+		}
+		errOption := p.ProductImageRepo.UpdateImage(&productBody.ProductImage[i], productBody.UserId)
+		if errOption != nil {
+			log.Println("Error to create product in repo")
+		}
+	}
+
+	errOption := p.ProductOptionRepo.DeleteAllOption(productBody.Id)
+	if errOption != nil {
+		log.Println("Error to delete option in product repo")
+	}
+	for i := 0; i < len(productBody.ProductOption); i++ {
+		productBody.ProductOption[i].ProductId = productBody.Id
+		if productBody.ProductOption[i].Id > 0 {
+			productBody.ProductOption[i].Id = 0
+		}
+		errOption := p.ProductOptionRepo.UpdateOption(&productBody.ProductOption[i], productBody.UserId)
+		if errOption != nil {
+			log.Println("Error to create product in repo")
+		}
+	}
+
+	productToUpdate.Name = productBody.Name
+	productToUpdate.MinPrice = productBody.MinPrice
+	productToUpdate.Description = productBody.Description
+	productToUpdate.Quantity = productBody.Quantity
+	productToUpdate.ExpectPrice = productBody.ExpectPrice
 
 	recordSave := p.connection.Updates(&productToUpdate)
 	if recordSave.Error != nil {
@@ -99,14 +151,33 @@ func (p *ProductRepositoryDefault) UpdateProduct(updateBody *entity.Product) err
 	return nil
 }
 
-func (p *ProductRepositoryDefault) GetAllProducts() (*[]entity.Product, error) {
+func (p *ProductRepositoryDefault) GetAllProducts(userId uint) (*[]entity.Product, error) {
 	var products *[]entity.Product
-	record := p.connection.Find(&products)
+	var count int64
+	record := p.connection.Where("user_id = ?", userId).Order("created_at desc").Find(&products).Count(&count)
 	if record.Error != nil {
 		log.Println("GetProducts: Error get all products in repo", record.Error)
 		return nil, record.Error
 	}
+	if count == 0 {
+		return nil, errors.New("product not found")
+	}
 
+	for i := 0; i < len(*products); i++ {
+		options, _ := p.ProductOptionRepo.GetOptions((*products)[i].Id)
+		if options == nil {
+			continue
+		}
+		(*products)[i].ProductOption = *options
+	}
+
+	for j := 0; j < len(*products); j++ {
+		images, _ := p.ProductImageRepo.GetAllImages((*products)[j].Id)
+		if images == nil {
+			continue
+		}
+		(*products)[j].ProductImage = *images
+	}
 	return products, nil
 }
 func (p *ProductRepositoryDefault) GetProductByProductId(productId string) (*entity.Product, error) {

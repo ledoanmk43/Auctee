@@ -12,8 +12,9 @@ type IProductOptionRepository interface {
 	CreateOption(option *entity.ProductOption, userId uint) error
 	UpdateOption(option *entity.ProductOption, userId uint) error
 	DeleteOption(option *entity.ProductOption, userId uint) error
+	DeleteAllOption(proId string) error
 	ProductOptionByID(productId string) (int64, error)
-	GetOptions(b *dto.ProductIdDTO) (*[]entity.ProductOption, error)
+	GetOptions(proId string) (*[]entity.ProductOption, error)
 	GetOptionByID(b *dto.OptionIdDTO) (*entity.ProductOption, error)
 }
 
@@ -28,28 +29,20 @@ func NewProductOptionRepository(dbConn *gorm.DB) *ProductOptionRepository {
 }
 
 func (p *ProductOptionRepository) UpdateOption(optionBody *entity.ProductOption, userId uint) error {
-	var countPro int64
-	var product *entity.Product
-	var option *entity.ProductOption
-	record := p.connection.Where("id = ? AND user_id = ? ", optionBody.ProductId, userId).Find(&product).Count(&countPro)
-	if record.Error != nil || countPro == 0 {
-		log.Println("line 36")
-		return errors.New("option not found")
-	}
 
-	var countOption int64
-	res := p.connection.Where("product_id = ? AND id = ?", optionBody.ProductId, optionBody.ID).Find(&option).Count(&countOption)
+	//var countOption int64
+	//res := p.connection.Where("product_id = ? AND id = ?", optionBody.ProductId, optionBody.ID).Find(&option).Count(&countOption)
+	//
+	//if res.Error != nil || countOption == 0 {
+	//	log.Println("line 44")
+	//	return errors.New("option not found")
+	//}
 
-	if res.Error != nil || countOption == 0 {
-		log.Println("line 44")
-		return errors.New("option not found")
-	}
-
-	option.Model = optionBody.Model
-	option.Color = optionBody.Color
-	option.Size = optionBody.Size
-	option.Quantity = optionBody.Quantity
-	resUpdate := p.connection.Updates(&option)
+	//option.Model = optionBody.Model
+	//option.Color = optionBody.Color
+	//option.Size = optionBody.Size
+	//option.Quantity = optionBody.Quantity
+	resUpdate := p.connection.Create(&optionBody)
 	if resUpdate.Error != nil {
 		return errors.New("option not found")
 	}
@@ -87,10 +80,10 @@ func (p *ProductOptionRepository) CreateOption(option *entity.ProductOption, use
 	return nil
 }
 
-func (p *ProductOptionRepository) GetOptions(b *dto.ProductIdDTO) (*[]entity.ProductOption, error) {
+func (p *ProductOptionRepository) GetOptions(proId string) (*[]entity.ProductOption, error) {
 	var options *[]entity.ProductOption
 	var count int64
-	record := p.connection.Where("product_id = ?", b.ProductId).Find(&options).Count(&count)
+	record := p.connection.Where("product_id = ?", proId).Find(&options).Count(&count)
 	if record.Error != nil {
 		log.Println("GetOptions : Error to get all option", record.Error)
 		return nil, record.Error
@@ -134,6 +127,15 @@ func (p *ProductOptionRepository) DeleteOption(option *entity.ProductOption, use
 	resDel := p.connection.Delete(&option)
 	if resDel.Error != nil {
 		return errors.New("option not found")
+	}
+	return nil
+}
+
+func (p *ProductOptionRepository) DeleteAllOption(proId string) error {
+	var options *[]entity.ProductOption
+	res := p.connection.Where("product_id = ?", proId).Delete(&options)
+	if res.Error != nil {
+		return errors.New("no option to delete")
 	}
 	return nil
 }

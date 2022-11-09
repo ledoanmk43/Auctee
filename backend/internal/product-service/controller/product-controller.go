@@ -28,7 +28,23 @@ func NewProductController(productService service.IProductService) *ProductContro
 }
 
 func (p *ProductController) GetAllProducts(ctx *gin.Context) {
-	products, err := p.ProductService.GetAllProducts()
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	products, err := p.ProductService.GetAllProducts(claims.UserId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "fail to get all products",
@@ -92,6 +108,7 @@ func (p *ProductController) CreateProduct(ctx *gin.Context) {
 	}
 
 	productBody.UserId = claims.UserId
+	log.Println("nenenene: ", productBody)
 	errCreate := p.ProductService.Insert(productBody)
 	if errCreate != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{

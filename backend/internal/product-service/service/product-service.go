@@ -10,7 +10,7 @@ type IProductService interface {
 	Insert(b *entity.Product) error
 	Update(b *entity.Product) error
 	Delete(proId string, userId uint) error
-	GetAllProducts() (*[]entity.Product, error)
+	GetAllProducts(userId uint) (*[]entity.Product, error)
 	GetProductByProductId(productId string) (*entity.Product, error)
 	GetProductsByProductName(productName string) (*entity.ProductResponse, error)
 	GetProductDetailByProductId(productId string) (*entity.Product, error)
@@ -51,8 +51,8 @@ func (p *ProductService) Delete(proId string, userId uint) error {
 	return nil
 }
 
-func (p *ProductService) GetAllProducts() (*[]entity.Product, error) {
-	products, err := p.ProductRepository.GetAllProducts()
+func (p *ProductService) GetAllProducts(userId uint) (*[]entity.Product, error) {
+	products, err := p.ProductRepository.GetAllProducts(userId)
 	if err != nil {
 		log.Println("GetProducts : Error get products in package service", err)
 	}

@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy } from 'react';
 import { Link as RouterLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import FileBase64 from 'react-file-base64';
 // material
 import {
   Container,
@@ -33,7 +34,7 @@ export default function UpdateProfileForm() {
   const [shopName, setShopName] = useState('');
   const [nickName, setNickName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [avatarURL, setAvatarURL] = useState('');
+  const [avatarFile, setAvatarFile] = useState();
 
   const [isMale, setIsMale] = useState(false); // 1 male : 0 female
   const dates = [
@@ -79,7 +80,7 @@ export default function UpdateProfileForm() {
           setNickName(data.nickname);
           setIsMale(data.gender);
           setPhoneNumber(data.phone);
-          setAvatarURL(data.avatar);
+          setAvatarFile(data.avatar);
           setIsFetching(false);
         });
       }
@@ -115,7 +116,7 @@ export default function UpdateProfileForm() {
   const stringToBoolean = (value) => {
     return String(value) === '1' || String(value).toLowerCase() === 'true';
   };
-  
+
   const onSubmit = async () => {
     const payload = {
       nickname: nickName,
@@ -125,7 +126,7 @@ export default function UpdateProfileForm() {
       birthday: `${date.length > 2 ? date : String(date).padStart(2, '0')}/${
         month.length > 2 ? month : String(month).padStart(2, '0')
       }/${year}`,
-      avatar: avatarURL,
+      avatar: avatarFile,
     };
 
     await fetch('http://localhost:1001/auctee/user/profile/setting', {
@@ -149,7 +150,19 @@ export default function UpdateProfileForm() {
 
   const handleUpdateAvatar = (event) => {
     const file = event.target.files[0];
-    setAvatarURL(`/static/mock-images/avatars/${file.name}`);
+    if (file.size > 2000000) {
+      alert('file too large');
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      setAvatarFile(reader.result); // base64encoded string
+    };
+    reader.onerror = (error) => {
+      console.log('Error: ', error);
+    };
   };
 
   useEffect(() => {
@@ -314,7 +327,7 @@ export default function UpdateProfileForm() {
         <Stack justifyContent="space-around" direction="row" sx={{ flex: 1.5 }}>
           <Divider orientation="vertical" />
           <Stack alignItems="center" direction="column">
-            <Avatar alt="Remy Sharp" src={avatarURL} sx={{ width: 120, height: 120 }} />
+            <Avatar alt="Remy Sharp" src={avatarFile} sx={{ width: 120, height: 120 }} />
             <Button sx={{ my: 3, px: '20px !important' }} variant="outlined" color="error" component="label">
               Chọn Ảnh
               <input onChange={(e) => handleUpdateAvatar(e)} hidden accept="image/*" multiple type="file" />

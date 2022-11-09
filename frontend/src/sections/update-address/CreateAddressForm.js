@@ -142,9 +142,9 @@ export default function CreateAddressForm() {
     }).then((res) => {
       if (res.status === 200) {
         setIsUpdated(true);
-        setOpen(false);
         setError(false);
         setIsReloading(true);
+        setOpen(false);
       }
       if (res.status === 400 || res.status === 409) {
         setIsUpdated(false);

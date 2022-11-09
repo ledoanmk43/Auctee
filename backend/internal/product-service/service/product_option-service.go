@@ -12,7 +12,7 @@ type IProductOptionService interface {
 	CreateOption(option *entity.ProductOption, userId uint) error
 	UpdateOption(option *entity.ProductOption, userId uint) error
 	DeleteOption(option *entity.ProductOption, userId uint) error
-	GetOptions(b *dto.ProductIdDTO) (*[]entity.ProductOption, error)
+	GetOptions(proId string) (*[]entity.ProductOption, error)
 	GetOptionByID(b *dto.OptionIdDTO) (*entity.ProductOption, error)
 }
 
@@ -51,8 +51,8 @@ func (p *ProductOptionService) CreateOption(option *entity.ProductOption, userId
 	}
 	return nil
 }
-func (p *ProductOptionService) GetOptions(b *dto.ProductIdDTO) (*[]entity.ProductOption, error) {
-	options, err := p.ProductOptionRepository.GetOptions(b)
+func (p *ProductOptionService) GetOptions(proId string) (*[]entity.ProductOption, error) {
+	options, err := p.ProductOptionRepository.GetOptions(proId)
 	if err != nil {
 		log.Println("GetOptions: Error get options", err)
 		return nil, err

@@ -42,8 +42,8 @@ func (p *ProductImageService) GetImageByID(b *dto.ImageDTO) (*entity.ProductImag
 	return image, nil
 }
 
-func (p *ProductImageService) GetAllImagesOfAProduct(productId, userId uint) (*[]entity.ProductImage, error) {
-	images, err := p.ProductImageRepository.GetAllImages(productId, userId)
+func (p *ProductImageService) GetAllImagesOfAProduct(productId string) (*[]entity.ProductImage, error) {
+	images, err := p.ProductImageRepository.GetAllImages(productId)
 	if err != nil {
 		log.Println("GetOptions: Error get images", err)
 		return nil, err

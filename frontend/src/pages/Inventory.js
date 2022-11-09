@@ -21,8 +21,8 @@ import { Icon } from '@iconify/react';
 import { ReloadContext } from '../utils/Context';
 
 const Page = lazy(() => import('../components/Page'));
-const CreateAddressForm = lazy(() => import('../sections/update-address/CreateAddressForm'));
-const AddressList = lazy(() => import('../sections/update-address'));
+const CreateProductForm = lazy(() => import('../sections/update-product/CreateProductForm'));
+const ProductList = lazy(() => import('../sections/update-product'));
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -32,6 +32,7 @@ const RootStyle = styled('div')(({ theme }) => ({
     backgroundColor: 'white',
     height: '100%',
     minHeight: '580px',
+    maxWidth: '1042px',
   },
 }));
 
@@ -41,7 +42,7 @@ export default function Inventory() {
 
   return (
     <Suspense startTransition callback={<></>}>
-      <Page title="Kho">
+      <Page title="Tất cả sản phẩm">
         <RootStyle sx={{ px: 3, py: 2 }}>
           {/* Heading */}
           <Stack sx={{ pb: 0 }}>
@@ -54,8 +55,8 @@ export default function Inventory() {
             <Divider />
           </Stack>
           {/* Main */}
-          <CreateAddressForm />
-          <AddressList />
+          <CreateProductForm />
+          <ProductList />
         </RootStyle>
       </Page>
     </Suspense>

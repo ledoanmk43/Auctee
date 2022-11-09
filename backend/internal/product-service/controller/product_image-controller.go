@@ -154,6 +154,7 @@ func (p *ProductImageController) CreateImage(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
+
 	imageBody.ProductId = ctx.Param(product.ProductId)
 	errCreate := p.ProductImageService.CreateImage(imageBody, claims.UserId)
 	if errCreate != nil {

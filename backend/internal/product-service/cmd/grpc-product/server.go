@@ -38,7 +38,7 @@ func RunGRPCServer(enabledTLS bool, lis net.Listener) error {
 
 	s := grpc.NewServer(opts...)
 	db := config.GetDB()
-	productRepo := repository.NewProductRepositoryDefault(db)
+	productRepo := repository.NewProductRepositoryDefault(db, nil, nil)
 	ProductService := service.NewProductService(productRepo)
 
 	imageRepo := repository.NewProductImageRepository(db)

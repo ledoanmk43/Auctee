@@ -33,7 +33,7 @@ export default function Router() {
         { path: 'user/profile', element: <User /> },
         { path: 'user/change-password', element: <ChangePwd /> },
         { path: 'user/address', element: <Address /> },
-        { path: 'user/inventory', element: <Inventory /> },
+        { path: 'user/product-list', element: <Inventory /> },
         { path: 'user/purchase', element: <Purchase /> },
         { path: 'blog', element: <Blog /> },
       ],

@@ -36,20 +36,21 @@ func main() {
 	//Cookie
 	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
 
-	productRepository := repository.NewProductRepositoryDefault(db)
+	productOptionRepository := repository.NewProductOptionRepository(db)
+	productImageRepository := repository.NewProductImageRepository(db)
+	productRepository := repository.NewProductRepositoryDefault(db, productOptionRepository, productImageRepository)
+	
 	productService := service.NewProductService(productRepository)
 	productController := controller.NewProductController(productService)
 	adminSrvCtrl := account_server_controller.NewAccountServiceController(accountClient)
 	productRouter := route.NewProductRoute(productController, newRouter, adminSrvCtrl)
 	productRouter.GetRouter()
 
-	productOptionRepository := repository.NewProductOptionRepository(db)
 	productOptionService := service.NewProductOptionService(productOptionRepository)
 	productOptionController := controller.NewProductOptionController(productOptionService)
 	optionRouter := route.NewOptionRoute(productOptionController, newRouter, adminSrvCtrl)
 	optionRouter.GetRouter()
 
-	productImageRepository := repository.NewProductImageRepository(db)
 	productImageService := service.NewProductImageService(productImageRepository)
 	productImageController := controller.NewProductImageController(productImageService)
 	imageRouter := route.NewImageRoute(productImageController, newRouter, adminSrvCtrl)

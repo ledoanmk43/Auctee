@@ -92,6 +92,7 @@ func (p *ProductOptionController) CreateOption(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
+
 	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
 	if errGetToken != nil {
 		log.Println("Error when get token in controller: ", errGetToken)
@@ -108,6 +109,7 @@ func (p *ProductOptionController) CreateOption(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
+
 	optionBody.ProductId = ctx.Param(product.ProductId)
 	errCreate := p.ProductOptionService.CreateOption(optionBody, claims.UserId)
 	if errCreate != nil {

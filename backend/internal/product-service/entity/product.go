@@ -16,7 +16,7 @@ type Product struct {
 	Description   string          `json:"description" gorm:"type:nvarchar(1500);not null"`
 	Quantity      int             `json:"quantity" gorm:"type:bigint;not null"`
 	ExpectPrice   float64         `json:"expect_price" gorm:"type:double;not null"`
-	UserId        uint            `gorm:"not null" json:"-"`
+	UserId        uint            `json:"-" gorm:"not null"`
 	ProductImage  []ProductImage  `json:"product_images"`
 	ProductOption []ProductOption `json:"product_options"`
 }

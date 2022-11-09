@@ -57,7 +57,6 @@ export default function ProductDetail() {
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          handleFetchOwnerData(data.user_id);
           setAuction(data);
         });
       }
@@ -76,7 +75,6 @@ export default function ProductDetail() {
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          handleFetchOwnerData(data.user_id);
           setProduct(data);
           setIsFetching(false);
         });
@@ -95,6 +93,12 @@ export default function ProductDetail() {
     }
   }, [isFetching]);
 
+  useEffect(() => {
+    if (auction && auction.user_id) {
+      handleFetchOwnerData(auction.user_id);
+    }
+  }, [product, isFetching]);
+  console.log(product);
   return isFetching ? (
     <></>
   ) : (

@@ -23,7 +23,7 @@ type Account struct {
 	Token          string  `gorm:"-" json:"token,omitempty"`
 	Shopname       string  `json:"shopname" gorm:"type:nvarchar(100);not null"`
 	TotalIncome    float64 `json:"total_income" gorm:"type:double;not null"`
-	Avatar         string  `json:"avatar" gorm:"type:varchar(100)"`
+	Avatar         string  `json:"avatar" gorm:"type:mediumtext"`
 	Nickname       string  `json:"nickname" gorm:"type:nvarchar(100);not null"`
 	PresentAuction uint    `json:"present_auction"`
 }
