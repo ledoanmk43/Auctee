@@ -25,7 +25,7 @@ export default function ProductDetail() {
   const star = Math.floor(Math.random() * (4.9 - 3.7 + 0.5)) + 3.7;
   const imageId = Math.floor(Math.random() * (24 - 1)) + 1;
 
-  // get data from server
+  // get data from <server></server>
   const [searchParams, setSearchParams] = useSearchParams();
   const auctionId = searchParams.get('id');
   const productId = searchParams.get('product');
@@ -94,11 +94,15 @@ export default function ProductDetail() {
   }, [isFetching]);
 
   useEffect(() => {
+
+  },[])
+
+  useEffect(() => {
     if (auction && auction.user_id) {
       handleFetchOwnerData(auction.user_id);
     }
   }, [product, isFetching]);
-  console.log(product);
+
   return isFetching ? (
     <></>
   ) : (
@@ -115,21 +119,21 @@ export default function ProductDetail() {
         >
           {/* Images */}
           <Box sx={{ backgroundColor: 'transparent', flex: 2 }}>
-            <Stack sx={{ py: 3, height: '100%', justifyContent: 'space-between' }}>
+            <Stack sx={{ py: 3, height: 'fit-content', justifyContent: 'space-between' }}>
               <Stack sx={{ height: '100%', width: '123spx', display: 'flex', alignItems: 'center', borderRadius: 0 }}>
                 <ImageViewer>
                   <img
                     style={{ width: '100%', height: '100%', objectFit: 'cover', justifyContent: 'center' }}
-                    src={`/static/mock-images/products/product_${imageId + 2}.jpg`}
+                    src={auction.image_path}
                     alt=""
                   />
                 </ImageViewer>
               </Stack>
-              <Stack direction="row">
+              <Stack direction="row" sx={{ mt: 0.5 }}>
                 <ImageViewer>
                   <img
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    src={`/static/mock-images/products/product_${imageId}.jpg`}
+                    src={product.product_images.filter((item) => item.path !== auction.image_path)[0]?.path}
                     alt=""
                   />
                 </ImageViewer>
@@ -137,7 +141,7 @@ export default function ProductDetail() {
                 <ImageViewer>
                   <img
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    src={`/static/mock-images/products/product_${auction.Id - imageId}.jpg`}
+                    src={product.product_images.filter((item) => item.path !== auction.image_path)[1]?.path}
                     alt=""
                   />
                 </ImageViewer>
@@ -153,7 +157,7 @@ export default function ProductDetail() {
               {/* Rating */}
               <Stack color="#f5b727" direction="row" spacing={1}>
                 <Typography sx={{ textDecoration: 'underline', fontWeight: 600 }}>{star}</Typography>
-                <Rating name="half-rating-read" defaultValue={star} precision={0.1} readOnly />
+                <Rating name="half-rating-read" value={star} precision={0.1} readOnly />
               </Stack>
               {/* Price */}
               <Stack color="#f72d2d" sx={{ mt: 3 }} direction="row" alignItems="center">

@@ -180,6 +180,7 @@ func (p *ProductRepositoryDefault) GetAllProducts(userId uint) (*[]entity.Produc
 	}
 	return products, nil
 }
+
 func (p *ProductRepositoryDefault) GetProductByProductId(productId string) (*entity.Product, error) {
 	var product *entity.Product
 	var count int64

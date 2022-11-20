@@ -37,14 +37,14 @@ func (b *BidServiceDefault) CreateBid(newBid *entity.Bid) error {
 	}
 
 	//change this func into CheckIfBidder is winner
-	if b.AuctionRepository.CheckIfUserIsWinner(newBid.UserId, auction.ID) {
+	if b.AuctionRepository.CheckIfUserIsWinner(newBid.UserId, auction.Id) {
 		log.Println("CreateBid: Error Create Bid in package service: user is winner")
-		return errors.New("you are currently the winner with highest bid")
+		return errors.New("Bạn đang là người đặt tiền cao nhất")
 	}
 
 	//if bidValue is smaller than currentBid
 	if newBid.BidValue <= auction.CurrentBid {
-		return errors.New("new bid must be greater than current bid")
+		return errors.New("Số tiền nhỏ hơn giá hiện tại của sản phẩm")
 	}
 
 	//after all create Bid

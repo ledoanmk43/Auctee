@@ -4,6 +4,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Container } from '@mui/material';
 //
+import { ProductCartWidget } from '../../sections/@dashboard/products';
+
 import MainNavbar from './MainNavbar';
 import Sidebar from './Sidebar';
 
@@ -63,8 +65,9 @@ export default function MainLayout() {
     });
   };
   useEffect(() => {
-    handleFetchUserData();
-  }, [isFetching]);
+    // eslint-disable-next-line no-unused-expressions
+    !userData && handleFetchUserData();
+  }, [userData]);
 
   return !isFetching ? (
     <RootStyle>
@@ -73,6 +76,7 @@ export default function MainLayout() {
         <Sidebar userData={userData} />
         <MainStyle userData={userData}>
           <Outlet />
+          <ProductCartWidget />
         </MainStyle>
       </div>
     </RootStyle>

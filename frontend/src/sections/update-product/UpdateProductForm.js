@@ -31,34 +31,6 @@ import { FormProvider, RHFTextField } from '../../components/hook-form';
 import useLocationForm from '../update-address/useLocationForm';
 import { ReloadContext } from '../../utils/Context';
 
-const customStyles = {
-  option: (provided, state) => ({
-    ...provided,
-    color: state.isSelected && '#f44336',
-    backgroundColor: state.isSelected && 'white',
-  }),
-  control: (base, state) => ({
-    ...base,
-    borderRadius: 8,
-    marginBottom: '4%',
-    boxShadow: 'none',
-    border: state.isFocused && '1px solid #f44336 !important',
-    '&:hover': {
-      border: '1px solid black',
-    },
-  }),
-  menu: (base) => ({
-    ...base,
-    marginTop: '-4%',
-  }),
-  menuList: (base) => ({
-    ...base,
-
-    marginTop: 0,
-    maxHeight: '200px',
-  }),
-};
-
 export default function UpdateAddressForm({ product, handleDelete }) {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -100,7 +72,6 @@ export default function UpdateAddressForm({ product, handleDelete }) {
   } = methods;
 
   const onSubmit = async () => {
-    console.log(images);
     const payload = {
       name: proName,
       min_price: parseFloat(minPrice),
@@ -358,7 +329,7 @@ export default function UpdateAddressForm({ product, handleDelete }) {
                   <RHFTextField
                     color="error"
                     required
-                    label="Mã hàng"
+                    label="Mã sp"
                     name="productid"
                     type="text"
                     disabled
@@ -497,7 +468,7 @@ export default function UpdateAddressForm({ product, handleDelete }) {
                       bgcolor: 'white',
                     }}
                   >
-                    {optionList.map((option, index) => (
+                    {optionList?.map((option, index) => (
                       <Stack key={index}>
                         {/* options */}
                         <Stack

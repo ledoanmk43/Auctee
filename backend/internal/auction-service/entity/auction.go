@@ -17,5 +17,5 @@ type Auction struct {
 	PricePerStep float64 `json:"price_per_step" gorm:"type:double;not null"`
 	UserId       uint    `gorm:"not null" json:"user_id"`
 	WinnerId     uint    `json:"winner_id"`
-	ImagePath    string  `json:"image_path" gorm:"type:varchar(100)"`
+	ImagePath    string  `json:"image_path" gorm:"type:mediumtext"`
 }

@@ -22,10 +22,11 @@ type Account struct {
 	Language       string  `json:"language" gorm:"type:nvarchar(100)"`
 	Token          string  `gorm:"-" json:"token,omitempty"`
 	Shopname       string  `json:"shopname" gorm:"type:nvarchar(100);not null"`
-	TotalIncome    float64 `json:"total_income" gorm:"type:double;not null"`
+	TotalIncome    float64 `json:"total_income" gorm:"type:double;not null;default:500000"`
 	Avatar         string  `json:"avatar" gorm:"type:mediumtext"`
 	Nickname       string  `json:"nickname" gorm:"type:nvarchar(100);not null"`
 	PresentAuction uint    `json:"present_auction"`
+	HonorPoint     uint    `json:"honor_point" gorm:"default:90"`
 }
 
 func (user *Account) HashPassword(password string) error {

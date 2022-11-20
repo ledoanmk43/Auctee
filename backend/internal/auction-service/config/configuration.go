@@ -2,6 +2,7 @@ package config
 
 import (
 	"backend/internal/auction-service/entity"
+	"backend/pkg/websocket"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -40,7 +41,13 @@ func GetDB() *gorm.DB {
 	return DB
 }
 
+var (
+	Pool *websocket.Pool
+)
+
 func init() {
+	Pool = websocket.NewPool()
+	go Pool.Start()
 	ConnectDatabase()
 	log.Println("Connected to database...")
 }

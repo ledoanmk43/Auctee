@@ -13,7 +13,7 @@ const navConfig = [
       { title: 'Hồ sơ', path: '/auctee/user/profile' },
       { title: 'Địa chỉ', path: '/auctee/user/address' },
       { title: 'Đổi mật khẩu', path: '/auctee/user/change-password' },
-      { title: 'Thanh toán', path: '/auctee/user/purchase' },
+      { title: 'Thanh toán & số dư', path: '/auctee/user/purchase' },
     ],
   },
   {
@@ -21,6 +21,7 @@ const navConfig = [
     icon: getIcon('ri:auction-line'),
     children: [
       { title: 'Danh sách sản phẩm', path: '/auctee/user/product-list' },
+      { title: 'Danh sách đấu giá', path: '/auctee/user/auction-list' },
       { title: 'Thống kê', path: '/auctee/user/dashboard' },
       { title: 'Đơn thanh toán', path: '/auctee/user/order' },
     ],

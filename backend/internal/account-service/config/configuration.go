@@ -60,7 +60,7 @@ func init() {
 		SameSite: http.SameSiteStrictMode,
 	}) // 7 days
 
-	//List of cookies
+	//List of cookies name
 	CookieAuth = os.Getenv("COOKIE_AUTH")
 
 	//Create List of cookies

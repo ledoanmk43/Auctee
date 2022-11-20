@@ -207,7 +207,7 @@ func (b *BidController) CreateBid(ctx *gin.Context) {
 	auctionData, errGetAuction := b.AuctionService.GetAuctionById(uint(auctionId))
 	if errGetAuction != nil || auctionData.ProductId != productId {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "auction does not exist",
+			"message": "Phiên đấu giá không tồn tại",
 		})
 		log.Println("GetAuctionById: Error in package controller", errGetAuction)
 		ctx.Abort()
@@ -217,8 +217,7 @@ func (b *BidController) CreateBid(ctx *gin.Context) {
 	//check is active
 	if *auctionData.IsActive == false {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			//check bid_value
-			"message": "auction has not run yet",
+			"message": "Phiên đấu giá chưa diễn ra",
 		})
 		ctx.Abort()
 		return
@@ -243,22 +242,22 @@ func (b *BidController) CreateBid(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-
-	if bidBody.BidValue <= float64(res.MinPrice) {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			//check bid_value
-			"message": "bid value does not meet min price",
-		})
-		ctx.Abort()
-		return
-	}
+	//
+	//if bidBody.BidValue <= float64(res.MinPrice) {
+	//	ctx.JSON(http.StatusBadRequest, gin.H{
+	//		//check bid_value
+	//		"message": "Số tiền không hợp lệ",
+	//	})
+	//	ctx.Abort()
+	//	return
+	//}
 
 	bidBody.UserId = claims.UserId
 	bidBody.AuctionId = uint(auctionId)
 	errCreateBid := b.BidService.CreateBid(bidBody)
 	if errCreateBid != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": errCreateBid.Error(),
+			"message": errCreateBid.Error(),
 		})
 		log.Println("CreateBid: Error create new Bid in package controller")
 		ctx.Abort()

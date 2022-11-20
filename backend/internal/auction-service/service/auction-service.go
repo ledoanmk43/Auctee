@@ -14,6 +14,7 @@ type IAuctionService interface {
 	Delete(auctionId, userId uint) error
 	GetAuctionById(auctionId uint) (*entity.Auction, error)
 	GetAllAuctions(page int) (*[]entity.Auction, error)
+	GetAllAuctionsByUserId(userId uint) (*[]entity.Auction, error)
 	GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error)
 }
 
@@ -34,6 +35,14 @@ func (a *AuctionServiceDefault) GetAllAuctionsByProductName(nameList []string) (
 	return auctions, nil
 }
 
+func (a *AuctionServiceDefault) GetAllAuctionsByUserId(userId uint) (*[]entity.Auction, error) {
+	auctions, err := a.AuctionRepository.GetAllAuctionsByUserId(userId)
+	if err != nil {
+		log.Println("Get auctions : Error get auctions in package service", err)
+	}
+	return auctions, nil
+}
+
 func (a *AuctionServiceDefault) GetAllAuctions(page int) (*[]entity.Auction, error) {
 	auctions, err := a.AuctionRepository.GetAllAuctions(page)
 	if err != nil {
@@ -45,14 +54,17 @@ func (a *AuctionServiceDefault) GetAllAuctions(page int) (*[]entity.Auction, err
 func (a *AuctionServiceDefault) CreateAuction(auction *entity.Auction) error {
 	startTime, err := utils.StringToTime(auction.StartTime)
 	if err != nil {
+		log.Println("CreateAuction: Error Create Auction in package service", err)
 		return err
 	}
 	endTime, err := utils.StringToTime(auction.EndTime)
 	if err != nil {
+		log.Println("CreateAuction: Error Create Auction in package service", err)
 		return err
 	}
 	now, err := utils.GetMoment()
 	if err != nil {
+		log.Println("CreateAuction: Error Create Auction in package service", err)
 		return err
 	}
 

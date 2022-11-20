@@ -124,8 +124,7 @@ export default function SearchProduct() {
           </Stack>
         </Stack>
 
-        <ProductList products={auctionsData} />
-        <ProductCartWidget />
+        <ProductList auctions={auctionsData} />
       </Container>
     </Page>
   );
