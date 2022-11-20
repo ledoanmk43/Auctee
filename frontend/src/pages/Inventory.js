@@ -50,7 +50,7 @@ export default function Inventory() {
               Quản lý sản phẩm
             </Typography>
             <Typography variant="body2" sx={{ color: 'black', opacity: 0.8, pb: 2 }}>
-              Đăng sản phẩm và mở phiên đấu giá
+              Đăng sản phẩm để tạo phiên đấu giá
             </Typography>
             <Divider />
           </Stack>

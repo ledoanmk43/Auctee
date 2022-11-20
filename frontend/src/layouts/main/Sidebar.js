@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack, Divider, useTheme, Container } from '@mui/material';
+import { Box, Link, Drawer, Typography, Avatar, Divider, useTheme, LinearProgress, Stack } from '@mui/material';
 import { Icon } from '@iconify/react';
 // mock
 import account from '../../API/account';
@@ -56,9 +56,15 @@ export default function DashboardSidebar({ userData }) {
           <AccountStyle>
             <Avatar sx={{ width: 56, height: 56 }} src={userData.avatar} alt="photoURL" />
             <Box sx={{ ml: 2 }}>
-              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+              <Typography variant="subtitle1" sx={{ color: 'text.primary' }}>
                 {userData.nickname}
               </Typography>
+              <LinearProgress color="success" variant="determinate" value={userData.honor_point} />
+
+              <Typography variant="caption" sx={{ color: 'black', position: 'relative' }}>
+                Điểm uy tín : {userData.honor_point} &nbsp;
+              </Typography>
+
               <Box sx={{ display: 'flex' }}>
                 <Icon fontSize={'1rem'} icon="bx:edit" color={theme.palette.text.secondary} />
                 <Typography variant="caption" sx={{ ml: 0.5, color: 'text.secondary' }}>

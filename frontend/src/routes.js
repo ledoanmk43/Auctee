@@ -8,6 +8,7 @@ import User from './pages/User';
 import Address from './pages/Address';
 import ChangePwd from './pages/ChangePwd';
 import Inventory from './pages/Inventory';
+import AuctionSite from './pages/Auction';
 
 import Purchase from './pages/Purchase';
 import Login from './pages/Login';
@@ -34,6 +35,7 @@ export default function Router() {
         { path: 'user/change-password', element: <ChangePwd /> },
         { path: 'user/address', element: <Address /> },
         { path: 'user/product-list', element: <Inventory /> },
+        { path: 'user/auction-list', element: <AuctionSite /> },
         { path: 'user/purchase', element: <Purchase /> },
         { path: 'blog', element: <Blog /> },
       ],

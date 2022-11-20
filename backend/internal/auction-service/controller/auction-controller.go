@@ -20,6 +20,7 @@ type IAuctionController interface {
 	DeleteAuctionByAuctionId(ctx *gin.Context)
 	GetAuctionByAuctionId(ctx *gin.Context)
 	GetAllAuctions(ctx *gin.Context)
+	GetAllAuctionsByUserId(ctx *gin.Context)
 	GetAllAuctionsByProductName(ctx *gin.Context)
 }
 
@@ -60,7 +61,7 @@ func (a *AuctionController) CreateAuction(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-
+	log.Println("Ngu ne: ", auctionBody)
 	in := product.GetProductByIdRequest{ProductId: auctionBody.ProductId}
 	res, errRes := a.ProductClient.GetProductById(ctx, &in)
 	if errRes != nil {
@@ -93,21 +94,13 @@ func (a *AuctionController) CreateAuction(ctx *gin.Context) {
 		auctionBody.CurrentBid = float64(res.MinPrice)
 	}
 
-	if len(res.Path) == 0 && len(auctionBody.ImagePath) == 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "no image as default, set a default image for this product first or choose an image",
-		})
-		ctx.Abort()
-		return
-	}
-
 	auctionBody.ProductName = res.Name
 	errCreateAuction := a.AuctionService.CreateAuction(auctionBody)
 	if errCreateAuction != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errCreateAuction.Error(),
 		})
-		log.Println("CreateAuction: Error create new auction in package controller")
+		log.Println("CreateAuction: Error create new auction in package controller", errCreateAuction)
 		ctx.Abort()
 		return
 	}
@@ -235,6 +228,7 @@ func (a *AuctionController) GetAuctionByAuctionId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, auctionDetail)
 
 }
+
 func (a *AuctionController) GetAllAuctions(ctx *gin.Context) {
 	page, errGetPage := strconv.Atoi(ctx.Query(auction.Page))
 	if errGetPage != nil {
@@ -246,6 +240,35 @@ func (a *AuctionController) GetAllAuctions(ctx *gin.Context) {
 		return
 	}
 	auctions, err := a.AuctionService.GetAllAuctions(page)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "fail to get all auctions",
+		})
+		log.Println("Get auctions: Error get all auctions in package controller", err)
+		ctx.Abort()
+	}
+
+	ctx.JSON(http.StatusOK, auctions)
+}
+
+func (a *AuctionController) GetAllAuctionsByUserId(ctx *gin.Context) {
+	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
+	if errGetToken != nil {
+		log.Println("Error when get token in controller: ", errGetToken)
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie)
+	if errExtract != nil || len(tokenFromCookie) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	auctions, err := a.AuctionService.GetAllAuctionsByUserId(claims.UserId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "fail to get all auctions",

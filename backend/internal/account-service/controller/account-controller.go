@@ -192,6 +192,8 @@ func (a *AccountController) SignOut(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
 		return
 	}
+	newSession.Set(config.CookieAuth, "")
+	newSession.Clear()
 	newSession.Options(sessions.Options{MaxAge: -1})
 	newSession.Delete(config.CookieAuth)
 	if err := newSession.Save(); err != nil {

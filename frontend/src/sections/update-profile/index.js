@@ -35,6 +35,7 @@ export default function UpdateProfileForm() {
   const [nickName, setNickName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarFile, setAvatarFile] = useState();
+  const [HonorPoint, setHonorPoint] = useState(0);
 
   const [isMale, setIsMale] = useState(false); // 1 male : 0 female
   const dates = [
@@ -173,6 +174,11 @@ export default function UpdateProfileForm() {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="row" sx={{ p: 2 }}>
         <Stack sx={{ flex: 2 }}>
+          <Stack direction="row" fontStyle="italic" sx={{ pb: 3, ml: 0.5 }}>
+            <Typography variant="body2" sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9 }}>
+              Mẹo: &nbsp;Duy trì điểm uy tín trên 80 để được tham gia đấu giá
+            </Typography>
+          </Stack>
           {/* Username */}
           <Stack direction="row" sx={{ pb: 3 }}>
             <Typography textAlign="right" variant="body2" sx={{ color: 'black', opacity: 0.8, minWidth: '100px' }}>

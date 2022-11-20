@@ -35,7 +35,6 @@ export default function ProductList() {
 
   const [isFetching, setIsFetching] = useState(true);
 
-  // User information
   const [productsData, setProductData] = useState();
 
   // Get user's data base on access_token
@@ -112,10 +111,18 @@ export default function ProductList() {
 
   useEffect(() => {
     setIsReloading(false);
-    handleFetchProductData();
   }, [isFetching, isReloading]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    if (!productsData || isReloading) {
+      handleFetchProductData();
+      setIsReloading(false);
+    }
+  }, [productsData, isReloading]);
+
   return !isFetching ? (
-    productsData.map((product, index) => (
+    productsData?.map((product, index) => (
       <Stack key={index}>
         {index === 0 && (
           <Typography sx={{ mb: 2, fontWeight: 500 }}>
@@ -140,11 +147,19 @@ export default function ProductList() {
                 <Typography fontSize={'0.9rem'} variant="body2" sx={{ color: 'inherit' }}>
                   Số lượng &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;: {product.quantity}
                 </Typography>
-                <Typography fontSize={'0.9rem'} variant="body2" sx={{ color: 'green', opacity: 0.6 }}>
-                  Giá khởi điểm : {product.min_price} VNĐ
+                <Typography fontSize={'0.9rem'} variant="body2" sx={{ color: 'green' }}>
+                  Giá khởi điểm :{' '}
+                  {product.min_price.toLocaleString('tr-TR', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })}
                 </Typography>
-                <Typography fontSize={'0.9rem'} variant="body2" sx={{ color: 'red', opacity: 0.6 }}>
-                  Giá tối đa &nbsp; &nbsp; &nbsp; &nbsp; : {product.expect_price} VNĐ
+                <Typography fontSize={'0.9rem'} variant="body2" sx={{ color: 'red' }}>
+                  Giá tối đa &nbsp; &nbsp; &nbsp; &nbsp; :{' '}
+                  {product.expect_price.toLocaleString('tr-TR', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })}
                 </Typography>
               </Stack>
               <Stack sx={{ flex: 0.7 }}>

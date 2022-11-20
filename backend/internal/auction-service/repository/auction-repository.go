@@ -16,6 +16,7 @@ type IAuctionRepository interface {
 	DeleteAuction(auctionId, userIdId uint) error
 	GetAuctionById(auctionId uint) (*entity.Auction, error)
 	GetAllAuctions(page int) (*[]entity.Auction, error)
+	GetAllAuctionsByUserId(userId uint) (*[]entity.Auction, error)
 	UpdateCurrentBidByAuctionId(bid *entity.Bid) error
 	CheckIfUserIsWinner(userId, auctionId uint) bool
 	GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error)
@@ -35,6 +36,21 @@ func (a *AuctionRepositoryDefault) GetAllAuctionsByProductName(nameList []string
 	_ = a.connection.Where("product_name IN ? AND end_time >= ?", nameList, time.Now()).Find(&auctions).Count(&count)
 	if count == 0 {
 		return nil, errors.New("no auction found")
+	}
+
+	return auctions, nil
+}
+
+func (a *AuctionRepositoryDefault) GetAllAuctionsByUserId(userId uint) (*[]entity.Auction, error) {
+	var auctions *[]entity.Auction
+	var count int64
+	record := a.connection.Where("user_id = ?", userId).Order("created_at desc").Find(&auctions).Count(&count)
+	if record.Error != nil {
+		log.Println("Get auctions: Error get all auctions in repo", record.Error)
+		return nil, record.Error
+	}
+	if count == 0 {
+		return nil, errors.New("product not found")
 	}
 
 	return auctions, nil
@@ -136,9 +152,13 @@ func (a *AuctionRepositoryDefault) UpdateCurrentBidByAuctionId(newBid *entity.Bi
 
 func (a *AuctionRepositoryDefault) CheckIfUserIsWinner(userId, auctionId uint) bool {
 	var auction *entity.Auction
-	res := a.connection.Where("winner_id = ? AND id = ?", userId, auctionId).First(&auction)
-	if res.Error != nil || auction == nil {
+	var count int64
+	res := a.connection.Where("winner_id = ? AND id = ?", userId, auctionId).Find(&auction).Count(&count)
+	if res.Error != nil {
 		log.Println("Error: ", res.Error)
+		return false
+	}
+	if count == 0 {
 		return false
 	}
 	return true

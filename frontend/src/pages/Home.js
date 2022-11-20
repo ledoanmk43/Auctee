@@ -56,7 +56,7 @@ export default function EcommerceShop() {
     <Page title="Auctee">
       <Container>
         <Typography variant="h4" sx={{ mb: 2 }}>
-          All Products
+         Tất cả sản phẩm đang được đấu giá
         </Typography>
 
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
@@ -70,7 +70,7 @@ export default function EcommerceShop() {
           </Stack>
         </Stack>
 
-        <ProductList products={auctionsData} />
+        <ProductList auctions={auctionsData} />
         <ProductCartWidget />
       </Container>
     </Page>

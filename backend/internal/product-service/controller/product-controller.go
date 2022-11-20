@@ -108,7 +108,7 @@ func (p *ProductController) CreateProduct(ctx *gin.Context) {
 	}
 
 	productBody.UserId = claims.UserId
-	log.Println("nenenene: ", productBody)
+
 	errCreate := p.ProductService.Insert(productBody)
 	if errCreate != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{

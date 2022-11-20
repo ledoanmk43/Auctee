@@ -62,13 +62,13 @@ func (p *ProductServer) GetProductById(ctx context.Context, in *product.GetProdu
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "Not found: %v", err)
 	}
-	var imagePath string
-	image, _ := p.imageService.GetDefaultImageByProductId(productId)
-	if image == nil {
-		imagePath = ""
-	} else {
-		imagePath = image.Path
-	}
+	//var imagePath string
+	//image, _ := p.imageService.GetDefaultImageByProductId(productId)
+	//if image == nil {
+	//	imagePath = ""
+	//} else {
+	//	imagePath = image.Path
+	//}
 
 	response := &product.GetProductByIdResponse{
 		Id:          prod.Id,
@@ -78,7 +78,7 @@ func (p *ProductServer) GetProductById(ctx context.Context, in *product.GetProdu
 		Quantity:    int32(prod.Quantity),
 		ExpectPrice: float32(prod.ExpectPrice),
 		UserId:      uint32(prod.UserId),
-		Path:        imagePath, //default image
+		//Path:        imagePath, //default image
 	}
 	return response, nil
 }

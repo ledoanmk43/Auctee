@@ -54,6 +54,7 @@ export default function LoginForm() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
+      mode: 'cors',
       credentials: 'include',
     }).then((res) => {
       if (res.status === 200) {

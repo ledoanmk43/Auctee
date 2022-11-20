@@ -28,6 +28,7 @@ func (a *AuctionRoute) GetRouter() {
 		auctionRoute.POST("/user/auction", a.AccountSrvController.MiddlewareCheckIsAuth(), a.AuctionController.CreateAuction)
 		auctionRoute.PUT("/user/auction/detail", a.AccountSrvController.MiddlewareCheckIsAuth(), a.AuctionController.UpdateAuctionByAuctionId)
 		auctionRoute.DELETE("/user/auction/detail", a.AccountSrvController.MiddlewareCheckIsAuth(), a.AuctionController.DeleteAuctionByAuctionId)
+		auctionRoute.GET("/user/auctions", a.AuctionController.GetAllAuctionsByUserId)
 		auctionRoute.GET("/auctions", a.AuctionController.GetAllAuctions)
 		auctionRoute.GET("/auctions/products", a.AuctionController.GetAllAuctionsByProductName)
 		auctionRoute.GET("/auction/detail", a.AuctionController.GetAuctionByAuctionId)

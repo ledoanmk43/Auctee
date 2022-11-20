@@ -54,27 +54,7 @@ export default function CreateProductForm() {
 
   const [isFetching, setIsFetching] = useState(true);
   const [errMessage, setErrorMessage] = useState('');
-  const [userData, setUserData] = useState();
 
-  const handleFetchUserData = async () => {
-    await fetch('http://localhost:1001/auctee/user/profile', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    }).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setUserData(data);
-          setIsFetching(false);
-        });
-      }
-      if (res.status === 401) {
-        alert('You need to login first');
-        setIsFetching(true);
-        navigate('/auctee/login', { replace: true });
-      }
-    });
-  };
 
   const defaultValues = {
     id: '',
@@ -219,14 +199,13 @@ export default function CreateProductForm() {
   };
   useEffect(() => {
     setIsReloading(false);
-    handleFetchUserData();
   }, [isFetching, isReloading]);
 
   return (
     <>
       <Stack justifyContent="space-between" alignItems="center" direction="row" sx={{ maxHeight: '100%', pb: 2 }}>
         <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
-          Sản phẩm
+          Tất cả sản phẩm
         </Typography>
         <Button
           onClick={handleClickOpen}
@@ -338,7 +317,7 @@ export default function CreateProductForm() {
                 <RHFTextField
                   color="error"
                   required
-                  label="Mã hàng"
+                  label="Mã sp"
                   name="productid"
                   type="text"
                   value={proId || ''}

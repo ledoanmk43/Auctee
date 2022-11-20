@@ -1,9 +1,11 @@
 // routes
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { viVN } from '@mui/material/locale';
+import * as locales from '@mui/material/locale';
+import { createTheme, useTheme } from '@mui/material/styles';
 import Router from './routes';
 import { LoginContext, ReloadContext } from './utils/Context';
-
 // theme
 import ThemeProvider from './theme';
 // components
@@ -17,6 +19,10 @@ export default function App() {
   const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
+
+  const theme = useTheme();
+  const [locale, setLocale] = useState('viVN');
+  const themeWithLocale = useMemo(() => createTheme(theme, locales[locale]), [locale, theme]);
 
   const handleCheckLogin = async () => {
     await fetch('http://localhost:1001/auctee/refreshToken', {
@@ -42,7 +48,7 @@ export default function App() {
     handleCheckLogin();
   }, []);
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={themeWithLocale}>
       <ScrollToTop />
       <BaseOptionChartStyle />
       <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>

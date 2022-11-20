@@ -1,8 +1,9 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import TimeAgo from 'javascript-time-ago';
+// English.
+import vi from 'javascript-time-ago/locale/vi';
 import { Icon } from '@iconify/react';
 import {
   Card,
@@ -19,50 +20,19 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme, alpha } from '@mui/material/styles';
+import moment from 'moment';
+import 'moment/locale/vi';
 import Label from '../../components/Label';
 import Scrollbar from '../../components/Scrollbar';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../@dashboard/user';
-// mock
-import USERLIST from '../../API/user';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Người tham gia', alignRight: false },
   { id: 'company', label: 'Số tiền ', alignRight: false },
   { id: 'role', label: 'Thời gian ', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
 ];
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
 
 const EditButton = styled('button')(({ theme }) => ({
   background: `${theme.palette.background.main}`,
@@ -100,7 +70,10 @@ const StyledButton = styled('button')(({ theme }) => ({
     opacity: 0.85,
   },
 }));
+
+TimeAgo.addLocale(vi);
 const BidSection = ({ product, auction }) => {
+  const timeAgo = new TimeAgo('vi-VN');
   const theme = useTheme();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -118,15 +91,7 @@ const BidSection = ({ product, auction }) => {
 
   const [orderBy, setOrderBy] = useState('name');
 
-  const [filterName, setFilterName] = useState('');
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+  const [rowsPerPage, setRowsPerPage] = useState(4);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -137,37 +102,79 @@ const BidSection = ({ product, auction }) => {
     setPage(0);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-  const isUserNotFound = filteredUsers.length === 0;
-
-  const handleReady = async () => {
-    if (presentAuction.toString() !== auctionId && presentAuction > 0) {
-      alert('Bạn đang tham gia một cuộc đấu giá khác');
-      setIsReady(false);
-      return;
-    }
-    const payload = {
-      present_auction: auctionId,
-    };
-    await fetch(`http://localhost:1001/auctee/user/profile/setting`, {
-      method: 'PUT',
+  const [userList, setUserList] = useState([]);
+  const renewUserList = async () => {
+    await fetch(`http://localhost:1009/auctee/all-bids/auction?id=${auction.Id}`, {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
       credentials: 'include',
     }).then((res) => {
       if (res.status === 200) {
-        setIsReady(true);
-      } else {
-        setIsReady(false);
-        alert('Something goes wrong. Please try again');
+        res.json().then((data) => {
+          setUserList(data);
+        });
       }
     });
+    setIsReloading(true);
+  };
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList?.length) : 0;
+
+  const [socketUrl, setSocketUrl] = useState('ws://localhost:1009/auctee/ws');
+  const [messageHistory, setMessageHistory] = useState([]);
+
+  const { lastMessage, readyState, sendJsonMessage } = useWebSocket(socketUrl);
+  const handleReady = async () => {
+    if (currentInCome < auction.current_bid) {
+      alert('Số dư trong ví không đủ để tham gia đấu giá');
+      setIsReady(false);
+    } else {
+      handleClickSendMessage();
+      setIsReady(true);
+    }
   };
 
-  const [presentAuction, setPresentAuction] = useState();
+  const handleClickSendMessage = useCallback((body) => sendJsonMessage(body), []);
+
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const [isReloading, setIsReloading] = useState(false);
+  const handleBid = async () => {
+    if (bidValue < auction.current_bid) {
+      alert('Invalid value');
+      return;
+    }
+
+    const payload = {
+      bid_value: bidValue,
+      nickname: nickName,
+    };
+    await fetch(`http://localhost:1009/auctee/auction?auctionId=${auction.Id}&productId=${product.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    }).then((res) => {
+      if (res.status === 200) {
+        setErrorMessage('');
+        handleClickSendMessage({
+          bid_value: bidValue,
+          nickname: nickName,
+        });
+        setIsReady(true);
+      } else {
+        res.json().then((res) => {
+          setBidValue(auction.current_bid);
+          setErrorMessage(res.message);
+        });
+      }
+    });
+    renewUserList();
+  };
+
+  const [nickName, setNickName] = useState('');
+  const [idPlayer, setIdPlayer] = useState('');
+
+  const [currentInCome, setCurrentInCome] = useState();
   const fetchUser = async () => {
     await fetch(`http://localhost:1001/auctee/user/profile`, {
       method: 'GET',
@@ -176,7 +183,9 @@ const BidSection = ({ product, auction }) => {
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          setPresentAuction(Number(data.present_auction));
+          setNickName(data.nickname);
+          setCurrentInCome(data.total_income);
+          setIdPlayer(data.id);
           if (data.present_auction.toString() === auctionId) {
             setIsReady(true);
           }
@@ -186,9 +195,20 @@ const BidSection = ({ product, auction }) => {
   };
 
   useEffect(() => {
-    fetchUser();
+    // eslint-disable-next-line no-unused-expressions
+    nickName.length === 0 && fetchUser();
+  }, [nickName]);
+
+  useEffect(() => {
+    if (lastMessage !== null) {
+      setMessageHistory((prev) => prev.concat(lastMessage));
+      renewUserList();
+    }
+  }, [isReady, lastMessage, setMessageHistory, isReloading]);
+  useEffect(() => {
     setBidValue(auction.current_bid);
-  }, [product, auction, isReady]);
+  }, [product, auction]);
+
   return (
     <>
       {/* Bidding area */}
@@ -245,7 +265,7 @@ const BidSection = ({ product, auction }) => {
         </Stack>
         <Stack>
           {isReady ? (
-            <StyledButton onClick={() => {}}>
+            <StyledButton onClick={() => handleBid()}>
               Đấu Giá <Icon style={{ fontSize: '1.2rem', marginLeft: 2 }} icon="mingcute:auction-line" />
             </StyledButton>
           ) : (
@@ -258,14 +278,28 @@ const BidSection = ({ product, auction }) => {
               }}
               onClick={() => handleReady()}
             >
-              Sẵn sàng
+              Tham gia
             </StyledButton>
           )}
         </Stack>
       </Stack>
+      <Stack sx={{ height: '24px' }}>
+        {errorMessage.length > 0 && (
+          <Typography sx={{ position: 'relative', ml: 2 }} variant="subtitle2" color="error">
+            <Icon style={{ position: 'absolute', left: '-15px', bottom: '5px' }} icon="bi:exclamation-circle" /> &nbsp;
+            {errorMessage}
+          </Typography>
+        )}
+      </Stack>
       {/* All users */}
-      <Container sx={{ px: '0 !important' }}>
-        <Card>
+      <Container sx={{ px: '0 !important', bgcolor: 'transparent' }}>
+        <Card
+          sx={{
+            bgcolor: alpha(theme.palette.background.main, 0.05),
+            borderRadius: 1,
+            border: `1px solid ${theme.palette.background.main}`,
+          }}
+        >
           <Scrollbar sx={{ maxHeight: '300px' }}>
             <TableContainer sx={{ minWidth: '100%' }}>
               <Table>
@@ -273,19 +307,23 @@ const BidSection = ({ product, auction }) => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={userList.length}
                   numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {userList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                    const user = {
+                      userId: row.user_id,
+                      nickName: row.nickname || 'unknown player',
+                      bidValue: row.bid_value,
+                      bidTime: timeAgo.format(new Date(row.bid_time)),
+                    };
+                    const isItemSelected = selected.indexOf(nickName) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={index}
                         tabIndex={-1}
                         role="checkbox"
                         selected={isItemSelected}
@@ -293,24 +331,41 @@ const BidSection = ({ product, auction }) => {
                       >
                         <TableCell component="th" scope="row" padding="none" sx={{ pl: 2 }}>
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
+                            {/* <Avatar alt={nickname} src={avatarUrl} /> */}
+                            <Typography
+                              sx={{
+                                color: `${user.userId === idPlayer ? theme.palette.background.main : 'inherit'}`,
+                              }}
+                              variant="subtitle2"
+                              noWrap
+                            >
+                              {user.nickName}
+                              {index === 0 && (
+                                <Icon
+                                  style={{
+                                    color: '#ebab09',
+                                    marginLeft: 1.5,
+                                    marginBottom: '-3px',
+                                    fontSize: '1.2rem',
+                                  }}
+                                  icon="ph:crown-simple-bold"
+                                />
+                              )}
                             </Typography>
+                            {user.userId === idPlayer && (
+                              <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                                (Bạn)
+                              </Typography>
+                            )}
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
-                            {sentenceCase(status)}
-                          </Label>
+                          {user.bidValue.toLocaleString('tr-TR', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })}
                         </TableCell>
-
-                        <TableCell align="right">
-                          <UserMoreMenu />
-                        </TableCell>
+                        <TableCell align="left">{user.bidTime}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -320,24 +375,14 @@ const BidSection = ({ product, auction }) => {
                     </TableRow>
                   )}
                 </TableBody>
-
-                {isUserNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
               </Table>
             </TableContainer>
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[4, 8, 24]}
             component="div"
-            count={USERLIST.length}
+            count={userList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
