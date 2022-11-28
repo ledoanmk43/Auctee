@@ -32,7 +32,7 @@ export default function ChangePwd() {
   return (
     <Suspense startTransition callback={<></>}>
       <Page title="Mật khẩu">
-        <RootStyle sx={{ px: 3, py: 2 }}>
+        <RootStyle sx={{ px: 3, py: 2, maxWidth: '980px' }}>
           <Stack>
             <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
               Đổi mật khẩu

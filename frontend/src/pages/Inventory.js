@@ -43,7 +43,7 @@ export default function Inventory() {
   return (
     <Suspense startTransition callback={<></>}>
       <Page title="Tất cả sản phẩm">
-        <RootStyle sx={{ px: 3, py: 2 }}>
+        <RootStyle sx={{ px: 3, py: 2, maxWidth: '980px !important' }}>
           {/* Heading */}
           <Stack sx={{ pb: 0 }}>
             <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>

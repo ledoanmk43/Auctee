@@ -5,7 +5,7 @@ import { viVN } from '@mui/material/locale';
 import * as locales from '@mui/material/locale';
 import { createTheme, useTheme } from '@mui/material/styles';
 import Router from './routes';
-import { LoginContext, ReloadContext } from './utils/Context';
+import { LoginContext, ReloadContext, CurrentAuctionsContext } from './utils/Context';
 // theme
 import ThemeProvider from './theme';
 // components

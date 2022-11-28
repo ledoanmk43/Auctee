@@ -60,7 +60,7 @@ export default function DashboardNavbar({ onOpenSidebar, userData }) {
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           {/* <LanguagePopover /> */}
-          <NotificationsPopover />
+          {/* <NotificationsPopover /> */}
           <AccountPopover userData={userData} />
         </Stack>
       </ToolbarStyle>

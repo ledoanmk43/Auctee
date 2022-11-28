@@ -16,6 +16,7 @@ import NotFound from './pages/Page404';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
+import PaymentDetail from './pages/PaymentDetail';
 import SearchProduct from './pages/SearchProduct';
 
 import DashboardApp from './pages/DashboardApp';
@@ -38,6 +39,7 @@ export default function Router() {
         { path: 'user/auction-list', element: <AuctionSite /> },
         { path: 'user/purchase', element: <Purchase /> },
         { path: 'blog', element: <Blog /> },
+        { path: 'user/order', element: <PaymentDetail /> },
       ],
     },
     {
@@ -59,12 +61,12 @@ export default function Router() {
       children: [
         { path: '/', element: <Navigate to="/auctee/home" /> },
         { path: '404', element: <NotFound /> },
-        { path: '*', element: <Navigate to="/404" /> },
+        { path: '*', element: <Navigate to="/auctee/404" /> },
       ],
     },
     {
       path: '*',
-      element: <Navigate to="/404" replace />,
+      element: <Navigate to="/auctee/404" replace />,
     },
   ]);
 }

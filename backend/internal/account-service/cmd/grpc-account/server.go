@@ -91,3 +91,20 @@ func (a *AccountServer) GetAddressByUserId(ctx context.Context, in *account.GetA
 	}
 	return response, nil
 }
+
+func (a *AccountServer) GetUserByUserId(ctx context.Context, in *account.GetUserByUserIdRequest) (*account.GetUserByUserIdResponse, error) {
+	userId := in.GetUserId()
+	if userId == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument productId= %v", userId)
+	}
+
+	res, err := a.accountService.GetUserByUserId(uint(userId))
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Not found: %v", err)
+	}
+
+	response := &account.GetUserByUserIdResponse{
+		Shopname: res.Shopname,
+	}
+	return response, nil
+}

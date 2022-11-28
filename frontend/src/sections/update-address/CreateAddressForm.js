@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense, useContext } from 'react';
-import { Link as RouterLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Select from 'react-select';
 
@@ -74,27 +74,7 @@ export default function CreateAddressForm() {
   const [isDefault, setIsDefault] = useState(false);
 
   const [isFetching, setIsFetching] = useState(true);
-  const [userData, setUserData] = useState();
-
-  const handleFetchUserData = async () => {
-    await fetch('http://localhost:1001/auctee/user/profile', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    }).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setUserData(data);
-          setIsFetching(false);
-        });
-      }
-      if (res.status === 401) {
-        alert('You need to login first');
-        setIsFetching(true);
-        navigate('/auctee/login', { replace: true });
-      }
-    });
-  };
+  const userData = useOutletContext();
 
   const stringToBoolean = (value) => {
     return String(value) === '1' || String(value).toLowerCase() === 'true';
@@ -121,6 +101,7 @@ export default function CreateAddressForm() {
 
   const [isUpdated, setIsUpdated] = useState(false);
   const [error, setError] = useState(false);
+  
   const onSubmit = async () => {
     const payload = {
       firstname: firstName,
@@ -160,7 +141,6 @@ export default function CreateAddressForm() {
   };
   useEffect(() => {
     setIsReloading(false);
-    handleFetchUserData();
   }, [isFetching, open, isReloading]);
 
   return (

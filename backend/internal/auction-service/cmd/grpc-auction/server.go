@@ -68,6 +68,7 @@ func (a *AuctionServer) GetAuctionById(ctx context.Context, in *auction.GetAucti
 		UserId:      uint32(res.UserId),
 		WinnerId:    uint32(res.WinnerId),
 		CurrentBid:  float32(res.CurrentBid),
+		ImagePath:   res.ImagePath,
 	}
 	return response, nil
 }
