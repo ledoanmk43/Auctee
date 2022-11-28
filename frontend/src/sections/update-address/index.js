@@ -126,7 +126,7 @@ export default function AddressList() {
               </Typography>
               <Stack sx={{ ml: 2, pl: 2, borderLeft: '1px solid grey' }}>
                 <Typography fontSize={'0.9rem'} variant="caption" sx={{ color: 'inherit' }}>
-                  {address.phone}
+                  (+84) &nbsp;{address.phone.substring(1)}
                 </Typography>
               </Stack>
             </Stack>

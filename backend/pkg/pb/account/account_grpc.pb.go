@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AccountServiceClient interface {
 	CheckIsAuth(ctx context.Context, in *CheckIsAuthRequest, opts ...grpc.CallOption) (*CheckIsAuthResponse, error)
 	GetAddressByUserId(ctx context.Context, in *GetAddressByUserIdRequest, opts ...grpc.CallOption) (*GetAddressByUserIdResponse, error)
+	GetUserByUserId(ctx context.Context, in *GetUserByUserIdRequest, opts ...grpc.CallOption) (*GetUserByUserIdResponse, error)
 }
 
 type accountServiceClient struct {
@@ -52,12 +53,22 @@ func (c *accountServiceClient) GetAddressByUserId(ctx context.Context, in *GetAd
 	return out, nil
 }
 
+func (c *accountServiceClient) GetUserByUserId(ctx context.Context, in *GetUserByUserIdRequest, opts ...grpc.CallOption) (*GetUserByUserIdResponse, error) {
+	out := new(GetUserByUserIdResponse)
+	err := c.cc.Invoke(ctx, "/AccountService/GetUserByUserId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServiceServer is the server API for AccountService service.
 // All implementations must embed UnimplementedAccountServiceServer
 // for forward compatibility
 type AccountServiceServer interface {
 	CheckIsAuth(context.Context, *CheckIsAuthRequest) (*CheckIsAuthResponse, error)
 	GetAddressByUserId(context.Context, *GetAddressByUserIdRequest) (*GetAddressByUserIdResponse, error)
+	GetUserByUserId(context.Context, *GetUserByUserIdRequest) (*GetUserByUserIdResponse, error)
 	mustEmbedUnimplementedAccountServiceServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedAccountServiceServer) CheckIsAuth(context.Context, *CheckIsAu
 }
 func (UnimplementedAccountServiceServer) GetAddressByUserId(context.Context, *GetAddressByUserIdRequest) (*GetAddressByUserIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAddressByUserId not implemented")
+}
+func (UnimplementedAccountServiceServer) GetUserByUserId(context.Context, *GetUserByUserIdRequest) (*GetUserByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUserId not implemented")
 }
 func (UnimplementedAccountServiceServer) mustEmbedUnimplementedAccountServiceServer() {}
 
@@ -120,6 +134,24 @@ func _AccountService_GetAddressByUserId_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccountService_GetUserByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).GetUserByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AccountService/GetUserByUserId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).GetUserByUserId(ctx, req.(*GetUserByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccountService_ServiceDesc is the grpc.ServiceDesc for AccountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAddressByUserId",
 			Handler:    _AccountService_GetAddressByUserId_Handler,
+		},
+		{
+			MethodName: "GetUserByUserId",
+			Handler:    _AccountService_GetUserByUserId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

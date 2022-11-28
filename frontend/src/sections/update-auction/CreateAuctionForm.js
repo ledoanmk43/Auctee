@@ -219,12 +219,13 @@ export default function CreateProductForm() {
 
   useEffect(() => {
     setIsReloading(false);
-    fetchProductData();
+    // eslint-disable-next-line no-unused-expressions
+    !productsData && fetchProductData();
   }, [isFetching, isReloading]);
 
   return (
     <>
-      <Stack justifyContent="space-between" alignItems="center" direction="row" sx={{ maxHeight: '100%', pb: 2 }}>
+      <Stack justifyContent="space-between" alignItems="center" direction="row" sx={{ maxHeight: '100%', pb: 1 }}>
         <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
           Tất cả phiên đấu giá
         </Typography>

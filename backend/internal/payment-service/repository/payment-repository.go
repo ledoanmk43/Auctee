@@ -10,10 +10,10 @@ import (
 )
 
 type IPaymentRepository interface {
-	CreatePayment(payment *entity.Payment) error
+	CreatePayment(payment *entity.Payment) (uint, error)
 	UpdateAddressPayment(b *entity.Payment) error
 	DeletePayment(paymentId, userId uint) error
-	GetPaymentByPaymentId(paymentId uint) (*entity.Payment, error)
+	GetPaymentByPaymentId(paymentId, userId uint) (*entity.Payment, error)
 	GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error)
 	GetAllPaymentsForOwner(page int, ownerId uint) (*[]entity.Payment, error)
 }
@@ -26,29 +26,30 @@ func NewPaymentRepositoryDefault(dbConn *gorm.DB) *PaymentRepositoryDefault {
 	return &PaymentRepositoryDefault{connection: dbConn}
 }
 
-func (p *PaymentRepositoryDefault) CreatePayment(payment *entity.Payment) error {
+func (p *PaymentRepositoryDefault) CreatePayment(payment *entity.Payment) (uint, error) {
 	payment.CheckoutTime = time.Now()
 	var count int64
-	resIsDuplicated := p.connection.Model(&entity.Payment{}).Where("auction_id = ?", payment.AuctionId).Count(&count)
+	resIsDuplicated := p.connection.Where("auction_id = ? and winner_id = ?", payment.AuctionId, payment.WinnerId).Find(&payment).Count(&count)
 	if resIsDuplicated.Error != nil {
 		log.Println("Error to create payment in repo: ", resIsDuplicated.Error)
-		return resIsDuplicated.Error
+		return 0, resIsDuplicated.Error
 	}
 	if count != 0 {
-		return errors.New("order is pending")
+		return payment.Id, errors.New("order is pending")
 	}
 
 	record := p.connection.Create(&payment)
 	if record.Error != nil {
 		log.Println("Error to create payment in repo: ", record.Error)
-		return record.Error
+		return 0, record.Error
 	}
-	return nil
+
+	return payment.Id, nil
 }
 
 func (p *PaymentRepositoryDefault) GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error) {
 	var payments *[]entity.Payment
-	record := p.connection.Limit(payment.PerPage).Offset((page-1)*payment.PerPage).Where("winner_id = ? ", winnerId).Find(&payments)
+	record := p.connection.Limit(payment.PerPage).Offset((page-1)*payment.PerPage).Where("winner_id = ? ", winnerId).Order("created_at desc").Find(&payments)
 	if record.Error != nil {
 		log.Println("Get auctions: Error get all auctions in repo", record.Error)
 		return nil, record.Error
@@ -100,7 +101,7 @@ func (p *PaymentRepositoryDefault) UpdateAddressPayment(updateBody *entity.Payme
 		return errors.New("Unauthorized")
 	}
 
-	if *paymentToUpdate.CheckoutStatus == true {
+	if paymentToUpdate.CheckoutStatus == 2 {
 		return errors.New("your order has been confirm")
 	}
 
@@ -135,7 +136,7 @@ func (a *PaymentRepositoryDefault) DeletePayment(paymentId, userId uint) error {
 		return errors.New("payment not found")
 	}
 
-	if *payment.CheckoutStatus == true {
+	if payment.CheckoutStatus == 2 {
 		return errors.New("your order has been confirm")
 	}
 
@@ -143,10 +144,10 @@ func (a *PaymentRepositoryDefault) DeletePayment(paymentId, userId uint) error {
 	return nil
 }
 
-func (p *PaymentRepositoryDefault) GetPaymentByPaymentId(paymentId uint) (*entity.Payment, error) {
+func (p *PaymentRepositoryDefault) GetPaymentByPaymentId(paymentId, userId uint) (*entity.Payment, error) {
 	var payment *entity.Payment
 	var count int64
-	record := p.connection.Where("id = ?", paymentId).Find(&payment).Count(&count)
+	record := p.connection.Where("id = ? and winner_id = ?", paymentId, userId).Find(&payment).Count(&count)
 	if record.Error != nil {
 		log.Println("Error to find payment in repo")
 		return nil, record.Error

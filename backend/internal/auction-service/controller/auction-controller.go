@@ -61,7 +61,7 @@ func (a *AuctionController) CreateAuction(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	log.Println("Ngu ne: ", auctionBody)
+
 	in := product.GetProductByIdRequest{ProductId: auctionBody.ProductId}
 	res, errRes := a.ProductClient.GetProductById(ctx, &in)
 	if errRes != nil {

@@ -42,7 +42,7 @@ export default function Addess() {
   return (
     <Suspense startTransition callback={<></>}>
       <Page title="Địa chỉ">
-        <RootStyle sx={{ px: 3, py: 2 }}>
+        <RootStyle sx={{ px: 3, py: 2, maxWidth: '980px' }}>
           {/* Heading */}
           <Stack sx={{ pb: 0 }}>
             <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>

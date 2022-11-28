@@ -25,6 +25,7 @@ import {
   Avatar,
   TextField,
   Switch,
+  Tooltip,
 } from '@mui/material';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -82,7 +83,7 @@ const customStyles = {
   }),
 };
 
-export default function UpdateAddressForm({ auction, handleDelete }) {
+export default function UpdateAddressForm({ auction, handleDelete, index }) {
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -122,10 +123,11 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
     formState: { isSubmitting },
   } = methods;
 
+  // update auction
   const onSubmit = async () => {
     const payload = {
       image_path: imageAuction,
-      is_active: isActive,
+      is_active: stringToBoolean(isActive),
       price_per_step: parseFloat(auctionStep),
       start_time:
         typeof startDate === 'object'
@@ -145,17 +147,16 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
     }).then((res) => {
       if (res.status === 200) {
         setError(false);
+        setOpen(false);
+        setIsReloading(true);
       }
-      setIsReloading(true);
-      setOpen(false);
       if (res.status === 400) {
         setError(true);
-        setIsReloading(false);
         setErrorMessage('Thời gian không hợp lệ');
+        setOpen(true);
+        setIsReloading(false);
       }
       if (res.status === 401) {
-        setError(true);
-        setIsReloading(false);
         alert('You need to login first');
         navigate('/auctee/login', { replace: true });
       }
@@ -173,7 +174,7 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
     setProName(auction?.product_name);
     setAuctionStep(auction?.price_per_step);
     setImageAuction(auction?.image_path);
-    setIsActive(auction?.is_active);
+    setIsActive(auction.is_active);
     setOpen(true);
   };
 
@@ -210,27 +211,31 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
 
   return (
     <>
-      <Stack key={auction.Id} direction="row">
-        <Button
-          onClick={handleClickOpen}
-          sx={{
-            borderRadius: 0,
-            maxWidth: '80px',
-            p: 0,
-            bgcolor: 'transparent',
-            border: 'none',
-            fontSize: '0.9rem',
-            color: 'green',
-            fontWeight: 400,
-            textTransform: 'none',
-            '&:hover': {
-              bgcolor: 'transparent',
-              textDecoration: 'underline',
-            },
-          }}
-        >
-          Cập nhật
-        </Button>
+      <Stack key={index} direction="row">
+        <Tooltip enterDelay={700} title="Lưu ý: không thể cập nhật phiên đấu giá đã có người tham gia">
+          <span>
+            <Button
+              onClick={handleClickOpen}
+              sx={{
+                borderRadius: 0,
+                maxWidth: '80px',
+                p: 0,
+                bgcolor: 'transparent',
+                border: 'none',
+                fontSize: '0.9rem',
+                color: 'green',
+                fontWeight: 400,
+                textTransform: 'none',
+                '&:hover': {
+                  bgcolor: 'transparent',
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              Cập nhật
+            </Button>
+          </span>
+        </Tooltip>
         {/* Dialog Update */}
         <Dialog
           open={open}
@@ -277,6 +282,7 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
                         min: 1000,
                       },
                     }}
+                    disabled={auction.winner_id > 0}
                     color="error"
                     required
                     label="Bước giá"
@@ -342,7 +348,14 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
                   {/* Active  */}
                   <FormControlLabel
                     sx={{ display: 'flex', flex: 1.2, fontSize: '0.2rem', ml: 1.5, mr: 0 }}
-                    control={<Switch color="success" onChange={(e) => setIsActive(e.target.checked)} />}
+                    control={
+                      <Switch
+                        color="success"
+                        disabled={auction.winner_id > 0}
+                        checked={isActive}
+                        onChange={(e) => setIsActive(e.target.checked)}
+                      />
+                    }
                     label="Kích hoạt"
                   />
                 </Stack>
@@ -450,6 +463,7 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
                 Trở lại
               </Button>
               <LoadingButton
+                disabled={auction.winner_id > 0}
                 disableRipple
                 color="error"
                 sx={{ px: 3, position: 'absolute', right: 24 }}
@@ -464,8 +478,34 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
           </FormProvider>
         </Dialog>
         {/* Delete Product */}
-        {!auction.is_default && (
+        {!auction.is_default && auction.winner_id > 0 ? (
+          <Tooltip enterDelay={1000} title="Phiên đấu giá đã có người tham gia">
+            <span>
+              <Button
+                disabled={auction.winner_id > 0}
+                key={auction.ID}
+                onClick={handleClickOpenDelForm}
+                sx={{
+                  ml: 1,
+                  borderRadius: 0,
+                  p: 0,
+                  bgcolor: 'transparent',
+                  border: 'none',
+                  fontSize: '0.9rem',
+                  fontWeight: 400,
+                  '&:hover': {
+                    bgcolor: 'transparent',
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                Xoá
+              </Button>
+            </span>
+          </Tooltip>
+        ) : (
           <Button
+            disabled={auction.winner_id > 0}
             key={auction.ID}
             onClick={handleClickOpenDelForm}
             sx={{
@@ -526,7 +566,7 @@ export default function UpdateAddressForm({ auction, handleDelete }) {
                 bgcolor: '#f44336',
               }}
               onClick={() => {
-                handleDelete(auction.Id);
+                handleDelete(auction);
                 handleCloseDelForm();
               }}
               autoFocus

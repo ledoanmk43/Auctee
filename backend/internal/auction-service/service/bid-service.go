@@ -8,8 +8,9 @@ import (
 )
 
 type IBidService interface {
-	CreateBid(bid *entity.Bid) error
+	CreateBid(bid *entity.Bid, maxPrice float32) error
 	GetAllBidsByAuctionId(auctionId uint) (*[]entity.Bid, error)
+	GetAllBidsByUserId(userId uint) (*[]entity.Auction, error)
 }
 
 type BidServiceDefault struct {
@@ -29,7 +30,21 @@ func (b *BidServiceDefault) GetAllBidsByAuctionId(auctionId uint) (*[]entity.Bid
 	return bids, nil
 }
 
-func (b *BidServiceDefault) CreateBid(newBid *entity.Bid) error {
+func (b *BidServiceDefault) GetAllBidsByUserId(userId uint) (*[]entity.Auction, error) {
+	bids, err := b.BidRepository.GetAllBidsByUserId(userId)
+	if err != nil {
+		log.Println("Get auctions : Error get auctions in package service", err)
+	}
+	var auctions []entity.Auction
+	for _, value := range *bids {
+		auction, _ := b.AuctionRepository.GetActiveAuctionById(value.AuctionId)
+		auctions = append(auctions, *auction)
+	}
+
+	return &auctions, nil
+}
+
+func (b *BidServiceDefault) CreateBid(newBid *entity.Bid, maxPrice float32) error {
 	auction, errGetAuction := b.AuctionRepository.GetAuctionById(newBid.AuctionId)
 	if errGetAuction != nil {
 		log.Println("GetAuction: Error Get auction in bid package service", errGetAuction)
@@ -48,7 +63,7 @@ func (b *BidServiceDefault) CreateBid(newBid *entity.Bid) error {
 	}
 
 	//after all create Bid
-	err := b.BidRepository.CreateBid(newBid)
+	err := b.BidRepository.CreateBid(newBid, maxPrice)
 	if err != nil {
 		log.Println("CreateBid: Error Create Bid in package service: ", err)
 		return err

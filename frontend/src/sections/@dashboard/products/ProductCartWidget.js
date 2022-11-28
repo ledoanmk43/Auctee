@@ -1,40 +1,73 @@
+import { useState, useEffect, lazy } from 'react';
 // material
-import { styled } from '@mui/material/styles';
-import { Badge } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+
+import { Stack, Typography } from '@mui/material';
+
+const ProductBadge = lazy(() => import('./ProductBadge'));
 // component
-import Iconify from '../../../components/Iconify';
-
-// ----------------------------------------------------------------------
-
-const RootStyle = styled('div')(({ theme }) => ({
-  zIndex: 999,
-  right: 0,
-  display: 'flex',
-  cursor: 'pointer',
-  position: 'fixed',
-  alignItems: 'center',
-  top: theme.spacing(16),
-  height: theme.spacing(5),
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-  paddingTop: theme.spacing(1.25),
-  boxShadow: theme.customShadows.z20,
-  color: theme.palette.text.primary,
-  backgroundColor: theme.palette.background.paper,
-  borderTopLeftRadius: Number(theme.shape.borderRadius) * 2,
-  borderBottomLeftRadius: Number(theme.shape.borderRadius) * 2,
-  transition: theme.transitions.create('opacity'),
-  '&:hover': { opacity: 0.72 }
-}));
 
 // ----------------------------------------------------------------------
 
 export default function CartWidget() {
+  const theme = useTheme();
+
+  const [activeAuctions, setActiveAuctions] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const fetchCurrentAuctions = async () => {
+    await fetch(`http://localhost:1009/auctee/user/all-current-bids`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    }).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          setActiveAuctions(data);
+          setLoaded(true);
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    !loaded && fetchCurrentAuctions();
+  }, [activeAuctions, setLoaded]);
+
   return (
-    <RootStyle>
-      <Badge showZero badgeContent={0} color="error" max={99}>
-        <Iconify icon="eva:shopping-cart-fill" width={24} height={24} />
-      </Badge>
-    </RootStyle>
+    <Stack
+      sx={{
+        maxHeight: '555px',
+        overflow: 'auto',
+        scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': {
+          width: '0.4em',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f0e7e6',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#cfc9c8',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#bab3b1',
+        },
+        zIndex: 999,
+        right: 5,
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: 'pointer',
+        position: 'fixed',
+        alignItems: 'center',
+        top: theme.spacing(14.5),
+        paddingRight: theme.spacing(1),
+      }}
+    >
+      <Typography variant="button" sx={{ mt: '-5px', opacity: 0.75, textTransform: 'none' }}>
+        Đang tham gia
+      </Typography>
+      {activeAuctions &&
+        activeAuctions.map((auction, index) => <ProductBadge setLoaded={setLoaded} key={index} auction={auction} />)}
+    </Stack>
   );
 }

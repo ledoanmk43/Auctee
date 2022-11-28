@@ -2,7 +2,6 @@ package grpc_product
 
 import (
 	"backend/pkg/pb/account"
-
 	"fmt"
 	"google.golang.org/grpc"
 	"log"

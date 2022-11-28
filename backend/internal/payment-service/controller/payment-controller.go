@@ -96,7 +96,31 @@ func (p *PaymentController) CreatePayment(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
+
+	inAccount := account.GetUserByUserIdRequest{
+		UserId: resAuction.UserId,
+	}
+	resAccount, errResAccount := p.AccountClient.GetUserByUserId(ctx, &inAccount)
+	if errResAccount != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errResAccount.Error(),
+		})
+		log.Println("CreatePayment: Error to call productService rpc server", errResAccount)
+		ctx.Abort()
+		return
+	}
+
+	if resAccount == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "no account found",
+		})
+		log.Println("CreatePayment: account not found")
+		ctx.Abort()
+		return
+	}
 	//Auction
+	paymentBody.ImagePath = resAuction.ImagePath
+	paymentBody.Shopname = resAccount.Shopname
 	paymentBody.AuctionId = uint(auctionId)
 	paymentBody.WinnerId = claims.UserId          //Winner of the auction
 	paymentBody.OwnerId = uint(resAuction.UserId) //Owner of the auction
@@ -105,18 +129,28 @@ func (p *PaymentController) CreatePayment(ctx *gin.Context) {
 	paymentBody.EndTime = resAuction.EndTime
 	paymentBody.Quantity = int(resAuction.Quantity)
 	paymentBody.BeforeDiscount = float64(resAuction.CurrentBid)
+	paymentBody.CheckoutStatus = 1
 
-	errCreatePayment := p.PaymentService.CreatePayment(&paymentBody)
+	id, errCreatePayment := p.PaymentService.CreatePayment(&paymentBody)
 	if errCreatePayment != nil {
+		if errCreatePayment.Error() == "order is pending" {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": errCreatePayment.Error(),
+				"id":      id,
+			})
+			log.Println("CreatePayment: Error create new payment in package controller")
+			ctx.Abort()
+			return
+		}
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": errCreatePayment.Error(),
+			"message": errCreatePayment.Error(),
 		})
 		log.Println("CreatePayment: Error create new payment in package controller")
 		ctx.Abort()
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "payment created",
+		"id": id,
 	})
 }
 
@@ -140,7 +174,7 @@ func (p *PaymentController) UpdateAddressPayment(ctx *gin.Context) {
 
 	addressId, errGetId := strconv.Atoi(ctx.Query(payment_config.AddressId))
 	if errGetId != nil {
-		log.Println("error when get auctionId: ", errGetId)
+		log.Println("error when get addressId: ", errGetId)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error when get id in url",
 		})
@@ -275,7 +309,7 @@ func (p *PaymentController) GetPaymentByPaymentId(ctx *gin.Context) {
 		return
 	}
 
-	paymentDetail, err := p.PaymentService.GetPaymentByPaymentId(uint(paymentId))
+	paymentDetail, err := p.PaymentService.GetPaymentByPaymentId(uint(paymentId), claims.UserId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "payment not found",

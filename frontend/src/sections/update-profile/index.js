@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
-import { Link as RouterLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import FileBase64 from 'react-file-base64';
 // material
@@ -28,9 +28,9 @@ import { FormProvider, RHFTextField } from '../../components/hook-form';
 export default function UpdateProfileForm() {
   const navigate = useNavigate();
   const location = useLocation();
+  const userData = useOutletContext();
 
   const [isFetching, setIsFetching] = useState(true);
-  const [userData, setUserData] = useState();
   const [shopName, setShopName] = useState('');
   const [nickName, setNickName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -59,39 +59,6 @@ export default function UpdateProfileForm() {
   const [year, setYear] = useState('');
 
   const [birthday, setBirthDay] = useState('');
-
-  // Get user's data base on access_token
-  const handleFetchUserData = async () => {
-    await fetch('http://localhost:1001/auctee/user/profile', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    }).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          const today = new Date();
-          setUserData(data);
-          const date = Number(data.birthday.slice(0, 2));
-          const month = Number(data.birthday.slice(3, 5));
-          const year = data.birthday.slice(6, 10);
-          setDate(date > 0 ? date : String(today.getDate()).padStart(2, '0'));
-          setMonth(month > 0 ? month : String(today.getMonth() + 1).padStart(2, '0'));
-          setYear(year > 0 ? year : today.getFullYear());
-          setShopName(data.shopname);
-          setNickName(data.nickname);
-          setIsMale(data.gender);
-          setPhoneNumber(data.phone);
-          setAvatarFile(data.avatar);
-          setIsFetching(false);
-        });
-      }
-      if (res.status === 401) {
-        alert('You need to login first');
-        setIsFetching(true);
-        navigate('/auctee/login', { replace: true });
-      }
-    });
-  };
 
   const [isUpdated, setIsUpdated] = useState(false);
 
@@ -167,10 +134,24 @@ export default function UpdateProfileForm() {
   };
 
   useEffect(() => {
-    handleFetchUserData();
-  }, [isFetching]);
+    if (userData) {
+      const today = new Date();
+      const dateConverted = Number(userData.birthday.slice(0, 2));
+      const monthConverted = Number(userData.birthday.slice(3, 5));
+      const yearConverted = userData.birthday.slice(6, 10);
+      setDate(dateConverted > 0 ? dateConverted : String(today.getDate()).padStart(2, '0'));
+      setMonth(monthConverted > 0 ? monthConverted : String(today.getMonth() + 1).padStart(2, '0'));
+      setYear(yearConverted > 0 ? yearConverted : today.getFullYear());
+      setShopName(userData.shopname);
+      setNickName(userData.nickname);
+      setIsMale(userData.gender);
+      setPhoneNumber(userData.phone);
+      setAvatarFile(userData.avatar);
+      setIsFetching(false);
+    }
+  }, [userData]);
 
-  return !isFetching ? (
+  return userData ? (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="row" sx={{ p: 2 }}>
         <Stack sx={{ flex: 2 }}>

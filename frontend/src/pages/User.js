@@ -39,7 +39,7 @@ export default function User() {
   return (
     <Suspense startTransition callback={<></>}>
       <Page title="Hồ sơ">
-        <RootStyle sx={{ px: 3, py: 2 }}>
+        <RootStyle sx={{ px: 3, py: 2, maxWidth: '980px' }}>
           {/* Heading */}
           <Stack>
             <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>

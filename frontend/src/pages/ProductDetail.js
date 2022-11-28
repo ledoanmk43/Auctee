@@ -1,11 +1,12 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
-import { Link as RouterLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useState, useEffect, lazy } from 'react';
+import { Link as RouterLink, useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { ImageViewer } from 'react-image-viewer-dv';
 // material
-import { Container, Input, Rating, Typography, Stack, Button, Select, Avatar, Link } from '@mui/material';
+import { Container, Rating, Typography, Stack, Button, Avatar, Link } from '@mui/material';
 
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
+import CountDown from '../utils/countdown';
 
 const Page = lazy(() => import('../components/Page'));
 const BidSection = lazy(() => import('../sections/bid'));
@@ -21,9 +22,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [expand, setExpand] = useState(3);
   const star = Math.floor(Math.random() * (4.9 - 3.7 + 0.5)) + 3.7;
-  const imageId = Math.floor(Math.random() * (24 - 1)) + 1;
 
   // get data from <server></server>
   const [searchParams, setSearchParams] = useSearchParams();
@@ -94,10 +93,6 @@ export default function ProductDetail() {
   }, [isFetching]);
 
   useEffect(() => {
-
-  },[])
-
-  useEffect(() => {
     if (auction && auction.user_id) {
       handleFetchOwnerData(auction.user_id);
     }
@@ -151,7 +146,7 @@ export default function ProductDetail() {
           {/* Detail */}
           <Box sx={{ flex: 3, ml: 3 }}>
             <Stack spacing={2} sx={{ px: 1.5, py: 2, height: '100%' }}>
-              <Typography sx={{ fontSize: '1.5rem', textOverflow: 'ellipsis' }} variant="body1 " noWrap>
+              <Typography sx={{ fontSize: '1.5rem', textOverflow: 'ellipsis' }} variantx="body1 " noWrap>
                 {auction.name}
               </Typography>
               {/* Rating */}
@@ -178,8 +173,40 @@ export default function ProductDetail() {
                 </Typography>
               </Stack>
               {/* Quantity */}
-              <Stack direection="row">
+              <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body1 ">Số lượng: &nbsp; {product.quantity} </Typography>
+                {new Date(auction.end_time) < new Date() ? (
+                  <Typography
+                    fontWeight={600}
+                    fontSize={'1.2rem'}
+                    variant="body1"
+                    direction="row"
+                    color="error"
+                    sx={{
+                      opacity: 0.8,
+                      px: 1.5,
+                      pb: 0.2,
+                      border: '2px solid #f44336',
+                      borderRadius: 1,
+                      // maxHeight: '22.63px',
+                    }}
+                  >
+                    Đã kết thúc
+                  </Typography>
+                ) : (
+                  <Stack
+                    // fontSize={'1rem'}
+                    variant="body2"
+                    direction="row"
+                    sx={{
+                      color: 'inherit',
+                      maxHeight: '22.63px',
+                    }}
+                  >
+                    Thời gian kết thúc :&nbsp;
+                    <CountDown time={auction.end_time} />
+                  </Stack>
+                )}
               </Stack>
               {/* Model */}
               <Stack direction="row" alignItems="center" sx={{ maxHeight: '62px', overflow: 'hidden' }}>

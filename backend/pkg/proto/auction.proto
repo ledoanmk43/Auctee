@@ -5,7 +5,7 @@ option go_package = "./pkg/pb/auction";
 
 service AuctionService {
   rpc GetAuctionById(GetAuctionByIdRequest) returns (GetAuctionByIdResponse);
-  rpc GetProductByProductName(GetProductByProductNameRequest) returns (GetProductByProductNameResponse);
+//  rpc GetProductByProductName(GetProductByProductNameRequest) returns (GetProductByProductNameResponse);
 }
 
 //By Id - this is for query a product
@@ -21,6 +21,7 @@ message GetAuctionByIdResponse {
   uint32 UserId = 5;
   uint32 WinnerId =6;
   float CurrentBid = 7;
+  string ImagePath = 8;
 }
 
 //    ProductId    string  `json:"product_id" gorm:"type:varchar(20);not null"`
@@ -36,13 +37,13 @@ message GetAuctionByIdResponse {
 //    ImagePath    string  `json:"image_path" gorm:"type:varchar(100)"`
 //
 //By productName - this is for search function
-message GetProductByProductNameRequest {
-  string ProductName = 1;
-}
-
-message GetProductByProductNameResponse {
-  repeated string IdList = 1;
-  repeated string ProductName = 2;
-}
+//message GetProductByProductNameRequest {
+//  string ProductName = 1;
+//}
+//
+//message GetProductByProductNameResponse {
+//  repeated string IdList = 1;
+//  repeated string ProductName = 2;
+//}
 
 

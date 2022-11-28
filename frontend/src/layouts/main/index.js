@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 import { Container } from '@mui/material';
 //
-import { ProductCartWidget } from '../../sections/@dashboard/products';
-
 import MainNavbar from './MainNavbar';
 import Sidebar from './Sidebar';
+
+const ProductCartWidget = lazy(() =>
+  import('../../sections/@dashboard/products').then((module) => ({
+    default: module.ProductCartWidget,
+  }))
+);
 
 // ----------------------------------------------------------------------
 
@@ -75,7 +79,7 @@ export default function MainLayout() {
       <div style={{ margin: 'auto', display: 'flex', flexDirection: 'row' }}>
         <Sidebar userData={userData} />
         <MainStyle userData={userData}>
-          <Outlet />
+          <Outlet context={userData} />
           <ProductCartWidget />
         </MainStyle>
       </div>

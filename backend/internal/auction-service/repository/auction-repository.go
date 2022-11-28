@@ -15,9 +15,10 @@ type IAuctionRepository interface {
 	UpdateAuction(product *entity.Auction) error
 	DeleteAuction(auctionId, userIdId uint) error
 	GetAuctionById(auctionId uint) (*entity.Auction, error)
+	GetActiveAuctionById(auctionId uint) (*entity.Auction, error)
 	GetAllAuctions(page int) (*[]entity.Auction, error)
 	GetAllAuctionsByUserId(userId uint) (*[]entity.Auction, error)
-	UpdateCurrentBidByAuctionId(bid *entity.Bid) error
+	UpdateCurrentBidByAuctionId(bid *entity.Bid, maxPrice float32) error
 	CheckIfUserIsWinner(userId, auctionId uint) bool
 	GetAllAuctionsByProductName(nameList []string) (*[]entity.Auction, error)
 }
@@ -60,7 +61,7 @@ func (a *AuctionRepositoryDefault) GetAllAuctions(page int) (*[]entity.Auction, 
 	var auctions *[]entity.Auction
 	//Maybe lazy load will require about 20 auctions at a time
 	//Or search about lazy load API
-	record := a.connection.Limit(auction.PerPage).Offset((page-1)*auction.PerPage).Order("end_time asc").Where("end_time >= ?", time.Now()).Find(&auctions)
+	record := a.connection.Limit(auction.PerPage).Offset((page-1)*auction.PerPage).Order("end_time asc").Where("end_time >= ? and is_active = ?", time.Now(), true).Find(&auctions)
 	if record.Error != nil {
 		log.Println("Get auctions: Error get all auctions in repo", record.Error)
 		return nil, record.Error
@@ -136,13 +137,32 @@ func (a *AuctionRepositoryDefault) GetAuctionById(auctionId uint) (*entity.Aucti
 	return auction, nil
 }
 
-func (a *AuctionRepositoryDefault) UpdateCurrentBidByAuctionId(newBid *entity.Bid) error {
+func (a *AuctionRepositoryDefault) GetActiveAuctionById(auctionId uint) (*entity.Auction, error) {
+	var auction *entity.Auction
+	var count int64
+	record := a.connection.Where("id = ? and is_active = ?", auctionId, true).Find(&auction).Count(&count)
+	if record.Error != nil {
+		log.Println("Error to find auction in repo")
+		return nil, record.Error
+	}
+	if count == 0 {
+		log.Println("GetAuctionById: auction not found", count)
+		return nil, errors.New("error: auction not found")
+	}
+	return auction, nil
+}
+
+func (a *AuctionRepositoryDefault) UpdateCurrentBidByAuctionId(newBid *entity.Bid, maxPrice float32) error {
 	var auction *entity.Auction
 	record := a.connection.Where("id = ?", newBid.AuctionId).Find(&auction)
 
 	if record.Error != nil {
 		log.Println(record.Error)
 		return errors.New("error to find auction when update current winner in repo")
+	}
+	log.Println(auction.CurrentBid, "vs", maxPrice, "Time: ", time.Now().Format("2006-01-02 15:04:05"))
+	if newBid.BidValue >= float64(maxPrice) {
+		auction.EndTime = time.Now().Format("2006-01-02 15:04:05")
 	}
 	auction.CurrentBid = newBid.BidValue
 	auction.WinnerId = newBid.UserId

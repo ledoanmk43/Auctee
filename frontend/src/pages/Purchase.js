@@ -1,27 +1,14 @@
 import { useState, useEffect, lazy } from 'react';
-import { Link as RouterLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import FileBase64 from 'react-file-base64';
 // material
-import {
-  Container,
-  Avatar,
-  FormGroup,
-  TextField,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-  Typography,
-  Stack,
-  Button,
-  Select,
-  MenuItem,
-  Divider,
-} from '@mui/material';
+import { Button, Typography, Stack, Tabs, Tab, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Icon } from '@iconify/react';
 import { styled, useTheme } from '@mui/material/styles';
 import { Box } from '@mui/system';
+import PropTypes from 'prop-types';
 import account from '../API/account';
 import { FormProvider, RHFTextField } from '../components/hook-form';
 
@@ -41,8 +28,9 @@ export default function Purchase() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const userData = useOutletContext();
   const [isFetching, setIsFetching] = useState(true);
-  const [userData, setUserData] = useState();
+  const [paymentsData, setPaymentsData] = useState();
   const [shopName, setShopName] = useState('');
   const [nickName, setNickName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -50,31 +38,10 @@ export default function Purchase() {
   const [HonorPoint, setHonorPoint] = useState(0);
 
   const [isMale, setIsMale] = useState(false); // 1 male : 0 female
-  const dates = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ];
-  const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const generateArrayOfYears = () => {
-    const max = new Date().getFullYear();
-    const min = max - 100;
-    const years = [];
-
-    for (let i = max; i >= min; i -= 1) {
-      years.push(i);
-    }
-    return years;
-  };
-  const years = generateArrayOfYears();
-
-  const [date, setDate] = useState('');
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
-
-  const [birthday, setBirthDay] = useState('');
 
   // Get user's data base on access_token
-  const handleFetchUserData = async () => {
-    await fetch('http://localhost:1001/auctee/user/profile', {
+  const handleFetchPaymentData = async () => {
+    await fetch('http://localhost:1003/auctee/user/checkout/payment-history?page=1', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -82,13 +49,7 @@ export default function Purchase() {
       if (res.status === 200) {
         res.json().then((data) => {
           const today = new Date();
-          setUserData(data);
-          const date = Number(data.birthday.slice(0, 2));
-          const month = Number(data.birthday.slice(3, 5));
-          const year = data.birthday.slice(6, 10);
-          setDate(date > 0 ? date : String(today.getDate()).padStart(2, '0'));
-          setMonth(month > 0 ? month : String(today.getMonth() + 1).padStart(2, '0'));
-          setYear(year > 0 ? year : today.getFullYear());
+          setPaymentsData(data);
           setShopName(data.shopname);
           setNickName(data.nickname);
           setIsMale(data.gender);
@@ -145,14 +106,58 @@ export default function Purchase() {
     //   }
     // });
   };
+  const [value, setValue] = useState(0);
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    setFilteredData([]);
+    if (paymentsData) {
+      switch (newValue) {
+        case 1:
+          paymentsData.forEach((payment) => {
+            if (payment.checkout_status === 1) {
+              setFilteredData((current) => [...current, payment]);
+            }
+          });
+          break;
+        case 2:
+          paymentsData.forEach((payment) => {
+            if (payment.checkout_status === 2) {
+              setFilteredData((current) => [...current, payment]);
+            }
+          });
+          break;
+        case 3:
+          paymentsData.forEach((payment) => {
+            if (payment.checkout_status === 3) {
+              setFilteredData((current) => [...current, payment]);
+            }
+          });
+          break;
+        case 4:
+          paymentsData.forEach((payment) => {
+            if (payment.checkout_status === 4) {
+              setFilteredData((current) => [...current, payment]);
+            }
+          });
+          break;
+        default:
+          setFilteredData(paymentsData);
+          break;
+      }
+    }
+  };
 
   useEffect(() => {
-    handleFetchUserData();
-  }, [isFetching]);
+    // eslint-disable-next-line no-unused-expressions
+    !paymentsData && handleFetchPaymentData();
+    setFilteredData(paymentsData);
+  }, [isFetching, paymentsData]);
 
   return !isFetching ? (
     <Page title="Thanh toán">
-      <RootStyle sx={{ px: 3, py: 2 }}>
+      <RootStyle sx={{ px: 3, py: 2, maxWidth: '980px', bgcolor: 'red' }}>
         {/* Heading */}
         <Stack>
           <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
@@ -205,10 +210,200 @@ export default function Purchase() {
             </Stack>
           </Stack>
         </FormProvider>
-        
+        <Stack sx={{ mt: 1 }}>
+          <Box sx={{ width: '100%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs
+                sx={{
+                  '& button': {
+                    minWidth: 146,
+                    color: 'inherit',
+                    fontSize: '0.9rem',
+                    fontWeight: 400,
+                    textTransform: 'none',
+                    px: 4,
+                  },
+                  '& button:hover': {
+                    color: '#f44336',
+                  },
+                  '& button.Mui-selected': {
+                    color: '#f44336',
+                  },
+                }}
+                textColor="primary"
+                TabIndicatorProps={{ style: { background: '#f44336' } }}
+                value={value}
+                onChange={handleChange}
+                aria-label="secondary tabs example"
+              >
+                <Tab disableRipple label="Tất cả" {...a11yProps(0)} />
+                <Tab disableRipple label="Chờ xác nhận" {...a11yProps(1)} />
+                <Tab disableRipple label="Đang giao" {...a11yProps(2)} />
+                <Tab disableRipple label="Đã nhận" {...a11yProps(3)} />
+                <Tab disableRipple label="Đã huỷ" {...a11yProps(4)} />
+                <Tab disableRipple label="Trả hàng/Hoàn tiền" {...a11yProps(4)} />
+              </Tabs>
+            </Box>
+            <TabPanel value={value} index={value}>
+              {filteredData ? (
+                filteredData.map((payment, index) => (
+                  <Stack sx={{ boxShadow: 4, mb: 2, p: 2 }} direction="column" key={index}>
+                    {/* Top side */}
+                    <Stack maxHeight={20} sx={{ mb: 0.5 }} direction="row">
+                      <Typography
+                        variant="button"
+                        sx={{
+                          textTransform: 'none',
+                          bgcolor: '#f44336',
+                          color: 'white',
+                          borderRadius: 0.5,
+                          fontSize: '0.7rem',
+                          px: 0.5,
+                          mr: 1.5,
+                        }}
+                      >
+                        Shop yêu thích
+                      </Typography>
+                      <Link
+                        style={{
+                          fontWeight: 600,
+                          color: 'inherit',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {payment.shopname}
+                      </Link>
+                      <Button
+                        disableRipple
+                        sx={{ ml: 1.5, border: '1px solid black', borderRadius: 0.4, opacity: 0.9, color: 'inherit' }}
+                      >
+                        <StorefrontIcon sx={{ fontSize: '1rem' }} />
+                        <Typography
+                          variant="button"
+                          sx={{
+                            textTransform: 'none',
+                            fontSize: '0.7rem',
+                            px: 0.5,
+                          }}
+                        >
+                          Xem shop
+                        </Typography>
+                      </Button>
+                    </Stack>
+                    {/* Body */}
+                    <Stack justifyContent="space-between" direction="row" sx={{ display: 'flex' }}>
+                      {/* Image */}
+                      <Stack flex={4} direction="row">
+                        <Stack>
+                          <ProductImgStyle alt={payment.product_id} src={payment.image_path} />
+                        </Stack>
+                        {/* Name */}
+                        <Stack sx={{ mx: 2 }}>
+                          <Typography variant="caption" sx={{ textTransform: 'uppercase', fontSize: '1rem' }}>
+                            {payment.product_name}
+                          </Typography>
+                          <Typography sx={{ mt: 1 }}>x{payment.quantity}</Typography>
+                        </Stack>
+                        {payment.checkout_status === 3 && (
+                          <Button
+                            color="error"
+                            size="medium"
+                            variant="contained"
+                            disableRipple
+                            sx={{
+                              borderRadius: 0.4,
+                              bgcolor: '#f44336',
+                              color: 'white',
+                              px: 1.5,
+                              textTransform: 'none',
+                            }}
+                            onClick={() => {
+                              navigate(`/auctee/user/order/?id=${payment.Id}`);
+                            }}
+                          >
+                            Đã nhận hàng
+                          </Button>
+                        )}
+                      </Stack>
+                      {/* Total */}
+                      <Stack alignItems="flex-end" flex={1}>
+                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                          Tổng số tiền tạm tính:
+                        </Typography>
+                        <Typography color="#f44336">
+                          {payment.before_discount.toLocaleString('tr-TR', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })}
+                        </Typography>
+                        <Button
+                          color="error"
+                          size="medium"
+                          variant="contained"
+                          disableRipple
+                          sx={{
+                            borderRadius: 0.4,
+                            bgcolor: '#f44336',
+                            color: 'white',
+                            px: 1.5,
+                            textTransform: 'none',
+                          }}
+                          onClick={() => {
+                            navigate(`/auctee/user/order/?id=${payment.id}`);
+                          }}
+                        >
+                          Chi tiết đơn hàng
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                ))
+              ) : (
+                <>Chưa có thông tin</>
+              )}
+            </TabPanel>
+          </Box>
+        </Stack>
       </RootStyle>
     </Page>
   ) : (
     <>Có lỗi xảy ra</>
   );
 }
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ py: 3 }}>
+          <Stack>{children}</Stack>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+const ProductImgStyle = styled('img')({
+  width: '85px',
+  height: '85px',
+  objectFit: 'cover',
+});

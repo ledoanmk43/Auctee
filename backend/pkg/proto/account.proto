@@ -5,7 +5,7 @@ option go_package = "src/pkg/pb/account";
 service AccountService {
   rpc CheckIsAuth(CheckIsAuthRequest) returns (CheckIsAuthResponse);
   rpc GetAddressByUserId(GetAddressByUserIdRequest) returns (GetAddressByUserIdResponse);
-
+  rpc GetUserByUserId(GetUserByUserIdRequest) returns (GetUserByUserIdResponse);
 }
 
 //Authenticate account
@@ -34,6 +34,14 @@ message GetAddressByUserIdResponse{
   string Address = 8;
   string TypeAddress = 9;
 }
+
+message GetUserByUserIdRequest{
+  uint32 UserId = 1;
+}
+message GetUserByUserIdResponse{
+  string Shopname = 1;
+}
+
 //    Firstname   string `json:"firstname" gorm:"type:nvarchar(100);not null"`
 //    Lastname    string `json:"lastname" gorm:"type:nvarchar(100);not null"`
 //    Phone       string `json:"phone" gorm:"type:nvarchar(100);not null"`

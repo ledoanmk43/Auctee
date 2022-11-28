@@ -1,17 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link as RouterLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useSearchParams, useLocation, useOutletContext } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import TimeAgo from 'javascript-time-ago';
 // English.
 import vi from 'javascript-time-ago/locale/vi';
 import { Icon } from '@iconify/react';
 import {
+  Box,
   Card,
   Table,
   Stack,
-  Avatar,
-  Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -19,19 +17,19 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  Button,
+  Dialog,
+  useMediaQuery,
 } from '@mui/material';
 import { styled, useTheme, alpha } from '@mui/material/styles';
-import moment from 'moment';
 import 'moment/locale/vi';
-import Label from '../../components/Label';
 import Scrollbar from '../../components/Scrollbar';
-import SearchNotFound from '../../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../@dashboard/user';
+import { UserListHead } from '../@dashboard/user';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Người tham gia', alignRight: false },
-  { id: 'company', label: 'Số tiền ', alignRight: false },
-  { id: 'role', label: 'Thời gian ', alignRight: false },
+  { id: 'value', label: 'Số tiền ', alignRight: false },
+  { id: 'time', label: 'Thời gian ', alignRight: false },
 ];
 
 const EditButton = styled('button')(({ theme }) => ({
@@ -76,10 +74,14 @@ const BidSection = ({ product, auction }) => {
   const timeAgo = new TimeAgo('vi-VN');
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const userData = useOutletContext();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const auctionId = searchParams.get('id');
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   //  create a bid
-  const [bidValue, setBidValue] = useState();
+  const [bidValue, setBidValue] = useState(auction.current_bid);
   const [isReady, setIsReady] = useState(false);
 
   // Users table
@@ -112,32 +114,31 @@ const BidSection = ({ product, auction }) => {
       if (res.status === 200) {
         res.json().then((data) => {
           setUserList(data);
+          setIsReady(true);
         });
       }
     });
-    setIsReloading(true);
+    // eslint-disable-next-line no-unused-expressions
+    bidValue <= auction.current_bid ? setBidValue(auction.current_bid) : setBidValue(bidValue);
   };
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList?.length) : 0;
 
   const [socketUrl, setSocketUrl] = useState('ws://localhost:1009/auctee/ws');
   const [messageHistory, setMessageHistory] = useState([]);
 
-  const { lastMessage, readyState, sendJsonMessage } = useWebSocket(socketUrl);
+  const { lastMessage, sendJsonMessage } = useWebSocket(socketUrl);
   const handleReady = async () => {
     if (currentInCome < auction.current_bid) {
       alert('Số dư trong ví không đủ để tham gia đấu giá');
       setIsReady(false);
     } else {
-      handleClickSendMessage();
       setIsReady(true);
     }
   };
 
   const handleClickSendMessage = useCallback((body) => sendJsonMessage(body), []);
-
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [isReloading, setIsReloading] = useState(false);
   const handleBid = async () => {
     if (bidValue < auction.current_bid) {
       alert('Invalid value');
@@ -145,7 +146,7 @@ const BidSection = ({ product, auction }) => {
     }
 
     const payload = {
-      bid_value: bidValue,
+      bid_value: Number(bidValue),
       nickname: nickName,
     };
     await fetch(`http://localhost:1009/auctee/auction?auctionId=${auction.Id}&productId=${product.id}`, {
@@ -159,6 +160,8 @@ const BidSection = ({ product, auction }) => {
         handleClickSendMessage({
           bid_value: bidValue,
           nickname: nickName,
+          user_id: idPlayer,
+          auction_id: parseInt(auctionId, 10),
         });
         setIsReady(true);
       } else {
@@ -168,54 +171,166 @@ const BidSection = ({ product, auction }) => {
         });
       }
     });
-    renewUserList();
+    // renewUserList();
   };
 
   const [nickName, setNickName] = useState('');
   const [idPlayer, setIdPlayer] = useState('');
 
   const [currentInCome, setCurrentInCome] = useState();
-  const fetchUser = async () => {
-    await fetch(`http://localhost:1001/auctee/user/profile`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    }).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setNickName(data.nickname);
-          setCurrentInCome(data.total_income);
-          setIdPlayer(data.id);
-          if (data.present_auction.toString() === auctionId) {
-            setIsReady(true);
-          }
-        });
-      }
-    });
+
+  const [isOrderCreated, setIsOrderCreated] = useState(false);
+  const [isCheckedOut, setIsCheckedOut] = useState(false);
+  const [paymentId, setPaymentId] = useState();
+  const createPayment = async () => {
+    if (
+      (userList[0]?.user_id === idPlayer && isEnded) ||
+      (userList[0]?.user_id === idPlayer &&
+        (userList[0]?.bid_value >= product.expect_price || auction.current_bid >= product.expect_price))
+    ) {
+      await fetch(`http://localhost:1003/auctee/user/checkout/auction?id=${auction.Id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      }).then((res) => {
+        if (res.status === 200) {
+          setIsOrderCreated(true);
+          res.json().then((res) => {
+            setPaymentId(res.id);
+          });
+        } else {
+          res.json().then((res) => {
+            if (res.message === 'order is pending') {
+              setIsOrderCreated(true);
+              setIsCheckedOut(true);
+              setPaymentId(res.id);
+            }
+          });
+        }
+      });
+    }
   };
 
   useEffect(() => {
-    // eslint-disable-next-line no-unused-expressions
-    nickName.length === 0 && fetchUser();
-  }, [nickName]);
+    if (userData) {
+      setNickName(userData.nickname);
+      setCurrentInCome(userData.total_income);
+      setIdPlayer(userData.id);
+      if (userData.present_auction.toString() === auctionId) {
+        setIsReady(true);
+      }
+    }
+  }, [userData]);
 
   useEffect(() => {
-    if (lastMessage !== null) {
-      setMessageHistory((prev) => prev.concat(lastMessage));
-      renewUserList();
-    }
-  }, [isReady, lastMessage, setMessageHistory, isReloading]);
+    // eslint-disable-next-line no-unused-expressions
+    const body = lastMessage && JSON.parse(lastMessage.data);
+    // eslint-disable-next-line no-unused-expressions
+    auctionId.length > 0 && body?.auction_id === Number(auctionId) && renewUserList();
+  }, [lastMessage]);
+
   useEffect(() => {
-    setBidValue(auction.current_bid);
-  }, [product, auction]);
+    // eslint-disable-next-line no-unused-expressions
+    lastMessage && setMessageHistory((prev) => prev.concat(lastMessage));
+  }, [lastMessage, setMessageHistory]);
+
+  const [isEnded, setIsEnd] = useState(false);
+
+  // initial loading
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    (new Date(auction.end_time) < new Date() || auction.current_bid >= product.expect_price) && setIsEnd(true);
+    // eslint-disable-next-line no-unused-expressions
+    !isReady && renewUserList();
+  }, [product, auction, userList]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    userList.length > 0 && createPayment();
+  }, [userList]);
 
   return (
     <>
+      <Dialog
+        sx={{ margin: 'auto', maxWidth: '530px !important' }}
+        BackdropProps={{
+          style: { backgroundColor: 'rgba(0,0,30,0.2)' },
+          invisible: true,
+        }}
+        fullScreen={fullScreen}
+        open={isOrderCreated}
+      >
+        <Typography fontStyle="italic" variant="subtitle1" sx={{ px: 3, pt: 2, pb: 0 }}>
+          {!isCheckedOut
+            ? ' Chúc mừng bạn đã là người chốt thành công sản phẩm! Vui lòng hoàn tất thanh toán trễ nhất sau 3 ngày kể từ ngày đấu giá thành công'
+            : 'Đơn hàng của bạn đã được tạo! Bạn có muốn kiểm tra thông tin đơn hàng ngay bây giờ?'}
+        </Typography>
+        <Box component="img" src="/static/congrate.svg" sx={{ px: '100px' }} />
+        <Stack sx={{ p: 2, pt: 0 }} justifyContent="flex-end" direction="row" alignItems="center">
+          <Button
+            sx={{
+              color: 'inherit',
+              bgcolor: 'transparent',
+              opacity: 0.85,
+              border: '1px solid white',
+              textTransform: 'none',
+              '&:hover': {
+                bgcolor: 'transparent',
+                opacity: 1,
+                border: '1px solid black',
+              },
+            }}
+            onClick={() => setIsOrderCreated(false)}
+          >
+            Trở lại
+          </Button>
+          {isCheckedOut ? (
+            // Go to detail page
+            <Button
+              disableRipple
+              color="error"
+              variant="contained"
+              sx={{
+                ml: 1,
+                textTransform: 'none',
+                color: 'white',
+                bgcolor: '#f44336',
+              }}
+              onClick={() => {
+                navigate(`/auctee/user/order/?id=${paymentId}`);
+              }}
+              autoFocus
+            >
+              Xem chi tiết đơn hàng
+            </Button>
+          ) : (
+            // Go to page create order to add address
+            <Button
+              disableRipple
+              color="error"
+              variant="contained"
+              sx={{
+                ml: 1,
+                textTransform: 'none',
+                color: 'white',
+                bgcolor: '#f44336',
+              }}
+              onClick={() => {
+                navigate(`/auctee/user/order/?id=${paymentId}`);
+              }}
+              autoFocus
+            >
+              Thanh toán ngay
+            </Button>
+          )}
+        </Stack>
+      </Dialog>
+
       {/* Bidding area */}
       <Stack justifyContent="space-between" alignItems="center" direction="row" sx={{ mt: '30px !important' }}>
-        <Stack direction="row">
-          <Typography sx={{ fontSize: '1.2rem', textOverflow: 'ellipsis' }} variant="body1" noWrap>
-            Bước giá: &nbsp;
+        <Stack direction="row" alignItems="center">
+          <Typography variant="body1" noWrap>
+            Bước giá: &nbsp;&nbsp;&nbsp;
           </Typography>
           <Typography sx={{ fontSize: '1.3rem', textOverflow: 'ellipsis' }} variant="body1" noWrap>
             {auction.price_per_step.toLocaleString('tr-TR', {
@@ -226,7 +341,7 @@ const BidSection = ({ product, auction }) => {
         </Stack>
         <Stack sx={{ color: `${theme.palette.background.main}` }} direction="row" alignItems="center">
           <EditButton
-            disabled={!isReady}
+            disabled={isEnded}
             onClick={() => {
               if (bidValue > auction.current_bid) {
                 setBidValue(bidValue - auction.price_per_step);
@@ -239,6 +354,7 @@ const BidSection = ({ product, auction }) => {
             value={bidValue || ''}
             onChange={(e) => setBidValue(e.target.value)}
             cursor="text"
+            disabled="true"
             style={{
               textAlign: 'center',
               lineHeight: 0,
@@ -248,12 +364,13 @@ const BidSection = ({ product, auction }) => {
               color: 'inherit',
               border: `1px solid ${theme.palette.background.main}`,
             }}
+            step={`${auction.price_per_step}`}
             type="number"
             max={`${product.expect_price}`}
             min={`${auction.current_bid}`}
           />
           <EditButton
-            disabled={!isReady}
+            disabled={isEnded}
             onClick={() => {
               if (bidValue < product.expect_price) {
                 setBidValue(bidValue + auction.price_per_step);
@@ -265,7 +382,7 @@ const BidSection = ({ product, auction }) => {
         </Stack>
         <Stack>
           {isReady ? (
-            <StyledButton onClick={() => handleBid()}>
+            <StyledButton disabled={isEnded} onClick={() => handleBid()}>
               Đấu Giá <Icon style={{ fontSize: '1.2rem', marginLeft: 2 }} icon="mingcute:auction-line" />
             </StyledButton>
           ) : (

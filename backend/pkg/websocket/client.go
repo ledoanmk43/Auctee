@@ -19,8 +19,10 @@ type Message struct {
 	Data Response `json:"data"`
 }
 type Response struct {
-	BidValue float64 `json:"bid_value"`
-	Nickname string  `json:"nickname"`
+	BidValue  float64 `json:"bid_value"`
+	Nickname  string  `json:"nickname"`
+	UserId    uint    `json:"user_id"`
+	AuctionId uint    `json:"auction_id"`
 }
 
 var (
@@ -44,8 +46,10 @@ func (c *Client) Read() {
 		_ = json.Unmarshal(message, &res)
 		log.Println(res)
 		userMessage := Message{Data: Response{
-			BidValue: res.BidValue,
-			Nickname: res.Nickname,
+			BidValue:  res.BidValue,
+			Nickname:  res.Nickname,
+			UserId:    res.UserId,
+			AuctionId: res.AuctionId,
 		}}
 		log.Println(userMessage)
 		c.Pool.Broadcast <- userMessage

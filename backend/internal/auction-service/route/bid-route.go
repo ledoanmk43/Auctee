@@ -43,5 +43,6 @@ func (b *BidRoute) GetRouter() {
 		bidRoute.POST("/auction", b.BidController.CreateBid)
 		bidRoute.POST("/bot/auction", b.BidController.AutoBid)
 		bidRoute.GET("/all-bids/auction", b.BidController.GetAllBidsByAuctionId)
+		bidRoute.GET("/user/all-current-bids", b.BidController.GetAllBidsByUserId)
 	}
 }

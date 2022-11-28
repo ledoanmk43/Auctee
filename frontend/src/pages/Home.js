@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 // material
 import { Container, Stack, Typography } from '@mui/material';
 // components
-import { ProductSort, ProductList, ProductCartWidget, ProductFilterSidebar } from '../sections/@dashboard/products';
+import { ProductSort, ProductList, ProductFilterSidebar } from '../sections/@dashboard/products';
 import { LoginContext } from '../utils/Context';
 
 const Page = lazy(() => import('../components/Page'));
@@ -71,7 +71,6 @@ export default function EcommerceShop() {
         </Stack>
 
         <ProductList auctions={auctionsData} />
-        <ProductCartWidget />
       </Container>
     </Page>
   );

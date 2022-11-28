@@ -7,10 +7,10 @@ import (
 )
 
 type IPaymentService interface {
-	CreatePayment(payment *entity.Payment) error
+	CreatePayment(payment *entity.Payment) (uint, error)
 	UpdateAddressPayment(payment *entity.Payment) error
 	DeletePayment(paymentId, userId uint) error
-	GetPaymentByPaymentId(paymentId uint) (*entity.Payment, error)
+	GetPaymentByPaymentId(paymentId, userId uint) (*entity.Payment, error)
 	GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error)
 	GetAllPaymentsForOwner(page int, winnerId uint) (*[]entity.Payment, error)
 }
@@ -41,14 +41,14 @@ func (p *PaymentServiceDefault) GetAllPaymentsForOwner(page int, ownerId uint) (
 	return payments, nil
 }
 
-func (p *PaymentServiceDefault) CreatePayment(payment *entity.Payment) error {
+func (p *PaymentServiceDefault) CreatePayment(payment *entity.Payment) (uint, error) {
 
-	errCreate := p.PaymentRepository.CreatePayment(payment)
+	id, errCreate := p.PaymentRepository.CreatePayment(payment)
 	if errCreate != nil {
 		log.Println("CreateAuction: Error Create Auction in package service", errCreate)
-		return errCreate
+		return id, errCreate
 	}
-	return nil
+	return id, nil
 }
 
 func (p *PaymentServiceDefault) UpdateAddressPayment(auction *entity.Payment) error {
@@ -69,8 +69,8 @@ func (p *PaymentServiceDefault) DeletePayment(paymentId, userId uint) error {
 	return nil
 }
 
-func (p *PaymentServiceDefault) GetPaymentByPaymentId(paymentId uint) (*entity.Payment, error) {
-	paymentDetail, err := p.PaymentRepository.GetPaymentByPaymentId(paymentId)
+func (p *PaymentServiceDefault) GetPaymentByPaymentId(paymentId, userId uint) (*entity.Payment, error) {
+	paymentDetail, err := p.PaymentRepository.GetPaymentByPaymentId(paymentId, userId)
 	if err != nil {
 		log.Println("GetPaymentById: Error in get paymentDetail by Id", err)
 		return nil, err
