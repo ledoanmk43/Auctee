@@ -376,6 +376,218 @@ func (x *GetUserByUserIdResponse) GetShopname() string {
 	return ""
 }
 
+type UpdateHonorPointRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId uint32 `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	CaseId int32  `protobuf:"varint,2,opt,name=caseId,proto3" json:"caseId,omitempty"`
+}
+
+func (x *UpdateHonorPointRequest) Reset() {
+	*x = UpdateHonorPointRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_proto_account_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateHonorPointRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateHonorPointRequest) ProtoMessage() {}
+
+func (x *UpdateHonorPointRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_proto_account_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateHonorPointRequest.ProtoReflect.Descriptor instead.
+func (*UpdateHonorPointRequest) Descriptor() ([]byte, []int) {
+	return file_pkg_proto_account_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdateHonorPointRequest) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *UpdateHonorPointRequest) GetCaseId() int32 {
+	if x != nil {
+		return x.CaseId
+	}
+	return 0
+}
+
+type UpdateHonorPointResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+}
+
+func (x *UpdateHonorPointResponse) Reset() {
+	*x = UpdateHonorPointResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_proto_account_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateHonorPointResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateHonorPointResponse) ProtoMessage() {}
+
+func (x *UpdateHonorPointResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_proto_account_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateHonorPointResponse.ProtoReflect.Descriptor instead.
+func (*UpdateHonorPointResponse) Descriptor() ([]byte, []int) {
+	return file_pkg_proto_account_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UpdateHonorPointResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type UpdateInComeRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId uint32  `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	CaseId int32   `protobuf:"varint,2,opt,name=caseId,proto3" json:"caseId,omitempty"`
+	Value  float32 `protobuf:"fixed32,3,opt,name=value,proto3" json:"value,omitempty"`
+}
+
+func (x *UpdateInComeRequest) Reset() {
+	*x = UpdateInComeRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_proto_account_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateInComeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateInComeRequest) ProtoMessage() {}
+
+func (x *UpdateInComeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_proto_account_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateInComeRequest.ProtoReflect.Descriptor instead.
+func (*UpdateInComeRequest) Descriptor() ([]byte, []int) {
+	return file_pkg_proto_account_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *UpdateInComeRequest) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *UpdateInComeRequest) GetCaseId() int32 {
+	if x != nil {
+		return x.CaseId
+	}
+	return 0
+}
+
+func (x *UpdateInComeRequest) GetValue() float32 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+type UpdateInComeResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+}
+
+func (x *UpdateInComeResponse) Reset() {
+	*x = UpdateInComeResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_proto_account_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateInComeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateInComeResponse) ProtoMessage() {}
+
+func (x *UpdateInComeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_proto_account_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateInComeResponse.ProtoReflect.Descriptor instead.
+func (*UpdateInComeResponse) Descriptor() ([]byte, []int) {
+	return file_pkg_proto_account_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdateInComeResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_pkg_proto_account_proto protoreflect.FileDescriptor
 
 var file_pkg_proto_account_proto_rawDesc = []byte{
@@ -415,7 +627,24 @@ var file_pkg_proto_account_proto_rawDesc = []byte{
 	0x65, 0x72, 0x49, 0x64, 0x22, 0x35, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x42,
 	0x79, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x1a, 0x0a, 0x08, 0x53, 0x68, 0x6f, 0x70, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x08, 0x53, 0x68, 0x6f, 0x70, 0x6e, 0x61, 0x6d, 0x65, 0x32, 0xdf, 0x01, 0x0a, 0x0e,
+	0x09, 0x52, 0x08, 0x53, 0x68, 0x6f, 0x70, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x49, 0x0a, 0x17, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x48, 0x6f, 0x6e, 0x6f, 0x72, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16,
+	0x0a, 0x06, 0x63, 0x61, 0x73, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06,
+	0x63, 0x61, 0x73, 0x65, 0x49, 0x64, 0x22, 0x34, 0x0a, 0x18, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x48, 0x6f, 0x6e, 0x6f, 0x72, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x5b, 0x0a, 0x13,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x43, 0x6f, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0d, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x63,
+	0x61, 0x73, 0x65, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x63, 0x61, 0x73,
+	0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x02, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x30, 0x0a, 0x14, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x49, 0x6e, 0x43, 0x6f, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x32, 0xe5, 0x02, 0x0a, 0x0e,
 	0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x38,
 	0x0a, 0x0b, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x73, 0x41, 0x75, 0x74, 0x68, 0x12, 0x13, 0x2e,
 	0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x73, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65,
@@ -429,9 +658,18 @@ var file_pkg_proto_account_proto_rawDesc = []byte{
 	0x65, 0x72, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x17, 0x2e, 0x47, 0x65, 0x74,
 	0x55, 0x73, 0x65, 0x72, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x42, 0x79, 0x55,
-	0x73, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x14, 0x5a,
-	0x12, 0x73, 0x72, 0x63, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x62, 0x2f, 0x61, 0x63, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x47, 0x0a,
+	0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x48, 0x6f, 0x6e, 0x6f, 0x72, 0x50, 0x6f, 0x69, 0x6e,
+	0x74, 0x12, 0x18, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x48, 0x6f, 0x6e, 0x6f, 0x72, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x48, 0x6f, 0x6e, 0x6f, 0x72, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x49, 0x6e, 0x63, 0x6f, 0x6d, 0x65, 0x12, 0x14, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x49,
+	0x6e, 0x43, 0x6f, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x43, 0x6f, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x42, 0x14, 0x5a, 0x12, 0x73, 0x72, 0x63, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70,
+	0x62, 0x2f, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -446,7 +684,7 @@ func file_pkg_proto_account_proto_rawDescGZIP() []byte {
 	return file_pkg_proto_account_proto_rawDescData
 }
 
-var file_pkg_proto_account_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_pkg_proto_account_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_pkg_proto_account_proto_goTypes = []interface{}{
 	(*CheckIsAuthRequest)(nil),         // 0: CheckIsAuthRequest
 	(*CheckIsAuthResponse)(nil),        // 1: CheckIsAuthResponse
@@ -454,16 +692,24 @@ var file_pkg_proto_account_proto_goTypes = []interface{}{
 	(*GetAddressByUserIdResponse)(nil), // 3: GetAddressByUserIdResponse
 	(*GetUserByUserIdRequest)(nil),     // 4: GetUserByUserIdRequest
 	(*GetUserByUserIdResponse)(nil),    // 5: GetUserByUserIdResponse
+	(*UpdateHonorPointRequest)(nil),    // 6: UpdateHonorPointRequest
+	(*UpdateHonorPointResponse)(nil),   // 7: UpdateHonorPointResponse
+	(*UpdateInComeRequest)(nil),        // 8: UpdateInComeRequest
+	(*UpdateInComeResponse)(nil),       // 9: UpdateInComeResponse
 }
 var file_pkg_proto_account_proto_depIdxs = []int32{
 	0, // 0: AccountService.CheckIsAuth:input_type -> CheckIsAuthRequest
 	2, // 1: AccountService.GetAddressByUserId:input_type -> GetAddressByUserIdRequest
 	4, // 2: AccountService.GetUserByUserId:input_type -> GetUserByUserIdRequest
-	1, // 3: AccountService.CheckIsAuth:output_type -> CheckIsAuthResponse
-	3, // 4: AccountService.GetAddressByUserId:output_type -> GetAddressByUserIdResponse
-	5, // 5: AccountService.GetUserByUserId:output_type -> GetUserByUserIdResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: AccountService.UpdateHonorPoint:input_type -> UpdateHonorPointRequest
+	8, // 4: AccountService.UpdateIncome:input_type -> UpdateInComeRequest
+	1, // 5: AccountService.CheckIsAuth:output_type -> CheckIsAuthResponse
+	3, // 6: AccountService.GetAddressByUserId:output_type -> GetAddressByUserIdResponse
+	5, // 7: AccountService.GetUserByUserId:output_type -> GetUserByUserIdResponse
+	7, // 8: AccountService.UpdateHonorPoint:output_type -> UpdateHonorPointResponse
+	9, // 9: AccountService.UpdateIncome:output_type -> UpdateInComeResponse
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -547,6 +793,54 @@ func file_pkg_proto_account_proto_init() {
 				return nil
 			}
 		}
+		file_pkg_proto_account_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateHonorPointRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_proto_account_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateHonorPointResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_proto_account_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateInComeRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_proto_account_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateInComeResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -554,7 +848,7 @@ func file_pkg_proto_account_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pkg_proto_account_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

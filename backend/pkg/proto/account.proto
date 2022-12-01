@@ -6,6 +6,8 @@ service AccountService {
   rpc CheckIsAuth(CheckIsAuthRequest) returns (CheckIsAuthResponse);
   rpc GetAddressByUserId(GetAddressByUserIdRequest) returns (GetAddressByUserIdResponse);
   rpc GetUserByUserId(GetUserByUserIdRequest) returns (GetUserByUserIdResponse);
+  rpc UpdateHonorPoint(UpdateHonorPointRequest) returns (UpdateHonorPointResponse);
+  rpc UpdateIncome(UpdateInComeRequest) returns (UpdateInComeResponse);
 }
 
 //Authenticate account
@@ -41,6 +43,25 @@ message GetUserByUserIdRequest{
 message GetUserByUserIdResponse{
   string Shopname = 1;
 }
+
+message UpdateHonorPointRequest{
+  uint32 userId = 1;
+  int32 caseId = 2;
+}
+
+message UpdateHonorPointResponse{
+ string message = 1;
+}
+
+message UpdateInComeRequest{
+  uint32 userId = 1;
+  int32 caseId = 2;
+  float value = 3;
+}
+message UpdateInComeResponse{
+  string message = 1;
+}
+
 
 //    Firstname   string `json:"firstname" gorm:"type:nvarchar(100);not null"`
 //    Lastname    string `json:"lastname" gorm:"type:nvarchar(100);not null"`

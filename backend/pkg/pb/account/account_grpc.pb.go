@@ -25,6 +25,8 @@ type AccountServiceClient interface {
 	CheckIsAuth(ctx context.Context, in *CheckIsAuthRequest, opts ...grpc.CallOption) (*CheckIsAuthResponse, error)
 	GetAddressByUserId(ctx context.Context, in *GetAddressByUserIdRequest, opts ...grpc.CallOption) (*GetAddressByUserIdResponse, error)
 	GetUserByUserId(ctx context.Context, in *GetUserByUserIdRequest, opts ...grpc.CallOption) (*GetUserByUserIdResponse, error)
+	UpdateHonorPoint(ctx context.Context, in *UpdateHonorPointRequest, opts ...grpc.CallOption) (*UpdateHonorPointResponse, error)
+	UpdateIncome(ctx context.Context, in *UpdateInComeRequest, opts ...grpc.CallOption) (*UpdateInComeResponse, error)
 }
 
 type accountServiceClient struct {
@@ -62,6 +64,24 @@ func (c *accountServiceClient) GetUserByUserId(ctx context.Context, in *GetUserB
 	return out, nil
 }
 
+func (c *accountServiceClient) UpdateHonorPoint(ctx context.Context, in *UpdateHonorPointRequest, opts ...grpc.CallOption) (*UpdateHonorPointResponse, error) {
+	out := new(UpdateHonorPointResponse)
+	err := c.cc.Invoke(ctx, "/AccountService/UpdateHonorPoint", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountServiceClient) UpdateIncome(ctx context.Context, in *UpdateInComeRequest, opts ...grpc.CallOption) (*UpdateInComeResponse, error) {
+	out := new(UpdateInComeResponse)
+	err := c.cc.Invoke(ctx, "/AccountService/UpdateIncome", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServiceServer is the server API for AccountService service.
 // All implementations must embed UnimplementedAccountServiceServer
 // for forward compatibility
@@ -69,6 +89,8 @@ type AccountServiceServer interface {
 	CheckIsAuth(context.Context, *CheckIsAuthRequest) (*CheckIsAuthResponse, error)
 	GetAddressByUserId(context.Context, *GetAddressByUserIdRequest) (*GetAddressByUserIdResponse, error)
 	GetUserByUserId(context.Context, *GetUserByUserIdRequest) (*GetUserByUserIdResponse, error)
+	UpdateHonorPoint(context.Context, *UpdateHonorPointRequest) (*UpdateHonorPointResponse, error)
+	UpdateIncome(context.Context, *UpdateInComeRequest) (*UpdateInComeResponse, error)
 	mustEmbedUnimplementedAccountServiceServer()
 }
 
@@ -84,6 +106,12 @@ func (UnimplementedAccountServiceServer) GetAddressByUserId(context.Context, *Ge
 }
 func (UnimplementedAccountServiceServer) GetUserByUserId(context.Context, *GetUserByUserIdRequest) (*GetUserByUserIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUserId not implemented")
+}
+func (UnimplementedAccountServiceServer) UpdateHonorPoint(context.Context, *UpdateHonorPointRequest) (*UpdateHonorPointResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateHonorPoint not implemented")
+}
+func (UnimplementedAccountServiceServer) UpdateIncome(context.Context, *UpdateInComeRequest) (*UpdateInComeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateIncome not implemented")
 }
 func (UnimplementedAccountServiceServer) mustEmbedUnimplementedAccountServiceServer() {}
 
@@ -152,6 +180,42 @@ func _AccountService_GetUserByUserId_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccountService_UpdateHonorPoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateHonorPointRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).UpdateHonorPoint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AccountService/UpdateHonorPoint",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).UpdateHonorPoint(ctx, req.(*UpdateHonorPointRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccountService_UpdateIncome_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateInComeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).UpdateIncome(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AccountService/UpdateIncome",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).UpdateIncome(ctx, req.(*UpdateInComeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccountService_ServiceDesc is the grpc.ServiceDesc for AccountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +234,14 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserByUserId",
 			Handler:    _AccountService_GetUserByUserId_Handler,
+		},
+		{
+			MethodName: "UpdateHonorPoint",
+			Handler:    _AccountService_UpdateHonorPoint_Handler,
+		},
+		{
+			MethodName: "UpdateIncome",
+			Handler:    _AccountService_UpdateIncome_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

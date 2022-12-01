@@ -140,6 +140,10 @@ const BidSection = ({ product, auction }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleBid = async () => {
+    if (userData.honor_point < 80) {
+      alert('Điểm uy tín thấp hơn 80');
+      return;
+    }
     if (bidValue < auction.current_bid) {
       alert('Invalid value');
       return;
@@ -210,7 +214,7 @@ const BidSection = ({ product, auction }) => {
       });
     }
   };
-
+  console.log(paymentId);
   useEffect(() => {
     if (userData) {
       setNickName(userData.nickname);

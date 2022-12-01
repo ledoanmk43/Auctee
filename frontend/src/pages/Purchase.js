@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 // material
 import { Button, Typography, Stack, Tabs, Tab, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import RemoveShoppingCartOutlinedIcon from '@mui/icons-material/RemoveShoppingCartOutlined';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Icon } from '@iconify/react';
 import { styled, useTheme } from '@mui/material/styles';
@@ -31,10 +32,7 @@ export default function Purchase() {
   const userData = useOutletContext();
   const [isFetching, setIsFetching] = useState(true);
   const [paymentsData, setPaymentsData] = useState();
-  const [shopName, setShopName] = useState('');
-  const [nickName, setNickName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [avatarFile, setAvatarFile] = useState();
+
   const [HonorPoint, setHonorPoint] = useState(0);
 
   const [isMale, setIsMale] = useState(false); // 1 male : 0 female
@@ -48,13 +46,7 @@ export default function Purchase() {
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          const today = new Date();
           setPaymentsData(data);
-          setShopName(data.shopname);
-          setNickName(data.nickname);
-          setIsMale(data.gender);
-          setPhoneNumber(data.phone);
-          setAvatarFile(data.avatar);
           setIsFetching(false);
         });
       }
@@ -85,27 +77,28 @@ export default function Purchase() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async () => {
-    const payload = {};
-
-    // await fetch('http://localhost:1001/auctee/user/profile/setting', {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(payload),
-    //   credentials: 'include',
-    // }).then((res) => {
-    //   if (res.status === 200) {
-    //     setIsUpdated(true);
-    //     navigate(0);
-    //   }
-    //   if (res.status === 409) {
-    //     setIsUpdated(false);
-    //   }
-    //   if (res.status === 400) {
-    //     setIsUpdated(false);
-    //   }
-    // });
+  const handleReceived = async (payment) => {
+    const payload = {
+      total: parseFloat(payment.before_discount + payment.shipping_value),
+    };
+    await fetch(`http://localhost:1003/auctee/user/checkout/shipping-status-payment?id=${payment.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    }).then((res) => {
+      if (res.status === 200) {
+        setIsFetching(false);
+        navigate(0);
+      }
+      if (res.status === 401) {
+        alert('You need to login first');
+        setIsFetching(true);
+        navigate('/auctee/login', { replace: true });
+      }
+    });
   };
+
   const [value, setValue] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
 
@@ -114,6 +107,7 @@ export default function Purchase() {
     setFilteredData([]);
     if (paymentsData) {
       switch (newValue) {
+        // chờ xác nhận
         case 1:
           paymentsData.forEach((payment) => {
             if (payment.checkout_status === 1) {
@@ -121,21 +115,31 @@ export default function Purchase() {
             }
           });
           break;
+        // đang giao
         case 2:
           paymentsData.forEach((payment) => {
-            if (payment.checkout_status === 2) {
+            if (payment.checkout_status === 3 && payment.shipping_status === false) {
               setFilteredData((current) => [...current, payment]);
             }
           });
           break;
+        // đã nhận
         case 3:
           paymentsData.forEach((payment) => {
-            if (payment.checkout_status === 3) {
+            if (payment.checkout_status === 3 && payment.shipping_status === true && payment.checkout_status !== 0) {
               setFilteredData((current) => [...current, payment]);
             }
           });
           break;
+        // đã huỷ
         case 4:
+          paymentsData.forEach((payment) => {
+            if (payment.checkout_status === 4) {
+              setFilteredData((current) => [...current, payment]);
+            }
+          });
+          break;
+        case 5:
           paymentsData.forEach((payment) => {
             if (payment.checkout_status === 4) {
               setFilteredData((current) => [...current, payment]);
@@ -168,48 +172,46 @@ export default function Purchase() {
           </Typography>
         </Stack>
         {/* Main */}
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction="row" sx={{ p: 2, boxShadow: 4, borderRadius: 2 }}>
-            <Stack sx={{ flex: 2 }}>
-              <Stack sx={{ ml: 0.5 }}>
-                <Stack direction="row">
-                  <Icon icon="bi:coin" color="#eba123" fontSize="3rem" />
-                  <Stack sx={{ ml: 1 }}>
-                    <Typography fontSize="1.2rem" color="#eba123">
-                      {userData.total_income.toLocaleString('tr-TR', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })}
-                    </Typography>
-                    <Typography fontStyle="italic" variant="caption" fontSize="0.9rem" sx={{ opacity: 0.7 }}>
-                      Số dư hiện tại
-                    </Typography>
-                  </Stack>
+        <Stack direction="row" sx={{ p: 2, boxShadow: 4, borderRadius: 2 }}>
+          <Stack sx={{ flex: 2 }}>
+            <Stack sx={{ ml: 0.5 }}>
+              <Stack direction="row">
+                <Icon icon="bi:coin" color="#eba123" fontSize="3rem" />
+                <Stack sx={{ ml: 1 }}>
+                  <Typography fontSize="1.2rem" color="#eba123">
+                    {userData.total_income.toLocaleString('tr-TR', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </Typography>
+                  <Typography fontStyle="italic" variant="caption" fontSize="0.9rem" sx={{ opacity: 0.7 }}>
+                    Số dư hiện tại
+                  </Typography>
                 </Stack>
-                <Typography
-                  fontStyle="italic"
-                  variant="body2"
-                  sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9, mt: 2 }}
-                >
-                  Mẹo: &nbsp;Số dư trong ví phải lớn hơn giá trị của sản phầm bạn muốn tham gia đấu giá
-                </Typography>
               </Stack>
-            </Stack>
-            <Stack justifyContent="center" alignItems="flex-start" direction="row">
-              <LoadingButton
-                disableRipple
-                color="error"
-                sx={{ px: 3, textTransform: 'none' }}
-                size="medium"
-                type="submit"
-                variant="contained"
-                loading={isSubmitting}
+              <Typography
+                fontStyle="italic"
+                variant="body2"
+                sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9, mt: 2 }}
               >
-                <Icon icon="bi:coin" /> &nbsp; Nạp tiền vào ví
-              </LoadingButton>
+                Mẹo: &nbsp;Số dư trong ví phải lớn hơn giá trị của sản phầm bạn muốn tham gia đấu giá
+              </Typography>
             </Stack>
           </Stack>
-        </FormProvider>
+          <Stack justifyContent="center" alignItems="flex-start" direction="row">
+            <LoadingButton
+              disableRipple
+              color="error"
+              sx={{ px: 3, textTransform: 'none' }}
+              size="medium"
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+            >
+              <Icon icon="bi:coin" /> &nbsp; Nạp tiền vào ví
+            </LoadingButton>
+          </Stack>
+        </Stack>
         <Stack sx={{ mt: 1 }}>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -241,7 +243,7 @@ export default function Purchase() {
                 <Tab disableRipple label="Đang giao" {...a11yProps(2)} />
                 <Tab disableRipple label="Đã nhận" {...a11yProps(3)} />
                 <Tab disableRipple label="Đã huỷ" {...a11yProps(4)} />
-                <Tab disableRipple label="Trả hàng/Hoàn tiền" {...a11yProps(4)} />
+                <Tab disableRipple label="Trả hàng/Hoàn tiền" {...a11yProps(5)} />
               </Tabs>
             </Box>
             <TabPanel value={value} index={value}>
@@ -289,6 +291,72 @@ export default function Purchase() {
                           Xem shop
                         </Typography>
                       </Button>
+                      {payment.payment_method.length > 0 && (
+                        <Button
+                          disableRipple
+                          sx={{
+                            ml: 1.5,
+                            borderRadius: 0.4,
+                            opacity: 0.9,
+                            textTransform: 'none',
+                            fontSize: '0.75rem',
+                            fontStyle: 'italic',
+                            color: `${payment.payment_method.length !== 3 ? '#a50064' : 'red'}`,
+                            '&:hover': {
+                              bgcolor: 'transparent',
+                            },
+                          }}
+                        >
+                          {payment.payment_method}
+                        </Button>
+                      )}
+                      {payment.shipping_status === true && payment.total !== 0 && (
+                        <Button
+                          disableRipple
+                          sx={{
+                            ml: 1.5,
+                            borderRadius: 0.4,
+                            textTransform: 'none',
+                            fontSize: '0.75rem',
+                            fontStyle: 'italic',
+                            opacity: 0.7,
+                            '&:hover': {
+                              bgcolor: 'transparent',
+                            },
+                          }}
+                        >
+                          Đã nhận hàng
+                        </Button>
+                      )}
+                      {payment.checkout_status === 4 && (
+                        <Button
+                          variant="error"
+                          disableRipple
+                          sx={{
+                            px: 0,
+                            ml: 1.5,
+                            borderRadius: 0.4,
+                            opacity: 0.9,
+                            color: 'inherit',
+                            '&:hover': {
+                              bgcolor: 'transparent',
+                            },
+                          }}
+                        >
+                          <RemoveShoppingCartOutlinedIcon color="error" sx={{ fontSize: '1rem' }} />
+                          <Typography
+                            color="error"
+                            variant="button"
+                            sx={{
+                              textTransform: 'none',
+                              fontSize: '0.7rem',
+                              px: 0.5,
+                            }}
+                          >
+                            Đã huỷ
+                          </Typography>
+                        </Button>
+                      )}
                     </Stack>
                     {/* Body */}
                     <Stack justifyContent="space-between" direction="row" sx={{ display: 'flex' }}>
@@ -304,7 +372,61 @@ export default function Purchase() {
                           </Typography>
                           <Typography sx={{ mt: 1 }}>x{payment.quantity}</Typography>
                         </Stack>
-                        {payment.checkout_status === 3 && (
+                      </Stack>
+                      {/* Total */}
+                      <Stack alignItems="flex-end" flex={1.7}>
+                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                          Tổng số tiền tạm tính:
+                        </Typography>
+                        <Typography color="#f44336">
+                          {payment.before_discount.toLocaleString('tr-TR', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })}
+                        </Typography>
+                        {payment.checkout_status === 3 && payment.total === 0 ? (
+                          <Stack width="100%" direction="row" justifyContent="space-between">
+                            <Button
+                              size="medium"
+                              variant="outlined"
+                              disableRipple
+                              sx={{
+                                opacity: 0.8,
+                                border: '1px solid grey',
+                                borderRadius: 0.4,
+                                color: 'inherit',
+                                px: 1.5,
+                                textTransform: 'none',
+                                '&:hover': {
+                                  border: '1px solid grey',
+                                  opacity: 1,
+                                  bgcolor: 'transparent',
+                                },
+                              }}
+                              onClick={() => {
+                                navigate(`/auctee/user/order/?id=${payment.id}`);
+                              }}
+                            >
+                              Chi tiết đơn hàng
+                            </Button>
+                            <Button
+                              color="error"
+                              size="medium"
+                              variant="contained"
+                              disableRipple
+                              sx={{
+                                borderRadius: 0.4,
+                                bgcolor: '#f44336',
+                                color: 'white',
+                                px: 1.5,
+                                textTransform: 'none',
+                              }}
+                              onClick={() => handleReceived(payment)}
+                            >
+                              Đã nhận hàng
+                            </Button>
+                          </Stack>
+                        ) : (
                           <Button
                             color="error"
                             size="medium"
@@ -318,42 +440,12 @@ export default function Purchase() {
                               textTransform: 'none',
                             }}
                             onClick={() => {
-                              navigate(`/auctee/user/order/?id=${payment.Id}`);
+                              navigate(`/auctee/user/order/?id=${payment.id}`);
                             }}
                           >
-                            Đã nhận hàng
+                            Chi tiết đơn hàng
                           </Button>
                         )}
-                      </Stack>
-                      {/* Total */}
-                      <Stack alignItems="flex-end" flex={1}>
-                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
-                          Tổng số tiền tạm tính:
-                        </Typography>
-                        <Typography color="#f44336">
-                          {payment.before_discount.toLocaleString('tr-TR', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })}
-                        </Typography>
-                        <Button
-                          color="error"
-                          size="medium"
-                          variant="contained"
-                          disableRipple
-                          sx={{
-                            borderRadius: 0.4,
-                            bgcolor: '#f44336',
-                            color: 'white',
-                            px: 1.5,
-                            textTransform: 'none',
-                          }}
-                          onClick={() => {
-                            navigate(`/auctee/user/order/?id=${payment.id}`);
-                          }}
-                        >
-                          Chi tiết đơn hàng
-                        </Button>
                       </Stack>
                     </Stack>
                   </Stack>

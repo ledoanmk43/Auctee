@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  admin:
+  account:
     container_name: account
     image: auctee/account
     build:
       context: .
-      dockerfile: ./internal/account-service/Dockerfile
+      dockerfile: ./src/account-service/Dockerfile
     ports:
       - "1001:1001"
       - "50051:50051"
@@ -15,16 +15,18 @@ services:
       - DB_PASS=Ledoan070899
       - DB_HOST=host.docker.internal
       - DB_PORT=3306
-      - DB_NAME=auctee
+      - DB_NAME=aucteev1
       - GIN_PORT=1001
       - GRPC_SERVER_PORT=50051
+      - KEY_PAIRS=lEDOAN
+      - COOKIE_AUTH=user_token
 
   product:
     container_name: product
     image: auctee/product
     build:
       context: .
-      dockerfile: ./internal/product-service/Dockerfile
+      dockerfile: ./src/product-service/Dockerfile
     ports:
       - "1002:1002"
       - "50052:50052"
@@ -33,35 +35,40 @@ services:
       - DB_PASS=Ledoan070899
       - DB_HOST=host.docker.internal
       - DB_PORT=3306
-      - DB_NAME=auctee
+      - DB_NAME=aucteev1
       - GIN_PORT=1002
       - GRPC_SERVER_PORT=50052
       - ACCOUNT_SRV_HOST=account:50051
+      - KEY_PAIRS=lEDOAN
+      - COOKIE_AUTH=user_token
 
   auction:
     container_name: auction
     image: auctee/auction
     build:
       context: .
-      dockerfile: ./internal/auction-service/Dockerfile
+      dockerfile: ./src/auction-service/Dockerfile
     ports:
       - "1009:1009"
+      - "50051:50051"
     environment:
       - DB_USER=root
       - DB_PASS=Ledoan070899
       - DB_HOST=host.docker.internal
       - DB_PORT=3306
-      - DB_NAME=auctee
+      - DB_NAME=aucteev1
       - GIN_PORT=1009
+      - GRPC_SERVER_PORT=50053
       - ACCOUNT_SRV_HOST=account:50051
       - PRODUCT_SRV_HOST=product:50052
-
+      - KEY_PAIRS=lEDOAN
+      - COOKIE_AUTH=user_token
   payment:
     container_name: payment
     image: auctee/payment
     build:
       context: .
-      dockerfile: ./internal/payment-service/Dockerfile
+      dockerfile: ./src/payment-service/Dockerfile
     ports:
       - "1003:1003"
     environment:
@@ -73,3 +80,8 @@ services:
       - GIN_PORT=1003
       - ACCOUNT_SRV_HOST=account:50051
       - AUCTION_SRV_HOST=auction:50053
+      - KEY_PAIRS=lEDOAN
+      - COOKIE_AUTH=user_token
+      - MOMO_EP=https://test-payment.momo.vn/v2/gateway/api/create
+      - MOMO_ACCESS_KEY=F8BBA842ECF85
+      - MOMO_SECRET_KEY=K951B6PE1waDMi640xX08PD3vg6EkVlz
