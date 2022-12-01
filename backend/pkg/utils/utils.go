@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"backend/internal/auction-service/config"
 	"backend/pkg/token"
 	"errors"
 	"github.com/gin-contrib/cors"
@@ -11,6 +10,10 @@ import (
 	"net/http"
 	"strings"
 	"time"
+)
+
+const (
+	DATEFORMAT = "2006-01-02 15:04:05"
 )
 
 func Router() *gin.Engine {
@@ -59,7 +62,7 @@ func GetTokenFromCookie(ctx *gin.Context, cookieName string) (string, error) {
 }
 
 func GetMoment() (time.Time, error) {
-	now, err := time.Parse(config.DATEFORMAT, time.Now().Format(config.DATEFORMAT))
+	now, err := time.Parse(DATEFORMAT, time.Now().Format(DATEFORMAT))
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -68,7 +71,7 @@ func GetMoment() (time.Time, error) {
 }
 
 func StringToTime(timeString string) (time.Time, error) {
-	result, err := time.Parse(config.DATEFORMAT, timeString)
+	result, err := time.Parse(DATEFORMAT, timeString)
 	if err != nil {
 		return time.Time{}, err
 	}

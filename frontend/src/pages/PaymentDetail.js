@@ -4,10 +4,6 @@ import { useForm } from 'react-hook-form';
 import FileBase64 from 'react-file-base64';
 // material
 import {
-  Container,
-  Avatar,
-  FormGroup,
-  TextField,
   RadioGroup,
   Radio,
   FormControlLabel,
@@ -19,9 +15,9 @@ import {
   Step,
   StepLabel,
   Button,
-  Select,
-  MenuItem,
+  Input,
   Divider,
+  useMediaQuery,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Icon } from '@iconify/react';
@@ -34,8 +30,7 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import MoveToInboxOutlinedIcon from '@mui/icons-material/MoveToInboxOutlined';
 import StarBorderPurple500OutlinedIcon from '@mui/icons-material/StarBorderPurple500Outlined';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
-import account from '../API/account';
-import { FormProvider, RHFTextField } from '../components/hook-form';
+import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
 
 const Page = lazy(() => import('../components/Page'));
 
@@ -70,6 +65,39 @@ const steps = [
   {
     value: 'Đánh giá',
     icon: StarBorderPurple500OutlinedIcon,
+  },
+];
+
+const stepsCheckedOut = [
+  {
+    value: 'Xác nhận đơn hàng',
+    icon: ReceiptOutlinedIcon,
+  },
+  {
+    value: 'Đã thanh toán',
+    icon: PaymentsOutlinedIcon,
+  },
+  {
+    value: 'Đang giao',
+    icon: LocalShippingOutlinedIcon,
+  },
+  {
+    value: 'Đã nhận',
+    icon: MoveToInboxOutlinedIcon,
+  },
+  {
+    value: 'Đánh giá',
+    icon: StarBorderPurple500OutlinedIcon,
+  },
+];
+const stepsForCancel = [
+  {
+    value: 'Đơn hàng đã đặt',
+    icon: ReceiptOutlinedIcon,
+  },
+  {
+    value: 'Đơn hàng đã bị huỷ',
+    icon: ProductionQuantityLimitsOutlinedIcon,
   },
 ];
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
@@ -134,6 +162,20 @@ function ColorlibStepIcon(props) {
     </ColorlibStepIconRoot>
   );
 }
+function ColorlibStepIconCancel(props) {
+  const { active, completed, className } = props;
+
+  const icons = {
+    1: <ReceiptOutlinedIcon sx={{ fontSize: '2rem' }} />,
+    2: <ProductionQuantityLimitsOutlinedIcon sx={{ fontSize: '2rem' }} />,
+  };
+
+  return (
+    <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
+      {icons[String(props.icon)]}
+    </ColorlibStepIconRoot>
+  );
+}
 
 ColorlibStepIcon.propTypes = {
   /**
@@ -160,22 +202,90 @@ export default function PaymentDetail() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const paymentId = searchParams.get('id');
-  const productId = searchParams.get('product');
+
   const userData = useOutletContext();
   const [isFetching, setIsFetching] = useState(true);
-  const [shopName, setShopName] = useState('');
-  const [nickName, setNickName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [avatarFile, setAvatarFile] = useState();
-  const [HonorPoint, setHonorPoint] = useState(0);
 
-  const [isMale, setIsMale] = useState(false); // 1 male : 0 female
+  const [noteData, setNoteData] = useState('');
 
   // All addresses
   const [userAddresses, setUserAddresses] = useState();
   const [selectedAddress, setSelectedAddress] = useState();
   const [openListAddresses, setOpenListAddresses] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('COD');
+  const [paymentStatus, setPaymentStatus] = useState('');
+
+  const [stepStatus, setStepStatus] = useState(0);
+  const handlePayment = async () => {
+    const payload = {
+      total: parseFloat(paymentData.before_discount + shippingFee),
+      id: paymentData.id,
+      product_name: paymentData.product_name,
+      shipping_value: parseFloat(shippingFee),
+      note: noteData,
+    };
+    if (paymentMethod === 'MOMO') {
+      await fetch('http://localhost:1003/auctee/user/checkout/momo-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      }).then((res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            window.open(data.redirectURL);
+          });
+        }
+        if (res.status === 401) {
+          alert('You need to login first');
+          navigate('/auctee/login', { replace: true });
+        }
+      });
+    } else {
+      await fetch(`http://localhost:1003/auctee/user/checkout/cod-payment?id=${selectedAddress.ID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      }).then((res) => {
+        if (res.status === 200) {
+          // res.json().then((data) => {
+          setPaymentStatus('Đang vận chuyển');
+          navigate(0);
+          // });
+        }
+        if (res.status === 401) {
+          alert('You need to login first');
+          navigate('/auctee/login', { replace: true });
+        }
+      });
+    }
+  };
+
   const [choice, setChoice] = useState();
+
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
+  const handleCancel = async (id) => {
+    await fetch(`http://localhost:1003/auctee/user/checkout/payment?id=${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    }).then((res) => {
+      if (res.status === 200) {
+        setOpenListAddresses(false);
+        navigate(0);
+      }
+      if (res.status === 400) {
+        setOpenListAddresses(true);
+      }
+      if (res.status === 401) {
+        alert('You need to login first');
+        navigate('/auctee/login', { replace: true });
+      }
+    });
+  };
+
   const handleFetchAddressData = async () => {
     await fetch('http://localhost:1001/auctee/user/addresses', {
       method: 'GET',
@@ -221,53 +331,100 @@ export default function PaymentDetail() {
     });
   };
 
-  const defaultValues = {
-    nickname: '',
-    shopname: '',
-    gender: isMale,
-    phone: '',
-    date: '',
-    month: '',
-    year: '',
-    avatar: '',
+  const [shippingFee, setShippingFee] = useState();
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    selectedAddress?.province === 'Hồ Chí Minh' ? setShippingFee(25000) : setShippingFee(35000);
+  }, [selectedAddress]);
+
+  const handleStatus = () => {
+    switch (paymentData.checkout_status) {
+      case 1:
+        setPaymentStatus('Chưa thanh toán');
+        break;
+      case 2:
+        setPaymentStatus('Đã thanh toán');
+        break;
+      case 3:
+        if (paymentData.shipping_status === false && paymentData.total === 0) {
+          setPaymentStatus('Đang vận chuyển');
+          break;
+        } else {
+          setPaymentStatus('Đã nhận hàng');
+        }
+        break;
+      case 4:
+        setPaymentStatus('Đã huỷ');
+
+        break;
+      case 5:
+        setPaymentStatus('Hoàn thành');
+        break;
+      default:
+        setPaymentStatus('Chưa thanh toán');
+    }
   };
 
-  const methods = useForm({
-    defaultValues,
-  });
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSubmit = async () => {
-    const payload = {};
-
-    // await fetch('http://localhost:1001/auctee/user/profile/setting', {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(payload),
-    //   credentials: 'include',
-    // }).then((res) => {
-    //   if (res.status === 200) {
-    //     setIsUpdated(true);
-    //     navigate(0);
-    //   }
-    //   if (res.status === 409) {
-    //     setIsUpdated(false);
-    //   }
-    //   if (res.status === 400) {
-    //     setIsUpdated(false);
-    //   }
-    // });
+  const handleReceived = async () => {
+    const payload = {
+      total: parseFloat(paymentData.before_discount + shippingFee),
+    };
+    await fetch(`http://localhost:1003/auctee/user/checkout/shipping-status-payment?id=${paymentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    }).then((res) => {
+      if (res.status === 200) {
+        setIsFetching(false);
+        navigate(0);
+      }
+      if (res.status === 401) {
+        alert('You need to login first');
+        setIsFetching(true);
+        navigate('/auctee/login', { replace: true });
+      }
+    });
   };
 
+  const handleStep = () => {
+    switch (paymentData.checkout_status) {
+      case 1:
+        if (paymentData.total === 0) {
+          setStepStatus(1);
+        }
+        break;
+      case 2: // đang giao
+        setStepStatus(1);
+        break;
+      case 3: // đã nhận
+        if (paymentData.shipping_status === true && paymentData.total !== 0) {
+          setStepStatus(3);
+        } else {
+          setStepStatus(2);
+        }
+        break;
+      case 4: // huỷ
+        setStepStatus(1);
+        break;
+      case 5:
+        setStepStatus(5);
+        break;
+      default:
+        setStepStatus(2);
+    }
+  };
   useEffect(() => {
     // eslint-disable-next-line no-unused-expressions
     !paymentData && handleFetchPayment();
     // eslint-disable-next-line no-unused-expressions
+    if (paymentData) {
+      handleStep();
+      handleStatus();
+    }
+    // eslint-disable-next-line no-unused-expressions
     !userAddresses && handleFetchAddressData();
-  }, [userAddresses]);
+  }, [userAddresses, paymentData]);
 
   return !isFetching ? (
     <Page title="Chi tiết đơn hàng">
@@ -282,264 +439,573 @@ export default function PaymentDetail() {
           </Typography>
           <Divider />
         </Stack>
-        <Stepper
-          sx={{ width: '100%', my: 2 }}
-          connector={<ColorlibConnector sx={{ width: '70%', ml: 1 }} />}
-          activeStep={paymentData.checkout_status}
-          alternativeLabel
-        >
-          {steps.map((item, index) => (
-            <Step key={index}>
-              <StepLabel sx={{ color: '#2dc258' }} StepIconComponent={ColorlibStepIcon}>
-                {item.value}
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        {/* Stepper */}
+        {paymentData.checkout_status === 4 ? (
+          <Stepper
+            sx={{ width: '100%', my: 2 }}
+            connector={<ColorlibConnector sx={{ width: '100%', ml: 1 }} />}
+            activeStep={1}
+            alternativeLabel
+          >
+            {stepsForCancel.map((item, index) => (
+              <Step key={index}>
+                <StepLabel sx={{ color: '#2dc258' }} StepIconComponent={ColorlibStepIconCancel}>
+                  {item.value}
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        ) : (
+          <Stepper
+            sx={{ width: '100%', my: 2 }}
+            connector={<ColorlibConnector sx={{ width: '70%', ml: 1 }} />}
+            activeStep={stepStatus}
+            alternativeLabel
+          >
+            {paymentData.total === 0
+              ? steps.map((item, index) => (
+                  <Step key={index}>
+                    <StepLabel sx={{ color: '#2dc258' }} StepIconComponent={ColorlibStepIcon}>
+                      {item.value}
+                    </StepLabel>
+                  </Step>
+                ))
+              : stepsCheckedOut.map((item, index) => (
+                  <Step key={index}>
+                    <StepLabel sx={{ color: '#2dc258' }} StepIconComponent={ColorlibStepIcon}>
+                      {item.value}
+                    </StepLabel>
+                  </Step>
+                ))}
+          </Stepper>
+        )}
         {/* Main */}
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction="row" sx={{ p: 2, boxShadow: 4, borderRadius: 2 }}>
-            <Stack sx={{ flex: 2 }}>
-              <Stack sx={{ ml: 0.5 }}>
-                <Stack direction="row">
-                  <Icon icon="material-symbols:location-on-outline-rounded" color="#f44336" fontSize="1.5rem" />
-                  <Stack sx={{ ml: 1 }}>
-                    <Typography fontSize="1.1rem" color="#f44336">
-                      Địa chỉ nhận hàng
-                    </Typography>
-                    {userAddresses?.length > 0 ? (
-                      <Stack alignItems="flex-end" direction="row">
-                        <Typography sx={{ fontWeight: 600 }}>
-                          {selectedAddress.lastname}&nbsp;
-                          {selectedAddress.firstname}
-                        </Typography>
-                        <Typography sx={{ fontWeight: 600 }}>
-                          &nbsp;&nbsp;(+84)&nbsp;{selectedAddress.phone.substring(1)}
-                        </Typography>
-                        <Typography variant="body1">
-                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{selectedAddress.address}, {selectedAddress.sub_district},
-                          {selectedAddress.district}, {selectedAddress.province}
-                        </Typography>
-                        <Button
-                          onClick={() => {
-                            setOpenListAddresses(true);
-                            setChoice(selectedAddress);
-                          }}
-                          disabled={paymentData.checkout_status !== 1}
-                          disableRipple
-                          sx={{
-                            ml: 2,
-                            p: 0,
-                            border: 'none',
-                            textTransform: 'none',
-                            borderRadius: 0.4,
-                            opacity: 0.85,
-                            color: '#f44336',
-                            '&:hover': {
-                              bgcolor: 'transparent',
-                              opacity: 1,
-                            },
-                          }}
-                        >
-                          Thay đổi
-                        </Button>
-                        {openListAddresses && (
-                          <Dialog
-                            open={openListAddresses}
-                            sx={{ margin: 'auto', minWidth: '480px' }}
-                            BackdropProps={{
-                              style: { backgroundColor: 'rgba(0,0,30,0.4)' },
-                              invisible: true,
-                            }}
-                          >
-                            <DialogTitle fontWeight={500}>Chọn địa chỉ giao hàng</DialogTitle>
-                            <Stack sx={{ px: 3 }}>
-                              <RadioGroup
-                                name="addressChoices"
-                                value={choice}
-                                onChange={(e) => setChoice(e.target._wrapperState.initialValue)}
-                              >
-                                {userAddresses?.map((address, index) => {
-                                  return (
-                                    <Stack maxHeight={120} direction="row" key={index}>
-                                      <Stack sx={{ width: '100%', mb: 1 }}>
-                                        <Stack alignItems="center" direction="row" sx={{ width: '7  0%' }}>
-                                          <Typography fontSize={'1rem'} variant="body2" sx={{ color: 'black' }}>
-                                            {address.lastname} {address.firstname}
-                                          </Typography>
-                                          <Stack sx={{ ml: 2, pl: 2, borderLeft: '1px solid grey' }}>
-                                            <Typography fontSize={'0.9rem'} variant="caption" sx={{ color: 'inherit' }}>
-                                              (+84) &nbsp;{address.phone.substring(1)}
-                                            </Typography>
-                                          </Stack>
-                                        </Stack>
-                                        <Typography
-                                          fontSize={'0.9rem'}
-                                          variant="body2"
-                                          sx={{ color: 'black', opacity: 0.6 }}
-                                        >
-                                          {address.address}
-                                        </Typography>
-                                        <Typography
-                                          fontSize={'0.9rem'}
-                                          variant="body2"
-                                          sx={{ color: 'black', opacity: 0.6 }}
-                                        >
-                                          {address.sub_district}, {address.district}, {address.province}
-                                        </Typography>
-                                        {address.is_default && (
-                                          <Button
-                                            fontSize="0.1rem"
-                                            sx={{
-                                              borderRadius: 0,
-                                              color: theme.palette.background.main,
-                                              textTransform: 'none',
-                                              width: '20%',
-                                              px: 0.5,
-                                              mt: 0.5,
-                                              py: 0,
-                                              fontWeight: 500,
-                                              border: `1px solid ${theme.palette.background.main}`,
-                                            }}
-                                          >
-                                            Mặc định
-                                          </Button>
-                                        )}
-                                        {userAddresses.length - index !== 1 && <Divider sx={{ mt: 2 }} />}
-                                      </Stack>
-                                      {/* Choices */}
-                                      <Stack>
-                                        <Radio
-                                          sx={{ maxHeight: '100px' }}
-                                          checked={choice === address}
-                                          name={`address-${address.ID}`}
-                                          key={index}
-                                          value={address}
-                                        />
-                                      </Stack>
-                                    </Stack>
-                                  );
-                                })}
-                              </RadioGroup>
-                              <Stack>
-                                <Button
-                                  onClick={() => {
-                                    navigate('/auctee/user/address');
-                                  }}
-                                  disableRipple
-                                  sx={{
-                                    mx: 'auto',
-                                    maxWidth: '50%',
-                                    textTransform: 'none',
-                                    borderRadius: 0.4,
-                                    opacity: 0.7,
-                                    color: 'inherit',
-                                    border: '1px solid transparent',
-                                    '&:hover': {
-                                      border: '1px solid black',
-                                      bgcolor: 'transparent',
-                                      opacity: 0.9,
-                                    },
-                                  }}
-                                >
-                                  <Icon icon="material-symbols:add" /> &nbsp; Thêm địa chỉ mới
-                                </Button>
-                              </Stack>
-                              <Stack
-                                justifyContent="center"
-                                alignItems="center"
-                                direction="row"
-                                sx={{ mt: 4, pb: 4, position: 'relative' }}
-                              >
-                                <Button
-                                  size="medium"
-                                  variant="outlined"
-                                  onClick={() => setOpenListAddresses(false)}
-                                  sx={{
-                                    px: 1.6,
-                                    position: 'absolute',
-                                    right: 124,
-                                    color: 'inherit',
-                                    border: '1px solid white',
-                                    opacity: 0.85,
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                      borderColor: 'black',
-                                      opacity: 1,
-                                    },
-                                  }}
-                                >
-                                  Trở lại
-                                </Button>
-                                <LoadingButton
-                                  onClick={() => {
-                                    setSelectedAddress(choice);
-                                    setOpenListAddresses(false);
-                                  }}
-                                  disableRipple
-                                  color="error"
-                                  sx={{ px: 3, position: 'absolute', right: 1, textTransform: 'none' }}
-                                  size="medium"
-                                  type="submit"
-                                  variant="contained"
-                                  loading={isSubmitting}
-                                >
-                                  Xác nhận
-                                </LoadingButton>
-                              </Stack>
-                            </Stack>
-                          </Dialog>
-                        )}
-                      </Stack>
-                    ) : (
+        <Stack direction="row" sx={{ p: 2, boxShadow: 4 }}>
+          {/* Address information */}
+          <Stack sx={{ flex: 2 }}>
+            <Stack sx={{ ml: 0.5 }}>
+              <Stack direction="row">
+                <Icon icon="material-symbols:location-on-outline-rounded" color="#f44336" fontSize="1.4rem" />
+                <Stack sx={{ ml: 1 }}>
+                  <Typography fontSize="1rem" color="#f44336">
+                    Địa chỉ nhận hàng
+                  </Typography>
+                  {userAddresses?.length > 0 ? (
+                    <Stack alignItems="flex-end" direction="row">
+                      <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
+                        {selectedAddress.lastname}&nbsp;
+                        {selectedAddress.firstname}
+                      </Typography>
+                      <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
+                        &nbsp;&nbsp;(+84)&nbsp;{selectedAddress.phone.substring(1)}
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontSize: '0.95rem' }}>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{selectedAddress.address}, {selectedAddress.sub_district},
+                        {selectedAddress.district}, {selectedAddress.province}
+                      </Typography>
                       <Button
                         onClick={() => {
-                          navigate('/auctee/user/address');
+                          setOpenListAddresses(true);
+                          setChoice(selectedAddress);
                         }}
+                        disabled={paymentData.checkout_status !== 1}
                         disableRipple
                         sx={{
+                          ml: 2,
+                          p: 0,
+                          border: 'none',
                           textTransform: 'none',
                           borderRadius: 0.4,
-                          opacity: 0.7,
-                          color: 'inherit',
+                          opacity: 0.85,
+                          color: 'primary',
                           '&:hover': {
                             bgcolor: 'transparent',
-                            opacity: 0.9,
+                            opacity: 1,
                           },
                         }}
                       >
-                        <Icon icon="material-symbols:add" /> &nbsp; Thêm địa chỉ mới
+                        Thay đổi
                       </Button>
-                    )}
-                  </Stack>
+                      {openListAddresses && (
+                        <Dialog
+                          open={openListAddresses}
+                          sx={{ margin: 'auto', minWidth: '480px' }}
+                          BackdropProps={{
+                            style: { backgroundColor: 'rgba(0,0,30,0.4)' },
+                            invisible: true,
+                          }}
+                        >
+                          <DialogTitle fontWeight={500}>Chọn địa chỉ giao hàng</DialogTitle>
+                          <Stack
+                            sx={{
+                              px: 3,
+                              maxHeight: 300,
+                              overflow: 'auto',
+                              scrollbarWidth: 'thin',
+                              '&::-webkit-scrollbar': {
+                                display: 'none',
+                                width: '0.4em',
+                              },
+                            }}
+                          >
+                            <RadioGroup
+                              name="addressChoices"
+                              value={choice}
+                              onChange={(e) => setChoice(e.target._wrapperState.initialValue)}
+                            >
+                              {userAddresses?.map((address, index) => {
+                                return (
+                                  <Stack maxHeight={120} direction="row" key={index}>
+                                    <Stack sx={{ width: '100%', mb: 1 }}>
+                                      <Stack alignItems="center" direction="row" sx={{ width: '7  0%' }}>
+                                        <Typography fontSize={'1rem'} variant="body2" sx={{ color: 'black' }}>
+                                          {address.lastname} {address.firstname}
+                                        </Typography>
+                                        <Stack sx={{ ml: 2, pl: 2, borderLeft: '1px solid grey' }}>
+                                          <Typography fontSize={'0.9rem'} variant="caption" sx={{ color: 'inherit' }}>
+                                            (+84) &nbsp;{address.phone.substring(1)}
+                                          </Typography>
+                                        </Stack>
+                                      </Stack>
+                                      <Typography
+                                        fontSize={'0.9rem'}
+                                        variant="body2"
+                                        sx={{ color: 'black', opacity: 0.6 }}
+                                      >
+                                        {address.address}
+                                      </Typography>
+                                      <Typography
+                                        fontSize={'0.9rem'}
+                                        variant="body2"
+                                        sx={{ color: 'black', opacity: 0.6 }}
+                                      >
+                                        {address.sub_district}, {address.district}, {address.province}
+                                      </Typography>
+                                      {address.is_default && (
+                                        <Button
+                                          fontSize="0.1rem"
+                                          sx={{
+                                            borderRadius: 0,
+                                            color: theme.palette.background.main,
+                                            textTransform: 'none',
+                                            width: '20%',
+                                            px: 0.5,
+                                            mt: 0.5,
+                                            py: 0,
+                                            fontWeight: 500,
+                                            border: `1px solid ${theme.palette.background.main}`,
+                                          }}
+                                        >
+                                          Mặc định
+                                        </Button>
+                                      )}
+                                      {userAddresses.length - index !== 1 && <Divider sx={{ mt: 2 }} />}
+                                    </Stack>
+                                    {/* Choices */}
+                                    <Stack>
+                                      <Radio
+                                        sx={{ maxHeight: '100px' }}
+                                        checked={choice === address}
+                                        name={`address-${address.ID}`}
+                                        key={index}
+                                        value={address}
+                                      />
+                                    </Stack>
+                                  </Stack>
+                                );
+                              })}
+                            </RadioGroup>
+                            {/* Add more address */}
+                            <Stack>
+                              <Button
+                                onClick={() => {
+                                  navigate('/auctee/user/address');
+                                }}
+                                disableRipple
+                                sx={{
+                                  mx: 'auto',
+                                  maxWidth: '50%',
+                                  textTransform: 'none',
+                                  borderRadius: 0.4,
+                                  opacity: 0.7,
+                                  color: 'inherit',
+                                  border: '1px solid transparent',
+                                  '&:hover': {
+                                    border: '1px solid black',
+                                    bgcolor: 'transparent',
+                                    opacity: 0.9,
+                                  },
+                                }}
+                              >
+                                <Icon icon="material-symbols:add" /> &nbsp; Thêm địa chỉ mới
+                              </Button>
+                            </Stack>
+                          </Stack>
+                          {/* Bottom */}
+                          <Stack
+                            justifyContent="center"
+                            alignItems="center"
+                            direction="row"
+                            sx={{ mt: 4, pb: 4, position: 'relative', mr: 2 }}
+                          >
+                            <Button
+                              size="medium"
+                              variant="outlined"
+                              onClick={() => setOpenListAddresses(false)}
+                              sx={{
+                                px: 1.6,
+                                position: 'absolute',
+                                right: 124,
+                                color: 'inherit',
+                                border: '1px solid white',
+                                opacity: 0.85,
+                                textTransform: 'none',
+                                '&:hover': {
+                                  borderColor: 'black',
+                                  opacity: 1,
+                                },
+                              }}
+                            >
+                              Trở lại
+                            </Button>
+                            <LoadingButton
+                              onClick={() => {
+                                setSelectedAddress(choice);
+                                setOpenListAddresses(false);
+                              }}
+                              disableRipple
+                              color="error"
+                              sx={{ px: 3, position: 'absolute', right: 1, textTransform: 'none' }}
+                              size="medium"
+                              type="submit"
+                              variant="contained"
+                            >
+                              Xác nhận
+                            </LoadingButton>
+                          </Stack>
+                        </Dialog>
+                      )}
+                    </Stack>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        navigate('/auctee/user/address');
+                      }}
+                      disableRipple
+                      sx={{
+                        textTransform: 'none',
+                        borderRadius: 0.4,
+                        opacity: 0.7,
+                        color: 'inherit',
+                        '&:hover': {
+                          bgcolor: 'transparent',
+                          opacity: 0.9,
+                        },
+                      }}
+                    >
+                      <Icon icon="material-symbols:add" /> &nbsp; Thêm địa chỉ mới
+                    </Button>
+                  )}
                 </Stack>
+              </Stack>
+              <Typography
+                fontStyle="italic"
+                variant="body2"
+                sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9, mt: 2 }}
+              >
+                Mẹo: &nbsp;Địa chỉ càng chính xác sẽ giúp bạn nhận hàng càng nhanh
+              </Typography>
+            </Stack>
+          </Stack>
+        </Stack>
+        {/* Product information */}
+        <Stack sx={{ boxShadow: 4, my: 2, p: 2 }} direction="column">
+          {/* Body */}
+          <Stack justifyContent="space-between" direction="row" sx={{ display: 'flex', height: '100%' }}>
+            <Stack flex={4} direction="column" justifyContent="space-between">
+              {/* Image */}
+              <Stack flex={2} direction="row">
+                <Stack>
+                  <ProductImgStyle alt={paymentData.product_id} src={paymentData.image_path} />
+                </Stack>
+                {/* Name */}
+                <Stack sx={{ mx: 2 }}>
+                  <Typography variant="caption" sx={{ textTransform: 'uppercase', fontSize: '1rem' }}>
+                    {paymentData.product_name}
+                  </Typography>
+                  <Typography sx={{ mt: 1 }}>x{paymentData.quantity}</Typography>
+                </Stack>
+              </Stack>
+              {/* Note */}
+              <Stack sx={{ ml: 1.5 }} alignItems="center" direction="row">
                 <Typography
-                  fontStyle="italic"
-                  variant="body2"
-                  sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9, mt: 2 }}
+                  color="primary"
+                  variant="caption"
+                  sx={{ mr: 3, fontSize: '0.9rem', whiteSpace: 'nowrap', fontStyle: 'italic' }}
                 >
-                  Mẹo: &nbsp;Địa chỉ càng chính xác sẽ giúp bạn nhận hàng càng nhanh
+                  Lời nhắn:&nbsp;
                 </Typography>
+                <Input
+                  disabled={paymentData.checkout_status !== 1}
+                  value={noteData}
+                  onChange={(e) => setNoteData(e.target.value)}
+                  fullWidth
+                  disableUnderline
+                  placeholder={`${paymentData.note ? paymentData.note : 'Lưu ý cho người bán'}`}
+                  inputProps={{
+                    sx: {
+                      width: '70%',
+                      px: 2,
+                      border: '1px solid grey',
+                      '&::placeholder': {
+                        opacity: 0.7,
+                        color: 'black',
+                        fontWeight: 200,
+                        fontSize: '0.8rem',
+                      },
+                    },
+                  }}
+                />
               </Stack>
             </Stack>
-            {/* <Stack justifyContent="center" alignItems="flex-start" direction="row">
-              <LoadingButton
-                disableRipple
-                color="error"
-                sx={{ px: 3, textTransform: 'none' }}
-                size="medium"
-                type="submit"
-                variant="contained"
-                loading={isSubmitting}
-              >
-                <Icon icon="bi:coin" /> &nbsp; Nạp tiền vào ví
-              </LoadingButton>
-            </Stack> */}
+            {/* Total */}
+            <Stack justifyContent="space-between" sx={{ height: '100%' }} alignItems="flex-end" flex={2}>
+              <Stack width="105%" justifyContent="flex-end" direction="row" alignItems="flex-end">
+                <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                  ID: &nbsp;
+                </Typography>
+                <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                  {paymentData.id}
+                </Typography>
+                <Typography sx={{ fontSize: '0.85rem', borderLeft: '1px solid grey', pl: 1, ml: 1 }} variant="caption">
+                  Trạng thái: &nbsp;&nbsp;&nbsp;
+                </Typography>
+                <Typography
+                  color={`${paymentData.checkout_status < 2 ? '#f5b70c' : '#2dc258'}`}
+                  sx={{ fontSize: '0.85rem' }}
+                  variant="caption"
+                >
+                  {paymentStatus}
+                </Typography>
+              </Stack>
+              <Stack width="65%" justifyContent="space-between" direction="row" alignItems="center">
+                <Typography variant="caption" sx={{ fontSize: '0.9rem', opacity: 0.8 }}>
+                  Vận chuyển:
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: '1rem', opacity: 0.7, ml: 2 }}>
+                  {shippingFee.toLocaleString('tr-TR', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })}
+                </Typography>
+              </Stack>
+              <Stack width="65%" justifyContent="space-between" direction="row" alignItems="center">
+                <Typography variant="caption" sx={{ fontSize: '0.9rem', opacity: 0.8 }}>
+                  Tồng cộng:
+                </Typography>
+                <Typography sx={{ ml: 2 }} color="#f44336">
+                  {(paymentData.before_discount + shippingFee).toLocaleString('tr-TR', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })}
+                </Typography>
+              </Stack>
+              {/* Payment Methods */}
+              <Stack direction="column" sx={{ mb: 0.5 }} width="77%">
+                <Typography variant="caption" sx={{ fontSize: '0.9rem' }}>
+                  Phương thức thanh toán:
+                </Typography>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    componentsProps={{
+                      typography: {
+                        variant: 'caption',
+                        color: 'inherit',
+                        border: '1px solid grey',
+                        px: 1,
+                        py: 0.15,
+                        borderRadius: 0.5,
+                      },
+                    }}
+                    value="COD"
+                    control={
+                      <Radio
+                        sx={{
+                          p: 0.7,
+                          color: '#f44336',
+                          '&.Mui-checked': {
+                            color: '#f44336',
+                          },
+                        }}
+                        disabled={paymentData.checkout_status !== 1}
+                        size="small"
+                      />
+                    }
+                    label="COD"
+                  />
+                  <FormControlLabel
+                    componentsProps={{
+                      typography: {
+                        variant: 'caption',
+                        color: 'white',
+                        bgcolor: '#a50064',
+                        px: 1,
+                        py: 0.2,
+                        borderRadius: 0.5,
+                      },
+                    }}
+                    value="MOMO"
+                    control={
+                      <Radio
+                        sx={{
+                          p: 0.7,
+                          color: '#f44336',
+                          '&.Mui-checked': {
+                            color: '#f44336',
+                          },
+                        }}
+                        disabled={paymentData.checkout_status !== 1}
+                        size="small"
+                      />
+                    }
+                    label="Ví MoMo E-Wallet"
+                  />
+                </RadioGroup>
+              </Stack>
+              <Stack width="83%" justifyContent="space-between" direction="row">
+                <Button
+                  disabled={paymentData.checkout_status !== 1}
+                  size="medium"
+                  variant="outlined"
+                  disableRipple
+                  sx={{
+                    border: '1px solid black',
+                    ml: 2,
+                    borderRadius: 0.4,
+                    color: 'inherit',
+                    px: 1.5,
+                    textTransform: 'none',
+                    '&:hover': {
+                      bgcolor: 'transparent',
+                      border: '1px solid black',
+                      opacity: 0.8,
+                    },
+                  }}
+                  onClick={() => {
+                    setOpenConfirmCancel(true);
+                  }}
+                >
+                  Huỷ đơn
+                </Button>
+                {/* Dialog Delete */}
+                <Dialog
+                  sx={{ margin: 'auto', minWidth: '480px' }}
+                  BackdropProps={{
+                    style: { backgroundColor: 'rgba(0,0,30,0.2)' },
+                    invisible: true,
+                  }}
+                  fullScreen={fullScreen}
+                  open={openConfirmCancel}
+                >
+                  <Stack sx={{ p: 3, overflow: 'hidden' }}>Bạn có chắc muốn huỷ đơn hàng này?</Stack>
+                  <Stack sx={{ px: 3 }}>
+                    <Typography color="error" sx={{ fontSize: '0.9rem' }} variant="caption" fontStyle="italic">
+                      (Lưu ý: Nếu bạn huỷ ngay bây giờ sẽ bị trừ 5 điềm uy tín)
+                    </Typography>
+                  </Stack>
+                  <Stack sx={{ p: 2 }} justifyContent="flex-end" direction="row" alignItems="center">
+                    <Button
+                      disableRipple
+                      sx={{
+                        color: 'inherit',
+                        bgcolor: 'transparent',
+                        opacity: 0.85,
+                        border: '1px solid white',
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: 'transparent',
+                          opacity: 1,
+                          border: '1px solid black',
+                        },
+                      }}
+                      onClick={() => setOpenConfirmCancel(false)}
+                    >
+                      Trở lại
+                    </Button>
+                    <Button
+                      disableRipple
+                      color="error"
+                      variant="contained"
+                      sx={{
+                        ml: 1,
+                        color: 'white',
+                        bgcolor: '#f44336',
+                        textTransform: 'none',
+                      }}
+                      onClick={() => handleCancel(paymentData.id)}
+                      autoFocus
+                    >
+                      Xác nhận huỷ
+                    </Button>
+                  </Stack>
+                </Dialog>
+                {paymentData.checkout_status === 3 ? (
+                  <Button
+                    color="error"
+                    size="medium"
+                    variant="contained"
+                    disableRipple
+                    sx={{
+                      borderRadius: 0.4,
+                      bgcolor: '#f44336',
+                      color: 'white',
+                      px: 2.5,
+                      textTransform: 'none',
+                    }}
+                    onClick={() => handleReceived()}
+                  >
+                    Đã nhận hàng
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={paymentData.checkout_status !== 1}
+                    color="error"
+                    size="medium"
+                    variant="contained"
+                    disableRipple
+                    sx={{
+                      borderRadius: 0.4,
+                      bgcolor: '#f44336',
+                      color: 'white',
+                      px: 1.5,
+                      textTransform: 'none',
+                    }}
+                    onClick={() => {
+                      handlePayment();
+                    }}
+                  >
+                    Thanh toán ngay
+                  </Button>
+                )}
+              </Stack>
+            </Stack>
           </Stack>
-        </FormProvider>
+        </Stack>
       </RootStyle>
     </Page>
   ) : (
-    <>Có lỗi xảy ra</>
+    <>Không tìm thấy đơn hàng</>
   );
 }
+
+const ProductImgStyle = styled('img')({
+  width: '100px',
+  height: '105px',
+  objectFit: 'cover',
+});

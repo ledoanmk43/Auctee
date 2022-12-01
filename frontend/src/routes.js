@@ -61,12 +61,12 @@ export default function Router() {
       children: [
         { path: '/', element: <Navigate to="/auctee/home" /> },
         { path: '404', element: <NotFound /> },
-        { path: '*', element: <Navigate to="/auctee/404" /> },
+        { path: '*', element: <Navigate to="/404" /> },
       ],
     },
     {
       path: '*',
-      element: <Navigate to="/auctee/404" replace />,
+      element: <Navigate to="/404" replace />,
     },
   ]);
 }
