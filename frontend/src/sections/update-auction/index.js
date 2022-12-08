@@ -51,10 +51,12 @@ export default function AuctionList() {
 
   // Get user's data base on access_token
   const handleFetchAuctionData = async () => {
-    await fetch('http://localhost:1009/auctee/user/auctions', {
+    await fetch('http://localhost:8080/auctee/user/auctions', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -73,10 +75,12 @@ export default function AuctionList() {
 
   // Delete
   const handleDelete = async (auction) => {
-    await fetch(`http://localhost:1009/auctee/user/auction/detail?id=${auction.Id}`, {
+    await fetch(`http://localhost:8080/auctee/user/auction/detail?id=${auction.Id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsReloading(true);

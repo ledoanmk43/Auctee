@@ -2,7 +2,7 @@ package main
 
 import (
 	"backend/pkg/utils"
-	config_account "backend/src/account-service/config"
+	"backend/src/account-service/config"
 	grpc_auction "backend/src/auction-service/cmd/grpc-auction"
 	rpcClientAuction "backend/src/auction-service/cmd/grpc-auction"
 	config_auction "backend/src/auction-service/config"
@@ -19,9 +19,9 @@ import (
 
 const (
 	ginPort               = ":1009"
-	grpcServerPortAccount = "localhost:50051"
-	grpcServerPortProduct = "localhost:50052"
-	grpcServerPort        = "localhost:50053"
+	grpcServerPortAccount = "dns:///account:50051"
+	grpcServerPortProduct = "dns:///product:50052"
+	grpcServerPort        = ":50053"
 )
 
 func main() {
@@ -39,7 +39,7 @@ func main() {
 	newRouter := utils.Router()
 
 	//Cookie
-	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
+	newRouter.Use(sessions.Sessions(config.CookieAuth, config.CookieStore))
 
 	auctionRepository := repository.NewAuctionRepositoryDefault(db)
 	auctionService := service.NewAuctionServiceDefault(auctionRepository)

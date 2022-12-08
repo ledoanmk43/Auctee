@@ -50,10 +50,11 @@ export default function MainLayout() {
   const [userData, setUserData] = useState();
 
   const handleFetchUserData = async () => {
-    await fetch('http://localhost:1001/auctee/user/profile', {
+    await fetch('http://localhost:8080/auctee/user/profile', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -73,7 +74,7 @@ export default function MainLayout() {
     !userData && handleFetchUserData();
   }, [userData]);
 
-  return !isFetching ? (
+  return userData ? (
     <RootStyle>
       <MainNavbar userData={userData} onOpenSidebar={() => setOpen(true)} />
       <div style={{ margin: 'auto', display: 'flex', flexDirection: 'row' }}>

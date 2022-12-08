@@ -18,6 +18,7 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import PaymentDetail from './pages/PaymentDetail';
 import SearchProduct from './pages/SearchProduct';
+import Sale from './pages/Sale';
 
 import DashboardApp from './pages/DashboardApp';
 
@@ -38,6 +39,7 @@ export default function Router() {
         { path: 'user/product-list', element: <Inventory /> },
         { path: 'user/auction-list', element: <AuctionSite /> },
         { path: 'user/purchase', element: <Purchase /> },
+        { path: 'user/sale/order', element: <Sale /> },
         { path: 'blog', element: <Blog /> },
         { path: 'user/order', element: <PaymentDetail /> },
       ],

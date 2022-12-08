@@ -16,8 +16,8 @@ import (
 
 const (
 	ginPort               = ":1003"
-	grpcServerPortAccount = "localhost:50051"
-	grpcServerPortAuction = "localhost:50053"
+	grpcServerPortAccount = "dns:///account:50051"
+	grpcServerPortAuction = "dns:///auction:50053"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 	newRouter := utils.Router()
 
 	//Cookie
-	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
+	newRouter.Use(sessions.Sessions(config_account.CookieAuth, config_account.CookieStore))
 
 	paymentRepository := repository.NewPaymentRepositoryDefault(db)
 	paymentService := service.NewPaymentServiceDefault(paymentRepository)
@@ -45,9 +45,12 @@ func main() {
 	paymentRouter.GetRouter()
 
 	if err := newRouter.Run(ginPort); err != nil {
-
-		fmt.Println("Open port is fail")
+		fmt.Println("Open port is fail: ", err)
 		return
 	}
+	//if err := newRouter.RunTLS(ginPort, "./minica.pem", "./minica-key.pem"); err != nil {
+	//	fmt.Println("Open port is fail: ", err)
+	//	return
+	//}
 	fmt.Println("Server is opened on port 1003")
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 // material
 import { Button, Typography, Stack, Tabs, Tab, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -10,8 +9,6 @@ import { Icon } from '@iconify/react';
 import { styled, useTheme } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import PropTypes from 'prop-types';
-import account from '../API/account';
-import { FormProvider, RHFTextField } from '../components/hook-form';
 
 const Page = lazy(() => import('../components/Page'));
 
@@ -39,10 +36,12 @@ export default function Purchase() {
 
   // Get user's data base on access_token
   const handleFetchPaymentData = async () => {
-    await fetch('http://localhost:1003/auctee/user/checkout/payment-history?page=1', {
+    await fetch('http://localhost:8080/auctee/user/checkout/payment-history?page=1', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -58,38 +57,21 @@ export default function Purchase() {
     });
   };
 
-  const defaultValues = {
-    nickname: '',
-    shopname: '',
-    gender: isMale,
-    phone: '',
-    date: '',
-    month: '',
-    year: '',
-    avatar: '',
-  };
-
-  const methods = useForm({
-    defaultValues,
-  });
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
   const handleReceived = async (payment) => {
     const payload = {
       total: parseFloat(payment.before_discount + payment.shipping_value),
     };
-    await fetch(`http://localhost:1003/auctee/user/checkout/shipping-status-payment?id=${payment.id}`, {
+    await fetch(`http://localhost:8080/auctee/user/checkout/shipping-status-payment?id=${payment.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
       body: JSON.stringify(payload),
     }).then((res) => {
       if (res.status === 200) {
         setIsFetching(false);
-        navigate(0);
+        navigate(`/auctee/user/order/?id=${payment.id}`);
       }
       if (res.status === 401) {
         alert('You need to login first');
@@ -110,7 +92,7 @@ export default function Purchase() {
         // chờ xác nhận
         case 1:
           paymentsData.forEach((payment) => {
-            if (payment.checkout_status === 1) {
+            if (payment.checkout_status === 1 || payment.shipping_status === 1) {
               setFilteredData((current) => [...current, payment]);
             }
           });
@@ -118,7 +100,7 @@ export default function Purchase() {
         // đang giao
         case 2:
           paymentsData.forEach((payment) => {
-            if (payment.checkout_status === 3 && payment.shipping_status === false) {
+            if (payment.checkout_status === 3 && payment.shipping_status === 2) {
               setFilteredData((current) => [...current, payment]);
             }
           });
@@ -126,7 +108,7 @@ export default function Purchase() {
         // đã nhận
         case 3:
           paymentsData.forEach((payment) => {
-            if (payment.checkout_status === 3 && payment.shipping_status === true && payment.checkout_status !== 0) {
+            if ((payment.checkout_status === 3 && payment.shipping_status === 3) || payment.checkout_status === 5) {
               setFilteredData((current) => [...current, payment]);
             }
           });
@@ -206,7 +188,6 @@ export default function Purchase() {
               size="medium"
               type="submit"
               variant="contained"
-              loading={isSubmitting}
             >
               <Icon icon="bi:coin" /> &nbsp; Nạp tiền vào ví
             </LoadingButton>
@@ -310,24 +291,6 @@ export default function Purchase() {
                           {payment.payment_method}
                         </Button>
                       )}
-                      {payment.shipping_status === true && payment.total !== 0 && (
-                        <Button
-                          disableRipple
-                          sx={{
-                            ml: 1.5,
-                            borderRadius: 0.4,
-                            textTransform: 'none',
-                            fontSize: '0.75rem',
-                            fontStyle: 'italic',
-                            opacity: 0.7,
-                            '&:hover': {
-                              bgcolor: 'transparent',
-                            },
-                          }}
-                        >
-                          Đã nhận hàng
-                        </Button>
-                      )}
                       {payment.checkout_status === 4 && (
                         <Button
                           variant="error"
@@ -354,6 +317,54 @@ export default function Purchase() {
                             }}
                           >
                             Đã huỷ
+                          </Typography>
+                        </Button>
+                      )}
+                      {payment.shipping_status === true && payment.total !== 0 && (
+                        <Button
+                          disableRipple
+                          sx={{
+                            ml: 1.5,
+                            borderRadius: 0.4,
+                            textTransform: 'none',
+                            fontSize: '0.75rem',
+                            fontStyle: 'italic',
+                            opacity: 0.7,
+                            '&:hover': {
+                              bgcolor: 'transparent',
+                            },
+                          }}
+                        >
+                          Đã nhận hàng
+                        </Button>
+                      )}
+
+                      {payment.checkout_status === 5 && (
+                        <Button
+                          variant="error"
+                          disableRipple
+                          sx={{
+                            px: 0,
+                            ml: 1.5,
+                            borderRadius: 0.4,
+                            opacity: 0.9,
+                            color: 'inherit',
+                            '&:hover': {
+                              bgcolor: 'transparent',
+                            },
+                          }}
+                        >
+                          <Typography
+                            color="#2DC258"
+                            variant="caption"
+                            sx={{
+                              fontStyle: 'italic',
+                              textTransform: 'none',
+                              fontSize: '0.75rem',
+                              px: 0.5,
+                            }}
+                          >
+                            Đã giao hàng thành công
                           </Typography>
                         </Button>
                       )}
@@ -410,6 +421,7 @@ export default function Purchase() {
                               Chi tiết đơn hàng
                             </Button>
                             <Button
+                              disabled={payment.shipping_status !== 2}
                               color="error"
                               size="medium"
                               variant="contained"
@@ -465,6 +477,28 @@ export default function Purchase() {
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
+  const [statusText, setStatusText] = useState('');
+  useEffect(() => {
+    switch (value) {
+      case 1:
+        setStatusText('Có vẻ bạn chưa có đơn hàng nào đang chờ xác nhận');
+        break;
+      case 2:
+        setStatusText('Có vẻ bạn chưa có đơn hàng nào đang được giao');
+        break;
+      case 3:
+        setStatusText('Có vẻ bạn chưa đặt đơn hàng nào');
+        break;
+      case 4:
+        setStatusText('Không tìm thấy đơn đã huỷ');
+        break;
+
+      default:
+        setStatusText('Có vẻ bạn chưa đặt đơn hàng nào');
+
+        break;
+    }
+  }, [value]);
   return (
     <div
       role="tabpanel"
@@ -475,7 +509,15 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ py: 3 }}>
-          <Stack>{children}</Stack>
+          <Stack>
+            {children.length > 0 ? (
+              children
+            ) : (
+              <Stack fontStyle="italic" sx={{ mx: 'auto' }}>
+                {statusText}
+              </Stack>
+            )}
+          </Stack>
         </Box>
       )}
     </div>

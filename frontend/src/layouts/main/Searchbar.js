@@ -43,7 +43,7 @@ export default function Searchbar() {
   const [keyword, setKeyWord] = useState('');
   const [recent, setRecent] = useState([]);
   const handleSearch = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     if (keyword?.length > 0) {
       /* eslint-disable-next-line no-plusplus */
       for (let i = 0; i < recent?.length; i++) {
@@ -63,8 +63,8 @@ export default function Searchbar() {
   };
 
   useEffect(() => {
-    setKeyWord(kwd);
-    if (recent.length === 0) {
+    setKeyWord(kwd && kwd);
+    if (recent?.length === 0) {
       window.localStorage.setItem('recent', JSON.stringify('Giá ưu đãi hôm nay'));
     } else {
       setRecent(JSON.parse(window.localStorage.getItem('recent')));

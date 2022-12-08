@@ -81,11 +81,13 @@ export default function UpdateAddressForm({ product, handleDelete }) {
       product_images: images,
       product_options: optionList,
     };
-    await fetch(`http://localhost:1002/auctee/user/product/detail?id=${product.id}`, {
+    await fetch(`http://localhost:8080/auctee/user/product/detail?id=${product.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setError(false);

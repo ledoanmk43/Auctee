@@ -106,10 +106,11 @@ const BidSection = ({ product, auction }) => {
 
   const [userList, setUserList] = useState([]);
   const renewUserList = async () => {
-    await fetch(`http://localhost:1009/auctee/all-bids/auction?id=${auction.Id}`, {
+    await fetch(`http://localhost:8080/auctee/all-bids/auction?id=${auction.Id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -144,8 +145,8 @@ const BidSection = ({ product, auction }) => {
       alert('Điểm uy tín thấp hơn 80');
       return;
     }
-    if (bidValue < auction.current_bid) {
-      alert('Invalid value');
+    if (bidValue <= auction.current_bid) {
+      alert('Số tiền không hợp lệ');
       return;
     }
 
@@ -153,10 +154,11 @@ const BidSection = ({ product, auction }) => {
       bid_value: Number(bidValue),
       nickname: nickName,
     };
-    await fetch(`http://localhost:1009/auctee/auction?auctionId=${auction.Id}&productId=${product.id}`, {
+    await fetch(`http://localhost:8080/auctee/auction?auctionId=${auction.Id}&productId=${product.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
       body: JSON.stringify(payload),
     }).then((res) => {
       if (res.status === 200) {
@@ -175,7 +177,7 @@ const BidSection = ({ product, auction }) => {
         });
       }
     });
-    // renewUserList();
+    renewUserList();
   };
 
   const [nickName, setNickName] = useState('');
@@ -192,10 +194,11 @@ const BidSection = ({ product, auction }) => {
       (userList[0]?.user_id === idPlayer &&
         (userList[0]?.bid_value >= product.expect_price || auction.current_bid >= product.expect_price))
     ) {
-      await fetch(`http://localhost:1003/auctee/user/checkout/auction?id=${auction.Id}`, {
+      await fetch(`http://localhost:8080/auctee/user/checkout/auction?id=${auction.Id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        mode: 'cors',
       }).then((res) => {
         if (res.status === 200) {
           setIsOrderCreated(true);
@@ -214,7 +217,7 @@ const BidSection = ({ product, auction }) => {
       });
     }
   };
-  console.log(paymentId);
+
   useEffect(() => {
     if (userData) {
       setNickName(userData.nickname);
@@ -246,6 +249,8 @@ const BidSection = ({ product, auction }) => {
     (new Date(auction.end_time) < new Date() || auction.current_bid >= product.expect_price) && setIsEnd(true);
     // eslint-disable-next-line no-unused-expressions
     !isReady && renewUserList();
+    // // eslint-disable-next-line no-unused-expressions
+    // !auction && setBidValue(auction.current_bid);
   }, [product, auction, userList]);
 
   useEffect(() => {
@@ -255,6 +260,7 @@ const BidSection = ({ product, auction }) => {
 
   return (
     <>
+      {/* Dialog payment created */}
       <Dialog
         sx={{ margin: 'auto', maxWidth: '530px !important' }}
         BackdropProps={{

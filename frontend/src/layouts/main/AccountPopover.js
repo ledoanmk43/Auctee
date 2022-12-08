@@ -39,10 +39,11 @@ export default function AccountPopover({ userData }) {
   };
   const handleLogout = async () => {
     if (loggedIn) {
-      await fetch('http://localhost:1001/auctee/logout', {
+      await fetch('http://localhost:8080/auctee/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        mode: 'cors',
       }).then((res) => {
         if (res.status === 200) {
           setLoggedIn(false);

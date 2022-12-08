@@ -2,11 +2,11 @@ package controller
 
 import (
 	"backend/pkg/token"
-	"backend/pkg/utils"
-	"backend/src/account-service/config"
+	account "backend/src/account-service/config"
 	product "backend/src/product-service/config"
 	"backend/src/product-service/entity"
 	"backend/src/product-service/service"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -38,15 +38,17 @@ func (p *ProductImageController) UpdateImage(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -138,15 +140,17 @@ func (p *ProductImageController) CreateImage(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -174,15 +178,17 @@ func (p *ProductImageController) CreateImage(ctx *gin.Context) {
 func (p *ProductImageController) DeleteImage(ctx *gin.Context) {
 	var imageBody entity.ProductImage
 
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",

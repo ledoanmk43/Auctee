@@ -1,0 +1,952 @@
+{
+  "version": 3,
+  "name": "Auctee Demo",
+  "port": 8080,
+  "timeout": "20s",
+  "cache_ttl": "1s",
+  "output_encoding": "no-op",
+  "extra_config": {
+    "router": {
+      "return_error_msg": true
+    },
+    "security/cors": {
+      "allow_origins": [
+        "http://localhost:3000"
+      ],
+      "allow_credentials": true,
+      "allow_methods": [
+        "GET",
+        "PUT",
+        "POST",
+        "DELETE"
+      ]
+    }
+  },
+  "host": [
+    "http://localhost:8080"
+  ],
+  "endpoints": [
+    {
+      "endpoint": "/auctee/login",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "disable_host_sanitize": false,
+          "encoding": "no-op",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "method": "POST",
+          "sd": "static",
+          "url_pattern": "/auctee/login"
+        }
+      ],
+      "input_headers": [
+        "Content-Type"
+      ],
+      "extra_config": {
+        "security/cors": {
+          "allow_origins": [
+            "http*"
+          ],
+          "allow_credentials": true
+        }
+      }
+    },
+    {
+      "endpoint": "/auctee/refreshToken",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "disable_host_sanitize": false,
+          "encoding": "no-op",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "method": "POST",
+          "sd": "static",
+          "url_pattern": "/auctee/refreshToken"
+        }
+      ],
+      "input_headers": [
+        "Cookie"
+      ],
+      "extra_config": {
+        "security/cors": {
+          "allow_origins": [
+            "http*"
+          ],
+          "allow_credentials": true
+        }
+      }
+    },
+    {
+      "endpoint": "/auctee/logout",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/logout",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/register",
+      "method": "POST",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/register",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/auctee/user",
+      "method": "GET",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/profile",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "encoding": "json",
+          "is_collection": true,
+          "url_pattern": "/auctee/user/profile",
+          "method": "GET",
+          "disable_host_sanitize": false
+        }
+      ],
+      "extra_config": {
+        "security/cors": {
+          "allow_origins": [
+            "http*"
+          ],
+          "allow_credentials": true
+        }
+    }
+    },
+    {
+      "endpoint": "/auctee/user/profile",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/profile",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/profile/setting",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/profile/setting",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/auctee/user/address",
+      "method": "POST",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/address",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/address",
+      "method": "GET",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/address",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/addresses",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/addresses",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/address",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/address",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/address",
+      "method": "DELETE",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/address",
+          "encoding": "json",
+          "sd": "static",
+          "method": "DELETE",
+          "host": [
+            "http://192.168.2.113:1001"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/auctee/user/product",
+      "method": "POST",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/product",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/product/detail",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/product/detail",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/products",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/products",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/product/detail",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/product/detail",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/product/detail",
+      "method": "DELETE",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/product/detail",
+          "encoding": "json",
+          "sd": "static",
+          "method": "DELETE",
+          "host": [
+            "http://192.168.2.113:1002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/auctee/user/auction",
+      "method": "POST",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/auction",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/auction/detail",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/auction/detail",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/auctions",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/auctions",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/auctions",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "page"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/auctions",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/auctions/products",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "product_name"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/auctions/products",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/auction/detail",
+      "method": "GET",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/auction/detail",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/auction/detail",
+      "method": "DELETE",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/auction/detail",
+          "encoding": "json",
+          "sd": "static",
+          "method": "DELETE",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/auctee/auction",
+      "method": "POST",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "auctionId","productId"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/auction",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/ws",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/ws",
+          "disable_host_sanitize": true,
+          "host": [
+            "http://192.168.2.113:1009"
+          ]
+        }
+      ],
+      "extra_config": {
+        "websocket": {
+          "input_headers": [
+            "Cookie",
+            "Authorization"
+          ],
+          "connect_event": true,
+          "disconnect_event": true,
+          "read_buffer_size": 4096,
+          "write_buffer_size": 4096,
+          "message_buffer_size": 4096,
+          "max_message_size": 3200000,
+          "write_wait": "10s",
+          "pong_wait": "60s",
+          "ping_period": "54s",
+          "max_retries": 0,
+          "backoff_strategy": "exponential"
+        }
+      }
+    },
+    {
+      "endpoint": "/auctee/all-bids/auction",
+      "method": "GET",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/all-bids/auction",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/all-current-bids",
+      "method": "GET",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/all-current-bids",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1009"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/auctee/user/checkout/auction",
+      "method": "POST",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/auction",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/cod-payment",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/cod-payment",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/momo-payment",
+      "method": "POST",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/momo-payment",
+          "encoding": "no-op",
+          "method": "POST",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/shipping-payment",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/shipping-payment",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/all-bills",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "page"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/all-bills",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/shipping-confirm",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/shipping-confirm",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/payment-history",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "page"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/payment-history",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/shipping-status-payment",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/shipping-status-payment",
+          "encoding": "json",
+          "is_collection": true,
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/checkout-status-done",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/checkout-status-done",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/cancel-payment",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id","winner_id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/cancel-payment",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/checkout/payment",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/checkout/payment",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://192.168.2.113:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    }
+  ]
+}

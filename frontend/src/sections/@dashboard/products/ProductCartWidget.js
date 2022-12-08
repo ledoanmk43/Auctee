@@ -15,10 +15,11 @@ export default function CartWidget() {
   const [activeAuctions, setActiveAuctions] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const fetchCurrentAuctions = async () => {
-    await fetch(`http://localhost:1009/auctee/user/all-current-bids`, {
+    await fetch(`http://localhost:8080/auctee/user/all-current-bids`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {

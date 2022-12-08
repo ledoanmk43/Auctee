@@ -2,7 +2,6 @@ package controller
 
 import (
 	"backend/pkg/token"
-	"backend/pkg/utils"
 	"backend/src/account-service/config"
 	"backend/src/account-service/dto"
 	"backend/src/account-service/entity"
@@ -76,7 +75,7 @@ func (a *AccountController) SignUp(ctx *gin.Context) {
 	}
 	//Create Session with token
 	createdUser.Token = tokenString
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
+	newSession := sessions.Default(ctx)
 	newSession.Set(config.CookieAuth, tokenString)
 	if errSave := newSession.Save(); errSave != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
@@ -120,7 +119,7 @@ func (a *AccountController) SignIn(ctx *gin.Context) {
 	}
 
 	//Create Session with token
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
+	newSession := sessions.Default(ctx)
 	newSession.Set(config.CookieAuth, tokenString)
 	if errSave := newSession.Save(); errSave != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
@@ -135,15 +134,18 @@ func (a *AccountController) SignIn(ctx *gin.Context) {
 
 func (a *AccountController) RefreshToken(ctx *gin.Context) {
 	//Checking session whether use is logged in
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -173,7 +175,7 @@ func (a *AccountController) RefreshToken(ctx *gin.Context) {
 	}
 
 	//Create Session with token
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
+	newSession := sessions.Default(ctx)
 	newSession.Set(config.CookieAuth, tokenString)
 	if errSave := newSession.Save(); errSave != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
@@ -186,28 +188,27 @@ func (a *AccountController) RefreshToken(ctx *gin.Context) {
 }
 
 func (a *AccountController) SignOut(ctx *gin.Context) {
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
-	tokenFromCookie := newSession.Get(config.CookieAuth)
-	if tokenFromCookie == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
-		return
-	}
-	newSession.Set(config.CookieAuth, "")
-	newSession.Clear()
-	newSession.Options(sessions.Options{MaxAge: -1})
-	newSession.Delete(config.CookieAuth)
-	if err := newSession.Save(); err != nil {
+	authSession := sessions.Default(ctx)
+	authSession.Set(config.CookieAuth, "")
+	authSession.Clear()
+	authSession.Options(sessions.Options{MaxAge: -1})
+	authSession.Delete(config.CookieAuth)
+	if err := authSession.Save(); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "log out successfully"})
+
 }
 
 func (a *AccountController) UpdatePassword(ctx *gin.Context) {
-	newSession := sessions.DefaultMany(ctx, config.CookieAuth)
-	tokenFromCookie := newSession.Get(config.CookieAuth)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
 	if tokenFromCookie == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
+		ctx.Abort()
 		return
 	}
 
@@ -257,15 +258,23 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 }
 
 func (a *AccountController) GetUserByUserId(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	//tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
+	//if errGetToken != nil {
+	//	log.Println("Error when get token in controller: ", errGetToken)
+	//	ctx.Abort()
+	//	return
+	//}
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -303,9 +312,12 @@ func (a *AccountController) GetUserAsGuestByUserId(ctx *gin.Context) {
 }
 
 func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
@@ -321,8 +333,8 @@ func (a *AccountController) UpdateProfileByUserId(ctx *gin.Context) {
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",

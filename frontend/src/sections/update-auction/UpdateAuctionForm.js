@@ -139,11 +139,12 @@ export default function UpdateAddressForm({ auction, handleDelete, index }) {
           : endDate.slice(0, 19).replace('T', ' '),
     };
 
-    await fetch(`http://localhost:1009/auctee/user/auction/detail?id=${auction?.Id}`, {
+    await fetch(`http://localhost:8080/auctee/user/auction/detail?id=${auction?.Id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setError(false);
@@ -179,10 +180,12 @@ export default function UpdateAddressForm({ auction, handleDelete, index }) {
   };
 
   const fetchProduct = async (id) => {
-    await fetch(`http://localhost:1002/auctee/product/detail?id=${id}`, {
+    await fetch(`http://localhost:8080/auctee/product/detail?id=${id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -463,7 +466,7 @@ export default function UpdateAddressForm({ auction, handleDelete, index }) {
                 Trở lại
               </Button>
               <LoadingButton
-                disabled={auction.winner_id > 0}
+                disabled={auction.winner_id > 0 && auction.is_active === true}
                 disableRipple
                 color="error"
                 sx={{ px: 3, position: 'absolute', right: 24 }}

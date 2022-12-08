@@ -16,6 +16,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sony/sonyflake"
@@ -28,13 +29,15 @@ import (
 type IPaymentController interface {
 	CreatePayment(ctx *gin.Context)
 	UpdateAddressPayment(ctx *gin.Context)
-	DeletePayment(ctx *gin.Context)
+	CancelPayment(ctx *gin.Context)
 	GetAllPaymentsForWinner(ctx *gin.Context)
 	GetAllPaymentsForOwner(ctx *gin.Context)
 	GetPaymentByPaymentId(ctx *gin.Context)
 	CheckoutMoMo(ctx *gin.Context)
 	CheckoutCOD(ctx *gin.Context)
 	SetShippingStatusCompleted(ctx *gin.Context)
+	SetShippingStatusDelivering(ctx *gin.Context)
+	SetCheckOutStatusDone(ctx *gin.Context)
 }
 
 type PaymentController struct {
@@ -48,6 +51,135 @@ func NewPaymentController(paymentService service.IPaymentService, auctionClient 
 	return &PaymentController{PaymentService: paymentService, AuctionClient: auctionClient, AccountClient: accountClient}
 }
 
+func (p *PaymentController) SetCheckOutStatusDone(ctx *gin.Context) {
+	var paymentBody entity.Payment
+
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	paymentId := ctx.Query(payment_config.Id)
+
+	//Address
+	paymentBody.Id = paymentId
+	paymentBody.OwnerId = claims.UserId
+	paymentBody.CheckoutStatus = 5 // đánh dấu đã hoàn thành đơn hàng
+	res, errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
+
+	if errUpdatePayment != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": errUpdatePayment.Error(),
+		})
+		log.Println("SetCheckOutStatusDone: Error create new payment in package controller")
+		ctx.Abort()
+		return
+	}
+
+	paymentDetail, err := p.PaymentService.GetPaymentByPaymentId(paymentId, res.WinnerId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "payment not found",
+		})
+		log.Println("GetPaymentById: Error in package controller", err)
+		ctx.Abort()
+		return
+	}
+
+	inAccount := account.UpdateHonorPointRequest{
+		UserId: uint32(paymentDetail.WinnerId),
+		CaseId: 1,
+	}
+
+	_, err = p.AccountClient.UpdateHonorPoint(ctx, &inAccount)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		log.Println("SetCheckOutStatusDone: Error to call productService rpc server", err)
+		ctx.Abort()
+		return
+	}
+
+	inAccountInCome := account.UpdateInComeRequest{
+		UserId: uint32(paymentDetail.OwnerId),
+		CaseId: 1,
+		Value:  float32(paymentDetail.Total),
+	}
+	_, err = p.AccountClient.UpdateIncome(ctx, &inAccountInCome)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		log.Println("SetCheckOutStatusDone: Error to call productService rpc server", err)
+		ctx.Abort()
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "payment updated",
+	})
+
+}
+
+func (p *PaymentController) SetShippingStatusDelivering(ctx *gin.Context) {
+	var paymentBody entity.Payment
+
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	paymentId := ctx.Query(payment_config.Id)
+
+	//Address
+	paymentBody.Id = paymentId
+	paymentBody.OwnerId = claims.UserId
+	paymentBody.ShippingStatus = 2 // đánh dấu đã giao cho shipper
+	_, errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
+	if errUpdatePayment != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": errUpdatePayment.Error(),
+		})
+		log.Println("CreatePayment: Error create new payment in package controller")
+		ctx.Abort()
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "payment updated",
+	})
+
+}
+
 func (p *PaymentController) SetShippingStatusCompleted(ctx *gin.Context) {
 	var paymentBody entity.Payment
 	if err := ctx.ShouldBindJSON(&paymentBody); err != nil {
@@ -58,14 +190,17 @@ func (p *PaymentController) SetShippingStatusCompleted(ctx *gin.Context) {
 		return
 	}
 
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -79,8 +214,8 @@ func (p *PaymentController) SetShippingStatusCompleted(ctx *gin.Context) {
 	//Address
 	paymentBody.Id = paymentId
 	paymentBody.WinnerId = claims.UserId
-	paymentBody.ShippingStatus = utils.BoolAddr(true)
-	errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
+	paymentBody.ShippingStatus = 3 // đánh dấu đã hoàn thành đơn hàng
+	_, errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
 	if errUpdatePayment != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errUpdatePayment.Error(),
@@ -107,15 +242,17 @@ func (p *PaymentController) CheckoutMoMo(ctx *gin.Context) {
 	}
 
 	// Get user id
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -135,11 +272,10 @@ func (p *PaymentController) CheckoutMoMo(ctx *gin.Context) {
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env in auction file")
+		log.Println("Error loading .env in MoMo file: ", err)
 	}
 	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
 	reqID, _ := flake.NextID()
-	//total := fmt.Sprintf("%f", paymentBody.Total)
 
 	redirectToThisURL := fmt.Sprintf("http://localhost:3000/auctee/user/order/?id=%s",
 		paymentBody.Id,
@@ -148,7 +284,7 @@ func (p *PaymentController) CheckoutMoMo(ctx *gin.Context) {
 	var endpoint = os.Getenv("MOMO_EP")
 	var accessKey = os.Getenv("MOMO_ACCESS_KEY")
 	var secretKey = os.Getenv("MOMO_SECRET_KEY")
-	var partnerCode = "MOMO"
+	var partnerCode = "MOMOOJOI20210710"
 	var partnerName = "Đấu giá trực tuyến"
 	var storeId = "MoMoTestStore"
 	var requestId = strconv.FormatUint(reqID, 16)
@@ -159,10 +295,10 @@ func (p *PaymentController) CheckoutMoMo(ctx *gin.Context) {
 	)
 	var redirectUrl = redirectToThisURL
 	var ipnUrl = "http://localhost:3000/auctee/user/checkout/shipping-status-payment"
-	var requestType = "payWithMethod"
+	var requestType = "captureWallet"
 	var extraData = ""
 	var orderGroupId = ""
-	var autoCapture = true
+	//var autoCapture = true
 	var lang = "vi"
 
 	//build raw signature
@@ -208,34 +344,51 @@ func (p *PaymentController) CheckoutMoMo(ctx *gin.Context) {
 		StoreId:      storeId,
 		PartnerName:  partnerName,
 		OrderGroupId: orderGroupId,
-		AutoCapture:  autoCapture,
+		AutoCapture:  true,
 		Lang:         lang,
 		OrderInfo:    orderInfo,
 		ExtraData:    extraData,
 		Signature:    signature,
 	}
-	log.Println(payload)
+
 	var jsonPayload []byte
 
 	jsonPayload, err = json.Marshal(payload)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Payload: " + string(jsonPayload))
 
 	//send HTTP to momo endpoint
 	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(jsonPayload))
+	log.Print("line 364: ", resp)
 	if err != nil {
-		log.Fatalln(err)
+		log.Print(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		ctx.Abort()
+		return
 	}
 
 	//result
 	var result map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		ctx.Abort()
 		return
 	}
-	fmt.Println("Response from Momo: ", result)
+	if (result["shortLink"]) == "" {
+		log.Println(result["Err"])
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": result["Err"],
+		})
+		ctx.Abort()
+		return
+	}
+	log.Println("Response from Momo: ", result)
 	ctx.JSON(http.StatusOK, gin.H{
 		"redirectURL": result["shortLink"],
 	})
@@ -253,15 +406,17 @@ func (p *PaymentController) CheckoutCOD(ctx *gin.Context) {
 	}
 
 	// Get user id
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -317,8 +472,8 @@ func (p *PaymentController) CheckoutCOD(ctx *gin.Context) {
 	paymentBody.CheckoutStatus = 3
 	paymentBody.PaymentMethod = "COD"
 	paymentBody.Total = 0
-	paymentBody.ShippingStatus = utils.BoolAddr(false)
-	errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
+	paymentBody.ShippingStatus = 1 // chờ shipper
+	_, errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
 	if errUpdatePayment != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errUpdatePayment.Error(),
@@ -341,15 +496,17 @@ func (p *PaymentController) CheckoutCOD(ctx *gin.Context) {
 
 func (p *PaymentController) CreatePayment(ctx *gin.Context) {
 	var paymentBody entity.Payment
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -526,7 +683,7 @@ func (p *PaymentController) UpdateAddressPayment(ctx *gin.Context) {
 	paymentBody.TypeAddress = resAccount.TypeAddress
 	paymentBody.WinnerId = claims.UserId
 
-	errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
+	_, errUpdatePayment := p.PaymentService.UpdateAddressPayment(&paymentBody)
 	if errUpdatePayment != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errUpdatePayment.Error(),
@@ -541,16 +698,18 @@ func (p *PaymentController) UpdateAddressPayment(ctx *gin.Context) {
 	})
 }
 
-func (p *PaymentController) DeletePayment(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+func (p *PaymentController) CancelPayment(ctx *gin.Context) {
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -560,8 +719,36 @@ func (p *PaymentController) DeletePayment(ctx *gin.Context) {
 	}
 
 	paymentId := ctx.Query(payment_config.Id)
-
-	errDeletePayment := p.PaymentService.DeletePayment(paymentId, claims.UserId)
+	winnerId := ctx.Query("winner_id")
+	if len(winnerId) > 0 {
+		id, err := strconv.Atoi(winnerId)
+		errDeletePayment := p.PaymentService.CancelPayment(paymentId, uint(id))
+		if errDeletePayment != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error": errDeletePayment.Error(),
+			})
+			log.Println("CreatePayment: Error create new payment in package controller")
+			ctx.Abort()
+			return
+		}
+		inAccount := account.UpdateHonorPointRequest{
+			UserId: uint32(id),
+			CaseId: 2,
+		}
+		_, err = p.AccountClient.UpdateHonorPoint(ctx, &inAccount)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			log.Println("CreatePayment: Error to call productService rpc server", err)
+			ctx.Abort()
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "payment deleted",
+		})
+	}
+	errDeletePayment := p.PaymentService.CancelPayment(paymentId, claims.UserId)
 	if errDeletePayment != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": errDeletePayment.Error(),
@@ -584,22 +771,24 @@ func (p *PaymentController) DeletePayment(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "payment deleted",
+		"message": "payment canceled",
 	})
 }
 
 func (p *PaymentController) GetPaymentByPaymentId(ctx *gin.Context) {
 	paymentId := ctx.Query(payment_config.Id)
 
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 || claims == nil {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -632,15 +821,17 @@ func (p *PaymentController) GetAllPaymentsForOwner(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -673,15 +864,17 @@ func (p *PaymentController) GetAllPaymentsForWinner(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account_config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",

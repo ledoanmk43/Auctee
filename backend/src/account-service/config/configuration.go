@@ -46,7 +46,10 @@ func GetDB() *gorm.DB {
 }
 
 func init() {
-	if err := godotenv.Load(); err != nil {
+	const (
+		env = ".env"
+	)
+	if err := godotenv.Load(env); err != nil {
 		log.Println("Error loading .env in account-config file")
 	}
 
@@ -56,15 +59,15 @@ func init() {
 	CookieStore.Options(sessions.Options{
 		MaxAge:   60 * 60 * 24 * 7,
 		HttpOnly: true, // prevent from FE to be accessed from client using script
-		//Secure:   true, //use in https. It means enable this line when deploying the project
-		SameSite: http.SameSiteStrictMode,
+		Secure:   true, //use in https. It means enable this line when deploying the project
+		SameSite: http.SameSiteNoneMode,
 	}) // 7 days
 
 	//List of cookies name
 	CookieAuth = os.Getenv("COOKIE_AUTH")
 
 	//Create List of cookies
-	NewSessions = append(NewSessions, CookieAuth)
+	//NewSessions = append(NewSessions, CookieAuth)
 
 	ConnectDatabase()
 	log.Println("Connected to database...")

@@ -15,7 +15,7 @@ type Payment struct {
 	Shopname    string `json:"shopname" gorm:"type:nvarchar(100);not null"`
 	EndTime     string `json:"end_time" gorm:"type:datetime;not null"`
 	OwnerId     uint   `gorm:"not null" json:"-"`
-	WinnerId    uint   `gorm:"not null" json:"-"`
+	WinnerId    uint   `gorm:"not null" json:"winner_id"`
 	ImagePath   string `json:"image_path" gorm:"type:mediumtext"`
 	Quantity    int    `json:"quantity" gorm:"type:nvarchar(100);not null"`
 	//Address
@@ -35,10 +35,11 @@ type Payment struct {
 	ShippingValue  float64 `json:"shipping_value" gorm:"type:double;not null"`
 	DiscountValue  float64 `json:"discount_value" gorm:"type:double;not null"`
 	Total          float64 `json:"total" gorm:"type:double;not null"`
-	// 1: chờ xác nhận 	2: đang giao 	3:đã nhận 	4: đã huỷ	5:
+	// 1: chờ xác nhận 	2: đang giao 	3:đã nhận 	4: đã huỷ	5: hoàn thành
 	CheckoutStatus uint      `json:"checkout_status" gorm:"default:0"`
 	CheckoutTime   time.Time `json:"checkout_time" gorm:"type:datetime;not null"`
-	ShippingStatus *bool     `json:"shipping_status" gorm:"default:false"`
+	// 1: chờ shipper 	2: đang giao 	3:đã nhận 	4: đã huỷ	5: hoàn thành	0: không nhận hàng
+	ShippingStatus uint `json:"shipping_status" gorm:"default:0"`
 }
 
 type Payload struct {

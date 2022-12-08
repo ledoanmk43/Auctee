@@ -2,8 +2,8 @@ package account_grpc_controller
 
 import (
 	"backend/pkg/pb/account"
-	"backend/pkg/utils"
 	"backend/src/account-service/config"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -23,14 +23,17 @@ func NewAccountServiceController(accountClient account.AccountServiceClient) *Ac
 
 func (a AccountServiceController) MiddlewareCheckIsAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-		if errGetToken != nil {
-			log.Println("Error when get token in account-rpc-controller: ", errGetToken)
+		authSession := sessions.Default(ctx)
+		tokenFromCookie := authSession.Get(config.CookieAuth)
+		if tokenFromCookie == nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"message": "no cookie",
+			})
 			ctx.Abort()
 			return
 		}
 		res, err := a.AccountClient.CheckIsAuth(ctx, &account.CheckIsAuthRequest{
-			Token: tokenFromCookie,
+			Token: tokenFromCookie.(string),
 		})
 		if err != nil {
 			log.Println(err.Error())

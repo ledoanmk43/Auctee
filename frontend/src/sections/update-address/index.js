@@ -33,17 +33,19 @@ export default function AddressList() {
 
   const { isReloading, setIsReloading } = useContext(ReloadContext);
 
-  const [isFetching, setIsFetching] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
 
   // User information
   const [addressesData, setAddressesData] = useState();
 
   // Get user's data base on access_token
   const handleFetchAddressData = async () => {
-    await fetch('http://localhost:1001/auctee/user/addresses', {
+    await fetch('http://localhost:8080/auctee/user/addresses', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -61,10 +63,12 @@ export default function AddressList() {
 
   // Delete address
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:1001/auctee/user/address?id=${id}`, {
+    await fetch(`http://localhost:8080/auctee/user/address?id=${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsReloading(true);
@@ -92,14 +96,16 @@ export default function AddressList() {
       type_address: address.type_address,
       is_default: true,
     };
-    await fetch(`http://localhost:1001/auctee/user/address?id=${address.ID}`, {
+    await fetch(`http://localhost:8080/auctee/user/address?id=${address.ID}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsReloading(true);
+        setIsFetching(false);
       }
       if (res.status === 401) {
         setIsReloading(false);
@@ -112,9 +118,10 @@ export default function AddressList() {
 
   useEffect(() => {
     setIsReloading(false);
-    handleFetchAddressData();
+    // eslint-disable-next-line no-unused-expressions
+    !isFetching && handleFetchAddressData();
   }, [isFetching, isReloading]);
-  return !isFetching ? (
+  return addressesData?.length > 0 ? (
     addressesData.map((address, index) => (
       <Stack key={index}>
         <Stack justifyContent="space-between" alignItems="center" direction="row" sx={{ pb: 3 }}>
@@ -126,7 +133,7 @@ export default function AddressList() {
               </Typography>
               <Stack sx={{ ml: 2, pl: 2, borderLeft: '1px solid grey' }}>
                 <Typography fontSize={'0.9rem'} variant="caption" sx={{ color: 'inherit' }}>
-                  (+84) &nbsp;{address.phone.substring(1)}
+                  (+84) &nbsp;{address.phone.slice(1)}
                 </Typography>
               </Stack>
             </Stack>

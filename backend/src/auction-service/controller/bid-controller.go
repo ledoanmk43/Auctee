@@ -3,11 +3,11 @@ package controller
 import (
 	"backend/pkg/pb/product"
 	"backend/pkg/token"
-	"backend/pkg/utils"
 	account "backend/src/account-service/config"
 	auction "backend/src/auction-service/config"
 	"backend/src/auction-service/entity"
 	"backend/src/auction-service/service"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -54,15 +54,17 @@ func (b *BidController) GetAllBidsByAuctionId(ctx *gin.Context) {
 }
 
 func (b *BidController) GetAllBidsByUserId(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -198,15 +200,17 @@ func (b *BidController) CreateBid(ctx *gin.Context) {
 		return
 	}
 
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, account.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",

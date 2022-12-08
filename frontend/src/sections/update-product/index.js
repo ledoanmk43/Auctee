@@ -39,10 +39,12 @@ export default function ProductList() {
 
   // Get user's data base on access_token
   const handleFetchProductData = async () => {
-    await fetch('http://localhost:1002/auctee/products', {
+    await fetch('http://localhost:8080/auctee/products', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -60,10 +62,12 @@ export default function ProductList() {
 
   // Delete
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:1002/auctee/user/product/detail?id=${id}`, {
+    await fetch(`http://localhost:8080/auctee/user/product/detail?id=${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsReloading(true);
@@ -91,11 +95,13 @@ export default function ProductList() {
       type_address: address.type_address,
       is_default: true,
     };
-    await fetch(`http://localhost:1001/auctee/user/address?id=${address.ID}`, {
+    await fetch(`http://localhost:8080/auctee/user/address?id=${address.ID}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsReloading(true);

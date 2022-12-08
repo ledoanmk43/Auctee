@@ -2,11 +2,11 @@ package controller
 
 import (
 	"backend/pkg/token"
-	"backend/pkg/utils"
 	"backend/src/account-service/config"
 	"backend/src/account-service/dto"
 	"backend/src/account-service/entity"
 	"backend/src/account-service/service"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -41,15 +41,18 @@ func (a *AddressController) CreateAddress(ctx *gin.Context) {
 		return
 	}
 
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -75,15 +78,18 @@ func (a *AddressController) CreateAddress(ctx *gin.Context) {
 }
 
 func (a *AddressController) UpdateAddressByAddressId(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -130,14 +136,17 @@ func (a *AddressController) UpdateAddressByAddressId(ctx *gin.Context) {
 }
 
 func (a *AddressController) GetAllAddresses(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -160,15 +169,18 @@ func (a *AddressController) GetAllAddresses(ctx *gin.Context) {
 }
 
 func (a *AddressController) DeleteAddressByAddressId(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
@@ -203,9 +215,12 @@ func (a *AddressController) DeleteAddressByAddressId(ctx *gin.Context) {
 }
 
 func (a *AddressController) GetAddressByAddressId(ctx *gin.Context) {
-	tokenFromCookie, errGetToken := utils.GetTokenFromCookie(ctx, config.CookieAuth)
-	if errGetToken != nil {
-		log.Println("Error when get token in controller: ", errGetToken)
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
 		ctx.Abort()
 		return
 	}
@@ -220,8 +235,8 @@ func (a *AddressController) GetAddressByAddressId(ctx *gin.Context) {
 		return
 	}
 
-	claims, errExtract := token.ExtractToken(tokenFromCookie)
-	if errExtract != nil || len(tokenFromCookie) == 0 {
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
 		log.Println("Error: Error when extracting token in controller: ", errExtract)
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",

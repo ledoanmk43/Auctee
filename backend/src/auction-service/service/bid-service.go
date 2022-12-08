@@ -38,7 +38,9 @@ func (b *BidServiceDefault) GetAllBidsByUserId(userId uint) (*[]entity.Auction, 
 	var auctions []entity.Auction
 	for _, value := range *bids {
 		auction, _ := b.AuctionRepository.GetActiveAuctionById(value.AuctionId)
-		auctions = append(auctions, *auction)
+		if auction != nil {
+			auctions = append(auctions, *auction)
+		}
 	}
 
 	return &auctions, nil

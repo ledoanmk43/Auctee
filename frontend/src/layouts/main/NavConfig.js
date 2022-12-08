@@ -22,8 +22,7 @@ const navConfig = [
     children: [
       { title: 'Danh sách sản phẩm', path: '/auctee/user/product-list' },
       { title: 'Danh sách đấu giá', path: '/auctee/user/auction-list' },
-      { title: 'Thống kê đơn hàng', path: '/auctee/user/dashboard' },
-      // { title: 'Đơn thanh toán', path: '/auctee/user/order' },
+      { title: 'Thống kê đơn hàng', path: '/auctee/user/sale/order' },
     ],
   },
 ];

@@ -1,7 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
 import { Link as RouterLink, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import FileBase64 from 'react-file-base64';
 // material
 import {
   RadioGroup,
@@ -216,6 +214,7 @@ export default function PaymentDetail() {
   const [paymentStatus, setPaymentStatus] = useState('');
 
   const [stepStatus, setStepStatus] = useState(0);
+
   const handlePayment = async () => {
     const payload = {
       total: parseFloat(paymentData.before_discount + shippingFee),
@@ -225,14 +224,16 @@ export default function PaymentDetail() {
       note: noteData,
     };
     if (paymentMethod === 'MOMO') {
-      await fetch('http://localhost:1003/auctee/user/checkout/momo-payment', {
+      await fetch(`http://localhost:8080/auctee/user/checkout/momo-payment?id=${selectedAddress.ID}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        mode: 'cors',
         body: JSON.stringify(payload),
       }).then((res) => {
         if (res.status === 200) {
           res.json().then((data) => {
+            setPaymentStatus('Đang vận chuyển');
             window.open(data.redirectURL);
           });
         }
@@ -242,10 +243,11 @@ export default function PaymentDetail() {
         }
       });
     } else {
-      await fetch(`http://localhost:1003/auctee/user/checkout/cod-payment?id=${selectedAddress.ID}`, {
+      await fetch(`http://localhost:8080/auctee/user/checkout/cod-payment?id=${selectedAddress.ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        mode: 'cors',
         body: JSON.stringify(payload),
       }).then((res) => {
         if (res.status === 200) {
@@ -267,10 +269,12 @@ export default function PaymentDetail() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
   const handleCancel = async (id) => {
-    await fetch(`http://localhost:1003/auctee/user/checkout/payment?id=${id}`, {
-      method: 'DELETE',
+    await fetch(`http://localhost:8080/auctee/user/checkout/cancel-payment?id=${id}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setOpenListAddresses(false);
@@ -287,10 +291,12 @@ export default function PaymentDetail() {
   };
 
   const handleFetchAddressData = async () => {
-    await fetch('http://localhost:1001/auctee/user/addresses', {
+    await fetch('http://localhost:8080/auctee/user/addresses', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -312,10 +318,11 @@ export default function PaymentDetail() {
   // All payments
   const [paymentData, setPaymentData] = useState();
   const handleFetchPayment = async () => {
-    await fetch(`http://localhost:1003/auctee/user/checkout/payment?id=${paymentId}`, {
+    await fetch(`http://localhost:8080/auctee/user/checkout/payment?id=${paymentId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -346,13 +353,13 @@ export default function PaymentDetail() {
         setPaymentStatus('Đã thanh toán');
         break;
       case 3:
-        if (paymentData.shipping_status === false && paymentData.total === 0) {
+        if (paymentData.shipping_status === 1 || paymentData.shipping_status === 2) {
           setPaymentStatus('Đang vận chuyển');
           break;
         } else {
           setPaymentStatus('Đã nhận hàng');
+          break;
         }
-        break;
       case 4:
         setPaymentStatus('Đã huỷ');
 
@@ -369,10 +376,11 @@ export default function PaymentDetail() {
     const payload = {
       total: parseFloat(paymentData.before_discount + shippingFee),
     };
-    await fetch(`http://localhost:1003/auctee/user/checkout/shipping-status-payment?id=${paymentId}`, {
+    await fetch(`http://localhost:8080/auctee/user/checkout/shipping-status-payment?id=${paymentId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
       body: JSON.stringify(payload),
     }).then((res) => {
       if (res.status === 200) {
@@ -398,7 +406,7 @@ export default function PaymentDetail() {
         setStepStatus(1);
         break;
       case 3: // đã nhận
-        if (paymentData.shipping_status === true && paymentData.total !== 0) {
+        if (paymentData.shipping_status === 3 && paymentData.total !== 0) {
           setStepStatus(3);
         } else {
           setStepStatus(2);
@@ -414,6 +422,8 @@ export default function PaymentDetail() {
         setStepStatus(2);
     }
   };
+  const [shippingStatus, setShippingStatus] = useState();
+
   useEffect(() => {
     // eslint-disable-next-line no-unused-expressions
     !paymentData && handleFetchPayment();
@@ -421,6 +431,24 @@ export default function PaymentDetail() {
     if (paymentData) {
       handleStep();
       handleStatus();
+      if (paymentData.shipping_status === 1) {
+        setShippingStatus('Chờ shipper lấy hàng');
+      }
+      if (paymentData.shipping_status === 2 && paymentData.checkout_status !== 4) {
+        setShippingStatus('Đã giao cho đơn vị vận chuyển');
+      }
+      if (paymentData.shipping_value !== 0) {
+        setSelectedAddress({
+          province: paymentData.province,
+          sub_district: paymentData.sub_district,
+          district: paymentData.district,
+          address: paymentData.address,
+          type_address: paymentData.type_address,
+          firstname: paymentData.firstname,
+          lastname: paymentData.lastname,
+          phone: paymentData.phone,
+        });
+      }
     }
     // eslint-disable-next-line no-unused-expressions
     !userAddresses && handleFetchAddressData();
@@ -479,6 +507,13 @@ export default function PaymentDetail() {
                 ))}
           </Stepper>
         )}
+        {shippingStatus && (
+          <Stack sx={{ mt: -2, pb: 2, mx: 'auto' }}>
+            <Typography fontStyle="italic" variant="caption" color="primary">
+              {shippingStatus}
+            </Typography>
+          </Stack>
+        )}
         {/* Main */}
         <Stack direction="row" sx={{ p: 2, boxShadow: 4 }}>
           {/* Address information */}
@@ -493,15 +528,15 @@ export default function PaymentDetail() {
                   {userAddresses?.length > 0 ? (
                     <Stack alignItems="flex-end" direction="row">
                       <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
-                        {selectedAddress.lastname}&nbsp;
-                        {selectedAddress.firstname}
+                        {selectedAddress?.lastname}&nbsp;
+                        {selectedAddress?.firstname}
                       </Typography>
                       <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
-                        &nbsp;&nbsp;(+84)&nbsp;{selectedAddress.phone.substring(1)}
+                        &nbsp;&nbsp;(+84)&nbsp;{selectedAddress?.phone.slice(1)}
                       </Typography>
                       <Typography variant="body1" sx={{ fontSize: '0.95rem' }}>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{selectedAddress.address}, {selectedAddress.sub_district},
-                        {selectedAddress.district}, {selectedAddress.province}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{selectedAddress?.address}, {selectedAddress?.sub_district},
+                        {selectedAddress?.district}, {selectedAddress?.province}
                       </Typography>
                       <Button
                         onClick={() => {
@@ -563,7 +598,7 @@ export default function PaymentDetail() {
                                         </Typography>
                                         <Stack sx={{ ml: 2, pl: 2, borderLeft: '1px solid grey' }}>
                                           <Typography fontSize={'0.9rem'} variant="caption" sx={{ color: 'inherit' }}>
-                                            (+84) &nbsp;{address.phone.substring(1)}
+                                            (+84) &nbsp;{address.phone.slice(1)}
                                           </Typography>
                                         </Stack>
                                       </Stack>
@@ -957,6 +992,7 @@ export default function PaymentDetail() {
                 </Dialog>
                 {paymentData.checkout_status === 3 ? (
                   <Button
+                    disabled={paymentData.shipping_status !== 2}
                     color="error"
                     size="medium"
                     variant="contained"

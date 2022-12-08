@@ -130,11 +130,13 @@ export default function CreateProductForm() {
       image_path: imageAuction,
     };
 
-    await fetch('http://localhost:1009/auctee/user/auction', {
+    await fetch('http://localhost:8080/auctee/user/auction', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setError(false);
@@ -151,10 +153,12 @@ export default function CreateProductForm() {
 
   const [productsData, setProductData] = useState();
   const fetchProductData = async () => {
-    await fetch('http://localhost:1002/auctee/products', {
+    await fetch('http://localhost:8080/auctee/products', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -194,10 +198,12 @@ export default function CreateProductForm() {
   };
 
   const handleChangeId = async (id) => {
-    await fetch(`http://localhost:1002/auctee/product/detail?id=${id}`, {
+    await fetch(`http://localhost:8080/auctee/product/detail?id=${id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {

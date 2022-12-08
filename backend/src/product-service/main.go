@@ -18,7 +18,7 @@ import (
 
 const (
 	ginPort        = ":1002"
-	grpcServerPort = "localhost:50052"
+	grpcServerPort = ":50052"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 	newRouter := utils.Router()
 
 	//Cookie
-	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
+	newRouter.Use(sessions.Sessions(config_account.CookieAuth, config_account.CookieStore))
 
 	productOptionRepository := repository.NewProductOptionRepository(db)
 	productImageRepository := repository.NewProductImageRepository(db)
