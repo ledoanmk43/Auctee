@@ -79,6 +79,7 @@ func (a *AccountServer) GetAddressByUserId(ctx context.Context, in *account.GetA
 	}
 
 	response := &account.GetAddressByUserIdResponse{
+		ID:          addressId,
 		Firstname:   res.Firstname,
 		Lastname:    res.Lastname,
 		Phone:       res.Phone,

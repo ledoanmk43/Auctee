@@ -16,8 +16,8 @@ import (
 
 const (
 	ginPort               = ":1003"
-	grpcServerPortAccount = "dns:///account:50051"
-	grpcServerPortAuction = "dns:///auction:50053"
+	grpcServerPortAccount = "account:50051"
+	grpcServerPortAuction = "auction:50053"
 )
 
 func main() {
@@ -44,11 +44,19 @@ func main() {
 	paymentRouter := route.NewPaymentRoute(paymentController, newRouter, accountSrvCtrl, accountClient)
 	paymentRouter.GetRouter()
 
+	//go func() {
 	if err := newRouter.Run(ginPort); err != nil {
 		fmt.Println("Open port is fail: ", err)
 		return
 	}
-	//if err := newRouter.RunTLS(ginPort, "./minica.pem", "./minica-key.pem"); err != nil {
+	//}()
+
+	//_, err := tls.LoadX509KeyPair("localhost.pem", "localhost-key.pem")
+	//if err != nil {
+	//	log.Fatalf("failed to load server key pairs: %v", err)
+	//}
+
+	//if err := newRouter.RunTLS(ginPort, "localhost.pem", "localhost-key.pem"); err != nil {
 	//	fmt.Println("Open port is fail: ", err)
 	//	return
 	//}

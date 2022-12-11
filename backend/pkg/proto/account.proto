@@ -35,6 +35,7 @@ message GetAddressByUserIdResponse{
   string SubDistrict = 7;
   string Address = 8;
   string TypeAddress = 9;
+  uint32 ID = 10;
 }
 
 message GetUserByUserIdRequest{

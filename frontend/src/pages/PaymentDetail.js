@@ -29,6 +29,8 @@ import MoveToInboxOutlinedIcon from '@mui/icons-material/MoveToInboxOutlined';
 import StarBorderPurple500OutlinedIcon from '@mui/icons-material/StarBorderPurple500Outlined';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
+import { Dataset } from '@mui/icons-material';
+
 
 const Page = lazy(() => import('../components/Page'));
 
@@ -196,10 +198,10 @@ ColorlibStepIcon.propTypes = {
 export default function PaymentDetail() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const paymentId = searchParams.get('id');
+  const resultCode = searchParams.get('resultCode');
 
   const userData = useOutletContext();
   const [isFetching, setIsFetching] = useState(true);
@@ -215,16 +217,46 @@ export default function PaymentDetail() {
 
   const [stepStatus, setStepStatus] = useState(0);
 
+  const handleMoMoCheckOutStatus = async () => {
+    console.log(resultCode);
+    if (resultCode === '0') {
+      const payload = {
+        total: parseFloat(paymentData?.before_discount + shippingFee),
+        shipping_value: parseFloat(shippingFee),
+        id: paymentData?.id,
+      };
+      await fetch(`http://localhost:8080/auctee/user/update/momo-payment`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        mode: 'cors',
+        body: JSON.stringify(payload),
+      }).then((res) => {
+        if (res.status === 200) {
+          setPaymentStatus('Đang vận chuyển');
+          navigate(0);
+        }
+        if (res.status === 401) {
+          alert('You need to login first');
+          navigate('/auctee/login', { replace: true });
+        }
+      });
+    }
+    if (resultCode === '1006' && paymentData.payment_method === 'MOMO') {
+      alert('Giao dịch MoMo không thành công');
+    }
+  };
+
   const handlePayment = async () => {
     const payload = {
-      total: parseFloat(paymentData.before_discount + shippingFee),
-      id: paymentData.id,
-      product_name: paymentData.product_name,
+      total: parseFloat(paymentData?.before_discount + shippingFee),
+      id: paymentData?.id,
+      product_name: paymentData?.product_name,
       shipping_value: parseFloat(shippingFee),
-      note: noteData,
     };
+    console.log(payload, 'and ', selectedAddress.ID);
     if (paymentMethod === 'MOMO') {
-      await fetch(`http://localhost:8080/auctee/user/checkout/momo-payment?id=${selectedAddress.ID}`, {
+      await fetch(`http://localhost:8080/auctee/user/checkout/momo-payment?id=${currAddress || selectedAddress.ID}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -243,7 +275,7 @@ export default function PaymentDetail() {
         }
       });
     } else {
-      await fetch(`http://localhost:8080/auctee/user/checkout/cod-payment?id=${selectedAddress.ID}`, {
+      await fetch(`http://localhost:8080/auctee/user/checkout/cod-payment?id=${currAddress || selectedAddress.ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -253,7 +285,7 @@ export default function PaymentDetail() {
         if (res.status === 200) {
           // res.json().then((data) => {
           setPaymentStatus('Đang vận chuyển');
-          navigate(0);
+          window.location.reload(`/auctee/user/order/?id=${payload.id}`);
           // });
         }
         if (res.status === 401) {
@@ -295,7 +327,6 @@ export default function PaymentDetail() {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-
       mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
@@ -315,6 +346,7 @@ export default function PaymentDetail() {
     });
   };
 
+  const [currAddress, setCurrAddress] = useState();
   // All payments
   const [paymentData, setPaymentData] = useState();
   const handleFetchPayment = async () => {
@@ -327,7 +359,10 @@ export default function PaymentDetail() {
       if (res.status === 200) {
         res.json().then((data) => {
           setPaymentData(data);
+          setCurrAddress(data.address_id);
+          // setTotalBill(data.before_discount + data.shipping_value);
           setIsFetching(false);
+          setPaymentMethod(data.payment_method || 'COD');
         });
       }
       if (res.status === 401) {
@@ -337,12 +372,14 @@ export default function PaymentDetail() {
       }
     });
   };
-
+  // const [totalBill, setTotalBill] = useState();
   const [shippingFee, setShippingFee] = useState();
   useEffect(() => {
     // eslint-disable-next-line no-unused-expressions
-    selectedAddress?.province === 'Hồ Chí Minh' ? setShippingFee(25000) : setShippingFee(35000);
-  }, [selectedAddress]);
+    selectedAddress?.province === 'Hồ Chí Minh' || currAddress === 'Hồ Chí Minh'
+      ? setShippingFee(25000)
+      : setShippingFee(35000);
+  }, [selectedAddress, currAddress]);
 
   const handleStatus = () => {
     switch (paymentData.checkout_status) {
@@ -350,7 +387,9 @@ export default function PaymentDetail() {
         setPaymentStatus('Chưa thanh toán');
         break;
       case 2:
-        setPaymentStatus('Đã thanh toán');
+        if (paymentData.total > 0) {
+          setPaymentStatus('Đã thanh toán');
+        }
         break;
       case 3:
         if (paymentData.shipping_status === 1 || paymentData.shipping_status === 2) {
@@ -431,6 +470,9 @@ export default function PaymentDetail() {
     if (paymentData) {
       handleStep();
       handleStatus();
+      if ((resultCode === '0' || resultCode === '1006') && paymentData.checkout_status < 3) {
+        handleMoMoCheckOutStatus();
+      }
       if (paymentData.shipping_status === 1) {
         setShippingStatus('Chờ shipper lấy hàng');
       }

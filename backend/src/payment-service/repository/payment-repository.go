@@ -125,21 +125,26 @@ func (p *PaymentRepositoryDefault) UpdateAddressPayment(updateBody *entity.Payme
 	//Address
 	paymentToUpdate.EndTime = strings.ReplaceAll(paymentToUpdate.EndTime, "Z", "")
 	paymentToUpdate.EndTime = strings.ReplaceAll(paymentToUpdate.EndTime, "T", " ")
-	paymentToUpdate.Firstname = updateBody.Firstname
-	paymentToUpdate.Lastname = updateBody.Lastname
-	paymentToUpdate.Phone = updateBody.Phone
-	paymentToUpdate.Email = updateBody.Email
-	paymentToUpdate.Province = updateBody.Province
-	paymentToUpdate.District = updateBody.District
-	paymentToUpdate.SubDistrict = updateBody.SubDistrict
-	paymentToUpdate.CheckoutStatus = updateBody.CheckoutStatus
-	paymentToUpdate.Address = updateBody.Address
-	paymentToUpdate.TypeAddress = updateBody.TypeAddress
-	paymentToUpdate.PaymentMethod = updateBody.PaymentMethod
-	paymentToUpdate.ShippingValue = updateBody.ShippingValue
-	paymentToUpdate.Note = updateBody.Note
-	paymentToUpdate.ShippingStatus = updateBody.ShippingStatus
-	paymentToUpdate.Total = updateBody.Total
+	if updateBody.CheckoutStatus != 5 {
+		paymentToUpdate.AddressId = updateBody.AddressId
+		paymentToUpdate.Firstname = updateBody.Firstname
+		paymentToUpdate.Lastname = updateBody.Lastname
+		paymentToUpdate.Phone = updateBody.Phone
+		paymentToUpdate.Email = updateBody.Email
+		paymentToUpdate.Province = updateBody.Province
+		paymentToUpdate.District = updateBody.District
+		paymentToUpdate.SubDistrict = updateBody.SubDistrict
+		paymentToUpdate.CheckoutStatus = updateBody.CheckoutStatus
+		paymentToUpdate.Address = updateBody.Address
+		paymentToUpdate.TypeAddress = updateBody.TypeAddress
+		paymentToUpdate.PaymentMethod = updateBody.PaymentMethod
+		paymentToUpdate.ShippingValue = updateBody.ShippingValue
+		paymentToUpdate.Note = updateBody.Note
+		paymentToUpdate.ShippingStatus = updateBody.ShippingStatus
+		paymentToUpdate.Total = updateBody.Total
+	} else {
+		paymentToUpdate.CheckoutStatus = 5
+	}
 	recordSave := p.connection.Updates(&paymentToUpdate)
 	if recordSave.Error != nil {
 		log.Println("Error to update payment repo", recordSave.Error)

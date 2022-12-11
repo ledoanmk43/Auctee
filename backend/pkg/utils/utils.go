@@ -21,7 +21,7 @@ func Router() *gin.Engine {
 
 	corsConfig := cors.DefaultConfig()
 
-	corsConfig.AllowOrigins = []string{"http://localhost:3000"}
+	corsConfig.AllowOrigins = []string{"https://localhost:3000"}
 	//corsConfig.AllowAllOrigins = true
 	// To be able to send tokens to the server.
 	corsConfig.AllowCredentials = true

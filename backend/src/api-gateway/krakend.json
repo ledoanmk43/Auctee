@@ -1,9 +1,10 @@
+
 {
   "version": 3,
   "name": "Auctee Demo",
   "port": 8080,
   "timeout": "20s",
-  "cache_ttl": "1s",
+  "cache_ttl": "3s",
   "output_encoding": "no-op",
   "extra_config": {
     "router": {
@@ -11,7 +12,7 @@
     },
     "security/cors": {
       "allow_origins": [
-        "http://localhost:3000"
+        "https://localhost:3000"
       ],
       "allow_credentials": true,
       "allow_methods": [
@@ -35,7 +36,7 @@
           "disable_host_sanitize": false,
           "encoding": "no-op",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "method": "POST",
           "sd": "static",
@@ -63,7 +64,7 @@
           "disable_host_sanitize": false,
           "encoding": "no-op",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "method": "POST",
           "sd": "static",
@@ -93,7 +94,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -110,7 +111,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -134,7 +135,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -150,7 +151,7 @@
       "backend": [
         {
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "encoding": "json",
           "is_collection": true,
@@ -182,7 +183,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -202,7 +203,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -223,7 +224,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -246,7 +247,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -267,7 +268,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -290,7 +291,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -313,7 +314,7 @@
           "sd": "static",
           "method": "DELETE",
           "host": [
-            "http://192.168.2.113:1001"
+            "http://account:1001"
           ],
           "disable_host_sanitize": false
         }
@@ -334,7 +335,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1002"
+            "http://product:1002"
           ],
           "disable_host_sanitize": false
         }
@@ -357,7 +358,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1002"
+            "http://product:1002"
           ],
           "disable_host_sanitize": false
         }
@@ -378,7 +379,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1002"
+            "http://product:1002"
           ],
           "disable_host_sanitize": false
         }
@@ -402,7 +403,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1002"
+            "http://product:1002"
           ],
           "disable_host_sanitize": false
         }
@@ -425,7 +426,7 @@
           "sd": "static",
           "method": "DELETE",
           "host": [
-            "http://192.168.2.113:1002"
+            "http://product:1002"
           ],
           "disable_host_sanitize": false
         }
@@ -446,7 +447,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -469,7 +470,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -490,7 +491,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -514,7 +515,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -538,7 +539,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -561,7 +562,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -584,7 +585,7 @@
           "sd": "static",
           "method": "DELETE",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -608,7 +609,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -622,7 +623,7 @@
           "url_pattern": "/ws",
           "disable_host_sanitize": true,
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ]
         }
       ],
@@ -664,7 +665,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -685,7 +686,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1009"
+            "http://auction:1009"
           ],
           "disable_host_sanitize": false
         }
@@ -709,7 +710,7 @@
           "sd": "static",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -724,7 +725,7 @@
       "input_query_strings": [
         "id"
       ],
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/auctee/user/checkout/cod-payment",
@@ -732,7 +733,46 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/update/momo-payment",
+      "method": "PUT",
+      "input_headers": [
+        "Cookie","Content-Type"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/update/momo-payment",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://payment:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/auctee/user/ipn/momo-payment",
+      "method": "POST",
+      "input_headers": [
+        "Content-Type"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/ipn/momo-payment",
+          "encoding": "no-op",
+          "method": "POST",
+          "host": [
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -754,7 +794,7 @@
           "encoding": "no-op",
           "method": "POST",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -777,7 +817,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -801,7 +841,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -825,7 +865,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -844,12 +884,12 @@
       "backend": [
         {
           "url_pattern": "/auctee/user/checkout/payment-history",
-          "encoding": "json",
+          "encoding": "no-op",
           "is_collection": true,
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -873,7 +913,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -896,7 +936,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -919,7 +959,7 @@
           "sd": "static",
           "method": "PUT",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }
@@ -934,7 +974,7 @@
       "input_query_strings": [
         "id"
       ],
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/auctee/user/checkout/payment",
@@ -942,7 +982,7 @@
           "sd": "static",
           "method": "GET",
           "host": [
-            "http://192.168.2.113:1003"
+            "http://payment:1003"
           ],
           "disable_host_sanitize": false
         }

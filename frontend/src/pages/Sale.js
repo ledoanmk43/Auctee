@@ -2,16 +2,18 @@ import { useState, useEffect, lazy } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 // material
-import { Button, Typography, Stack, Tabs, Tab, Divider } from '@mui/material';
+import { Button, Typography, Stack, Tabs, Tab, Divider, Input } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import RemoveShoppingCartOutlinedIcon from '@mui/icons-material/RemoveShoppingCartOutlined';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Icon } from '@iconify/react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme, alpha } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import PropTypes from 'prop-types';
 import account from '../API/account';
 import { FormProvider, RHFTextField } from '../components/hook-form';
+
+import Iconify from '../components/Iconify';
 
 const Page = lazy(() => import('../components/Page'));
 
@@ -26,16 +28,13 @@ const RootStyle = styled('div')(({ theme }) => ({
   },
 }));
 export default function Sale() {
+  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
   const userData = useOutletContext();
   const [isFetching, setIsFetching] = useState(true);
   const [paymentsData, setPaymentsData] = useState();
-
-  const [HonorPoint, setHonorPoint] = useState(0);
-
-  const [isMale, setIsMale] = useState(false); // 1 male : 0 female
 
   // Get user's data base on access_token
   const handleFetchPaymentData = async () => {
@@ -87,7 +86,6 @@ export default function Sale() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-
       mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
@@ -195,10 +193,45 @@ export default function Sale() {
           <Divider />
         </Stack>
         {/* Main */}
-        <Stack sx={{ pt: 2 }}>
+        <Stack sx={{ pt: 2 }} direction="row" alignItems="center" justifyContent="space-between">
           <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
             {paymentsData?.length} Đơn hàng
           </Typography>
+          <SearchbarStyle>
+            <Input
+              disableUnderline
+              placeholder="Tìm kiếm đơn hàng"
+              inputProps={{
+                sx: {
+                  '&::placeholder': {
+                    fontSize: '0.87rem',
+                    opacity: 0.62,
+                    color: 'black',
+                    fontWeight: 200,
+                  },
+                },
+              }}
+              sx={{
+                mr: 1,
+                ml: -3,
+              }}
+            />
+            <Button
+              type="submit"
+              sx={{
+                ':hover': {
+                  bgcolor: `${alpha(theme.palette.background.main, 0.8)}`,
+                },
+                borderRadius: 0,
+                mr: -4.2,
+                py: 0.75,
+                px: 2,
+                backgroundColor: `${alpha(theme.palette.background.main, 0.9)}`,
+              }}
+            >
+              <Iconify icon="eva:search-fill" sx={{ color: 'white', width: 20, height: 20, fontSize: '0.9rem' }} />
+            </Button>
+          </SearchbarStyle>
         </Stack>
         <Stack sx={{ mt: 1 }}>
           <Box sx={{ width: '100%' }}>
@@ -239,101 +272,37 @@ export default function Sale() {
                 filteredData.map((payment, index) => (
                   <Stack sx={{ boxShadow: 4, mb: 2, p: 2 }} direction="column" key={index}>
                     {/* Top side */}
-                    <Stack maxHeight={20} sx={{ mb: 0.5 }} direction="row">
-                      <Typography
-                        variant="button"
-                        sx={{
-                          textTransform: 'none',
-                          bgcolor: '#f44336',
-                          color: 'white',
-                          borderRadius: 0.5,
-                          fontSize: '0.7rem',
-                          px: 0.5,
-                          mr: 1.5,
-                        }}
-                      >
-                        Shop yêu thích
-                      </Typography>
-                      <Link
-                        style={{
-                          fontWeight: 600,
-                          color: 'inherit',
-                          textDecoration: 'none',
-                        }}
-                      >
-                        {payment.shopname}
-                      </Link>
-                      <Button
-                        disableRipple
-                        sx={{ ml: 1.5, border: '1px solid black', borderRadius: 0.4, opacity: 0.9, color: 'inherit' }}
-                      >
-                        <StorefrontIcon sx={{ fontSize: '1rem' }} />
+                    <Stack maxHeight={20} sx={{ mb: 0.5 }} direction="row" justifyContent="space-between">
+                      <Stack direction="row">
                         <Typography
                           variant="button"
                           sx={{
                             textTransform: 'none',
+                            bgcolor: '#f44336',
+                            color: 'white',
+                            borderRadius: 0.5,
                             fontSize: '0.7rem',
                             px: 0.5,
+                            mr: 1.5,
                           }}
                         >
-                          Shop của tôi
+                          Shop yêu thích
                         </Typography>
-                      </Button>
-                      {payment.payment_method.length > 0 && (
-                        <Button
-                          disableRipple
-                          sx={{
-                            ml: 1.5,
-                            borderRadius: 0.4,
-                            opacity: 0.9,
-                            textTransform: 'none',
-                            fontSize: '0.75rem',
-                            fontStyle: 'italic',
-                            color: `${payment.payment_method.length !== 3 ? '#a50064' : 'red'}`,
-                            '&:hover': {
-                              bgcolor: 'transparent',
-                            },
-                          }}
-                        >
-                          {payment.payment_method}
-                        </Button>
-                      )}
-                      {payment.shipping_status === 3 && payment.total !== 0 && (
-                        <Button
-                          disableRipple
-                          sx={{
-                            ml: 1.5,
-                            borderRadius: 0.4,
-                            textTransform: 'none',
-                            fontSize: '0.75rem',
-                            fontStyle: 'italic',
-                            opacity: 0.7,
-                            '&:hover': {
-                              bgcolor: 'transparent',
-                            },
-                          }}
-                        >
-                          Đã nhận hàng
-                        </Button>
-                      )}
-                      {payment.checkout_status === 4 && (
-                        <Button
-                          variant="error"
-                          disableRipple
-                          sx={{
-                            px: 0,
-                            ml: 1.5,
-                            borderRadius: 0.4,
-                            opacity: 0.9,
+                        <Link
+                          style={{
+                            fontWeight: 600,
                             color: 'inherit',
-                            '&:hover': {
-                              bgcolor: 'transparent',
-                            },
+                            textDecoration: 'none',
                           }}
                         >
-                          <RemoveShoppingCartOutlinedIcon color="error" sx={{ fontSize: '1rem' }} />
+                          {payment.shopname}
+                        </Link>
+                        <Button
+                          disableRipple
+                          sx={{ ml: 1.5, border: '1px solid black', borderRadius: 0.4, opacity: 0.9, color: 'inherit' }}
+                        >
+                          <StorefrontIcon sx={{ fontSize: '1rem' }} />
                           <Typography
-                            color="error"
                             variant="button"
                             sx={{
                               textTransform: 'none',
@@ -341,10 +310,84 @@ export default function Sale() {
                               px: 0.5,
                             }}
                           >
-                            Đã huỷ
+                            Shop của tôi
                           </Typography>
                         </Button>
-                      )}
+                        {payment.payment_method.length > 0 && (
+                          <Button
+                            disableRipple
+                            sx={{
+                              ml: 1.5,
+                              borderRadius: 0.4,
+                              opacity: 0.9,
+                              textTransform: 'none',
+                              fontSize: '0.75rem',
+                              fontStyle: 'italic',
+                              color: `${payment.payment_method.length !== 3 ? '#a50064' : 'red'}`,
+                              '&:hover': {
+                                bgcolor: 'transparent',
+                              },
+                            }}
+                          >
+                            {payment.payment_method}
+                          </Button>
+                        )}
+                        {payment.shipping_status === 3 && payment.total !== 0 && (
+                          <Button
+                            disableRipple
+                            sx={{
+                              ml: 1.5,
+                              borderRadius: 0.4,
+                              textTransform: 'none',
+                              fontSize: '0.75rem',
+                              fontStyle: 'italic',
+                              opacity: 0.7,
+                              '&:hover': {
+                                bgcolor: 'transparent',
+                              },
+                            }}
+                          >
+                            Đã nhận hàng
+                          </Button>
+                        )}
+                        {payment.checkout_status === 4 && (
+                          <Button
+                            variant="error"
+                            disableRipple
+                            sx={{
+                              px: 0,
+                              ml: 1.5,
+                              borderRadius: 0.4,
+                              opacity: 0.9,
+                              color: 'inherit',
+                              '&:hover': {
+                                bgcolor: 'transparent',
+                              },
+                            }}
+                          >
+                            <RemoveShoppingCartOutlinedIcon color="error" sx={{ fontSize: '1rem' }} />
+                            <Typography
+                              color="error"
+                              variant="button"
+                              sx={{
+                                textTransform: 'none',
+                                fontSize: '0.7rem',
+                                px: 0.5,
+                              }}
+                            >
+                              Đã huỷ
+                            </Typography>
+                          </Button>
+                        )}
+                      </Stack>
+                      <Stack justifyContent="flex-end" direction="row" alignItems="flex-end">
+                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                          ID: &nbsp;
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                          {payment.id}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     {/* Body */}
                     <Stack justifyContent="space-between" direction="row" sx={{ display: 'flex' }}>
@@ -372,7 +415,7 @@ export default function Sale() {
                             currency: 'VND',
                           })}
                         </Typography>
-                        {payment.checkout_status === 3 && payment.shipping_status === 1 && (
+                        {payment.shipping_status === 1 && (
                           <Stack sx={{}} width="100%" direction="row" justifyContent="flex-end">
                             <Button
                               color="error"
@@ -392,7 +435,7 @@ export default function Sale() {
                             </Button>
                           </Stack>
                         )}
-                        {payment.checkout_status === 3 && payment.shipping_status === 2 && (
+                        {payment.shipping_status === 2 && (
                           <Stack sx={{}} width="100%" direction="row" justifyContent="flex-end">
                             <Button
                               color="error"
@@ -521,3 +564,18 @@ const ProductImgStyle = styled('img')({
   height: '85px',
   objectFit: 'cover',
 });
+const APPBAR_MOBILE = 32;
+const APPBAR_DESKTOP = 46;
+const DRAWER_WIDTH = 660;
+
+const SearchbarStyle = styled('div')(({ theme }) => ({
+  width: 250,
+  display: 'flex',
+
+  border: '1px solid grey',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: APPBAR_MOBILE,
+  padding: theme.spacing(0, 4),
+  backgroundColor: 'white',
+}));

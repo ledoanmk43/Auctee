@@ -119,6 +119,9 @@ func (a *AccountRepositoryDefault) UpdateHonorPoint(userId, caseId uint) error {
 	switch caseId {
 	case 1:
 		userToUpdate.HonorPoint += 5
+		if userToUpdate.HonorPoint > 100 {
+			userToUpdate.HonorPoint = 100
+		}
 		res := a.db.Where("id = ?", userId).Updates(&userToUpdate)
 		if res.Error != nil {
 			log.Println("Update User: Error in package repository", res.Error)

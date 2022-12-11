@@ -4,14 +4,17 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Container } from '@mui/material';
 //
-import MainNavbar from './MainNavbar';
-import Sidebar from './Sidebar';
+// import MainNavbar from './MainNavbar';
+// import Sidebar from './Sidebar';
 
 const ProductCartWidget = lazy(() =>
   import('../../sections/@dashboard/products').then((module) => ({
     default: module.ProductCartWidget,
   }))
 );
+
+const MainNavbar = lazy(() => import('./MainNavbar'));
+const Sidebar = lazy(() => import('./Sidebar'));
 
 // ----------------------------------------------------------------------
 

@@ -5,7 +5,7 @@
   "version": "1.5.0",
   "private": false,
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&set SSL_CRT_FILE=localhost.pem&&set SSL_KEY_FILE=localhost-key.pem&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -58,6 +58,7 @@
     "history": "^5.3.0",
     "javascript-time-ago": "^2.5.9",
     "lodash": "^4.17.21",
+    "mkcert": "^1.5.1",
     "moment": "^2.29.4",
     "numeral": "^2.0.6",
     "prop-types": "^15.8.1",

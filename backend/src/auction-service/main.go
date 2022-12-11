@@ -19,8 +19,8 @@ import (
 
 const (
 	ginPort               = ":1009"
-	grpcServerPortAccount = "dns:///account:50051"
-	grpcServerPortProduct = "dns:///product:50052"
+	grpcServerPortAccount = "account:50051"
+	grpcServerPortProduct = "product:50052"
 	grpcServerPort        = ":50053"
 )
 

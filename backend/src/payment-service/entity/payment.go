@@ -19,6 +19,7 @@ type Payment struct {
 	ImagePath   string `json:"image_path" gorm:"type:mediumtext"`
 	Quantity    int    `json:"quantity" gorm:"type:nvarchar(100);not null"`
 	//Address
+	AddressId   uint   `json:"address_id"`
 	Firstname   string `json:"firstname" gorm:"type:nvarchar(100);not null"`
 	Lastname    string `json:"lastname" gorm:"type:nvarchar(100);not null"`
 	Phone       string `json:"phone" gorm:"type:nvarchar(100);not null"`

@@ -40,7 +40,6 @@ export default function Purchase() {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-
       mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {

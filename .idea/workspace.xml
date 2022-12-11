@@ -5,36 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="97c0ee4a-566b-4d6a-bcc3-949eac4e5d28" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/internal/auction-service/controller/bid-controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/internal/auction-service/controller/bid-controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/internal/auction-service/repository/auction-repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/internal/auction-service/repository/auction-repository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/internal/auction-service/repository/bid-repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/internal/auction-service/repository/bid-repository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/internal/auction-service/route/bid-route.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/internal/auction-service/route/bid-route.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/internal/auction-service/service/bid-service.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/internal/auction-service/service/bid-service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/pkg/websocket/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pkg/websocket/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/.eslintcache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/0.pack" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/0.pack" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/1.pack" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/1.pack" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/2.pack" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/2.pack" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/3.pack" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/3.pack" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/4.pack" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/4.pack" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/index.pack" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/index.pack" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/index.pack.old" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/node_modules/.cache/default-development/index.pack.old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/API/blog.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/API/blog.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/layouts/main/MainNavbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/layouts/main/MainNavbar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/layouts/main/NotificationsPopover.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/layouts/main/NotificationsPopover.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/layouts/main/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/layouts/main/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Address.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Address.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Auction.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Auction.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ChangePwd.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ChangePwd.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inventory.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ProductDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ProductDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Purchase.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Purchase.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/sections/@dashboard/products/ProductCartWidget.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/sections/@dashboard/products/ProductCartWidget.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/sections/bid/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/sections/bid/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/sections/update-auction/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/sections/update-auction/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/sections/update-product/UpdateProductForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/sections/update-product/UpdateProductForm.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,14 +28,6 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/backend/.env" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/account-service/cmd/main.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/account-service/config/configuration.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/account-service/controller/account-controller.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/account-service/route/account-route.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/auction-service/controller/auction-controller.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/auction-service/repository/auction-repository.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/auction-service/route/auction-route.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/backend/internal/auction-service/service/auction-service.go" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/backend/pkg/utils/utils.go" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">

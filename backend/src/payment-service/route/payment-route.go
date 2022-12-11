@@ -32,6 +32,8 @@ func (p *PaymentRoute) GetRouter() {
 		paymentRoute.PUT("/user/checkout/shipping-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.UpdateAddressPayment)
 		paymentRoute.PUT("/user/checkout/cancel-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CancelPayment)
 		paymentRoute.POST("/user/checkout/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutMoMo)
+		//paymentRoute.POST("/user/ipn/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.MoMoIPNResult)
+		paymentRoute.PUT("/user/update/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.UpdateMoMoCheckOut)
 		paymentRoute.PUT("/user/checkout/cod-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutCOD)
 		paymentRoute.PUT("/user/checkout/shipping-confirm", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.SetShippingStatusDelivering)
 		paymentRoute.PUT("/user/checkout/shipping-status-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.SetShippingStatusCompleted)
