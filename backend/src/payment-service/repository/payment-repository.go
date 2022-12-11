@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"backend/pkg/utils"
 	payment "backend/src/payment-service/config"
 	"backend/src/payment-service/entity"
 	"errors"
@@ -9,13 +8,14 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"math/rand"
+	"strings"
 	"time"
 )
 
 type IPaymentRepository interface {
 	CreatePayment(payment *entity.Payment) (string, error)
-	UpdateAddressPayment(payment *entity.Payment) error
-	DeletePayment(paymentId string, userId uint) error
+	UpdateAddressPayment(payment *entity.Payment) (*entity.Payment, error)
+	CancelPayment(paymentId string, userId uint) error
 	GetPaymentByPaymentId(paymentId string, userId uint) (*entity.Payment, error)
 	GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error)
 	GetAllPaymentsForOwner(page int, ownerId uint) (*[]entity.Payment, error)
@@ -31,6 +31,9 @@ func NewPaymentRepositoryDefault(dbConn *gorm.DB) *PaymentRepositoryDefault {
 
 func (p *PaymentRepositoryDefault) CreatePayment(payment *entity.Payment) (string, error) {
 	payment.CheckoutTime = time.Now()
+	payment.EndTime = strings.ReplaceAll(payment.EndTime, "T", " ")
+	payment.EndTime = strings.ReplaceAll(payment.EndTime, "Z", "")
+
 	var count int64
 	resIsDuplicated := p.connection.Where("auction_id = ? and winner_id = ?", payment.AuctionId, payment.WinnerId).Find(&payment).Count(&count)
 	if resIsDuplicated.Error != nil {
@@ -87,8 +90,9 @@ func (p *PaymentRepositoryDefault) GetAllBills(page int, userId uint) (*[]entity
 	return payments, nil
 }
 
-func (p *PaymentRepositoryDefault) UpdateAddressPayment(updateBody *entity.Payment) error {
+func (p *PaymentRepositoryDefault) UpdateAddressPayment(updateBody *entity.Payment) (*entity.Payment, error) {
 	var paymentToUpdate *entity.Payment
+
 	var count int64
 	record := p.connection.Where("id = ?", updateBody.Id).Find(&paymentToUpdate).Count(&count)
 
@@ -97,49 +101,62 @@ func (p *PaymentRepositoryDefault) UpdateAddressPayment(updateBody *entity.Payme
 	//}
 	if record.Error != nil {
 		log.Println("Error to find payment to update in repo", record.Error)
-		return record.Error
+		return nil, record.Error
 	}
 
 	if count == 0 {
-		return errors.New("payment not found")
+		return nil, errors.New("payment not found")
 	}
 
-	if updateBody.WinnerId != paymentToUpdate.WinnerId {
-		return errors.New("Unauthorized")
+	if updateBody.ShippingStatus == 2 || updateBody.CheckoutStatus == 5 {
+		if updateBody.OwnerId != paymentToUpdate.OwnerId {
+			return nil, errors.New("Unauthorized")
+		}
+	} else {
+		if updateBody.WinnerId != paymentToUpdate.WinnerId {
+			return nil, errors.New("Unauthorized")
+		}
 	}
 
 	if paymentToUpdate.CheckoutStatus == 2 {
-		return errors.New("your order has been confirm")
+		return nil, errors.New("your order has been confirm")
 	}
 
 	//Address
-	paymentToUpdate.Firstname = updateBody.Firstname
-	paymentToUpdate.Lastname = updateBody.Lastname
-	paymentToUpdate.Phone = updateBody.Phone
-	paymentToUpdate.Email = updateBody.Email
-	paymentToUpdate.Province = updateBody.Province
-	paymentToUpdate.District = updateBody.District
-	paymentToUpdate.SubDistrict = updateBody.SubDistrict
-	paymentToUpdate.CheckoutStatus = updateBody.CheckoutStatus
-	paymentToUpdate.Address = updateBody.Address
-	paymentToUpdate.TypeAddress = updateBody.TypeAddress
-	paymentToUpdate.PaymentMethod = updateBody.PaymentMethod
-	paymentToUpdate.ShippingValue = updateBody.ShippingValue
-	paymentToUpdate.Note = updateBody.Note
-	paymentToUpdate.ShippingStatus = utils.BoolAddr(*updateBody.ShippingStatus)
-	paymentToUpdate.Total = updateBody.Total
+	paymentToUpdate.EndTime = strings.ReplaceAll(paymentToUpdate.EndTime, "Z", "")
+	paymentToUpdate.EndTime = strings.ReplaceAll(paymentToUpdate.EndTime, "T", " ")
+	if updateBody.CheckoutStatus != 5 {
+		paymentToUpdate.AddressId = updateBody.AddressId
+		paymentToUpdate.Firstname = updateBody.Firstname
+		paymentToUpdate.Lastname = updateBody.Lastname
+		paymentToUpdate.Phone = updateBody.Phone
+		paymentToUpdate.Email = updateBody.Email
+		paymentToUpdate.Province = updateBody.Province
+		paymentToUpdate.District = updateBody.District
+		paymentToUpdate.SubDistrict = updateBody.SubDistrict
+		paymentToUpdate.CheckoutStatus = updateBody.CheckoutStatus
+		paymentToUpdate.Address = updateBody.Address
+		paymentToUpdate.TypeAddress = updateBody.TypeAddress
+		paymentToUpdate.PaymentMethod = updateBody.PaymentMethod
+		paymentToUpdate.ShippingValue = updateBody.ShippingValue
+		paymentToUpdate.Note = updateBody.Note
+		paymentToUpdate.ShippingStatus = updateBody.ShippingStatus
+		paymentToUpdate.Total = updateBody.Total
+	} else {
+		paymentToUpdate.CheckoutStatus = 5
+	}
 	recordSave := p.connection.Updates(&paymentToUpdate)
 	if recordSave.Error != nil {
 		log.Println("Error to update payment repo", recordSave.Error)
-		return recordSave.Error
+		return nil, recordSave.Error
 	}
-	return nil
+	return paymentToUpdate, nil
 }
 
-func (a *PaymentRepositoryDefault) DeletePayment(paymentId string, userId uint) error {
+func (p *PaymentRepositoryDefault) CancelPayment(paymentId string, userId uint) error {
 	var payment *entity.Payment
 	var count int64
-	result := a.connection.Where("id = ? AND winner_id = ?", paymentId, userId).Find(&payment).Count(&count)
+	result := p.connection.Where("id = ? AND winner_id = ?", paymentId, userId).Find(&payment).Count(&count)
 	if result.Error != nil {
 		log.Println("Delete payment: Error in find payment to delete in package repository", result.Error)
 		return result.Error
@@ -152,8 +169,14 @@ func (a *PaymentRepositoryDefault) DeletePayment(paymentId string, userId uint) 
 		return errors.New("your order has been confirm")
 	}
 
-	payment.CheckoutStatus = 4
-	a.connection.Updates(&payment)
+	payment.EndTime = strings.ReplaceAll(payment.EndTime, "Z", "")
+	payment.EndTime = strings.ReplaceAll(payment.EndTime, "T", " ")
+	payment.CheckoutStatus = 4 // xác nhận huỷ đơn hàng
+	recordSave := p.connection.Updates(&payment)
+	if recordSave.Error != nil {
+		log.Println("Error to cancel payment repo", recordSave.Error)
+		return recordSave.Error
+	}
 	return nil
 }
 

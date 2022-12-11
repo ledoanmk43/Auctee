@@ -25,10 +25,11 @@ export default function App() {
   const themeWithLocale = useMemo(() => createTheme(theme, locales[locale]), [locale, theme]);
 
   const handleCheckLogin = async () => {
-    await fetch('http://localhost:1001/auctee/refreshToken', {
+    await fetch('http://localhost:8080/auctee/refreshToken', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 401) {
         setLoggedIn(false);

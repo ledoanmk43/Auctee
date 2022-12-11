@@ -79,6 +79,7 @@ func (a *AccountServer) GetAddressByUserId(ctx context.Context, in *account.GetA
 	}
 
 	response := &account.GetAddressByUserIdResponse{
+		ID:          addressId,
 		Firstname:   res.Firstname,
 		Lastname:    res.Lastname,
 		Phone:       res.Phone,
@@ -127,7 +128,7 @@ func (a *AccountServer) UpdateHonorPoint(ctx context.Context, in *account.Update
 	return response, nil
 }
 
-func (a *AccountServer) UpdateInCome(ctx context.Context, in *account.UpdateInComeRequest) (*account.UpdateInComeResponse, error) {
+func (a *AccountServer) UpdateIncome(ctx context.Context, in *account.UpdateInComeRequest) (*account.UpdateInComeResponse, error) {
 	userId := in.GetUserId()
 	caseId := in.GetCaseId()
 	value := in.GetValue()
@@ -141,7 +142,7 @@ func (a *AccountServer) UpdateInCome(ctx context.Context, in *account.UpdateInCo
 	}
 
 	response := &account.UpdateInComeResponse{
-		Message: "honor point updated",
+		Message: "income updated",
 	}
 	return response, nil
 }

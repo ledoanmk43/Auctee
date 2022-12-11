@@ -50,12 +50,12 @@ export default function LoginForm() {
       username: data.email,
       password: data.password,
     };
-    await fetch('http://localhost:1001/auctee/login', {
+    await fetch('http://localhost:8080/auctee/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
-      mode: 'cors',
       credentials: 'include',
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setLoggedIn(true);

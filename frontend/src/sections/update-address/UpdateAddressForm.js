@@ -109,11 +109,13 @@ export default function UpdateAddressForm({ address, handleDelete, handleUpdateD
       type_address: addressType,
       is_default: stringToBoolean(isDefault),
     };
-    await fetch(`http://localhost:1001/auctee/user/address?id=${address.ID}`, {
+    await fetch(`http://localhost:8080/auctee/user/address?id=${address.ID}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsReloading(true);

@@ -8,8 +8,8 @@ import (
 
 type IPaymentService interface {
 	CreatePayment(payment *entity.Payment) (string, error)
-	UpdateAddressPayment(payment *entity.Payment) error
-	DeletePayment(paymentId string, userId uint) error
+	UpdateAddressPayment(payment *entity.Payment) (*entity.Payment, error)
+	CancelPayment(paymentId string, userId uint) error
 	GetPaymentByPaymentId(paymentId string, userId uint) (*entity.Payment, error)
 	GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error)
 	GetAllPaymentsForOwner(page int, winnerId uint) (*[]entity.Payment, error)
@@ -51,17 +51,17 @@ func (p *PaymentServiceDefault) CreatePayment(payment *entity.Payment) (string, 
 	return id, nil
 }
 
-func (p *PaymentServiceDefault) UpdateAddressPayment(payment *entity.Payment) error {
-	err := p.PaymentRepository.UpdateAddressPayment(payment)
+func (p *PaymentServiceDefault) UpdateAddressPayment(payment *entity.Payment) (*entity.Payment, error) {
+	res, err := p.PaymentRepository.UpdateAddressPayment(payment)
 	if err != nil {
 		log.Println("Error in package service", err)
-		return err
+		return nil, err
 	}
-	return nil
+	return res, nil
 }
 
-func (p *PaymentServiceDefault) DeletePayment(paymentId string, userId uint) error {
-	err := p.PaymentRepository.DeletePayment(paymentId, userId)
+func (p *PaymentServiceDefault) CancelPayment(paymentId string, userId uint) error {
+	err := p.PaymentRepository.CancelPayment(paymentId, userId)
 	if err != nil {
 		log.Println("CreateAuction: Error Create Auction in package service", err)
 		return err

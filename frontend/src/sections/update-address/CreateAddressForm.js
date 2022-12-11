@@ -101,7 +101,7 @@ export default function CreateAddressForm() {
 
   const [isUpdated, setIsUpdated] = useState(false);
   const [error, setError] = useState(false);
-  
+
   const onSubmit = async () => {
     const payload = {
       firstname: firstName,
@@ -115,11 +115,13 @@ export default function CreateAddressForm() {
       type_address: addressType,
       is_default: stringToBoolean(isDefault),
     };
-    await fetch('http://localhost:1001/auctee/user/address', {
+    await fetch('http://localhost:8080/auctee/user/address', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsUpdated(true);

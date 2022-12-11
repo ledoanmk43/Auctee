@@ -115,10 +115,13 @@ func (a *AccountRepositoryDefault) UpdateHonorPoint(userId, caseId uint) error {
 		log.Println("Update Password: Error in package repository: ", result.Error)
 		return errors.New("Unauthorized")
 	}
-	// 1: +2	2:-5
+	// 1: +5	2:-5
 	switch caseId {
 	case 1:
-		userToUpdate.HonorPoint += 2
+		userToUpdate.HonorPoint += 5
+		if userToUpdate.HonorPoint > 100 {
+			userToUpdate.HonorPoint = 100
+		}
 		res := a.db.Where("id = ?", userId).Updates(&userToUpdate)
 		if res.Error != nil {
 			log.Println("Update User: Error in package repository", res.Error)
@@ -139,31 +142,18 @@ func (a *AccountRepositoryDefault) UpdateHonorPoint(userId, caseId uint) error {
 }
 
 func (a *AccountRepositoryDefault) UpdateInCome(userId, caseId uint, value float64) error {
-	//var userToUpdate *entity.Account
-	//result := a.db.Where("id = ?", userId).Find(&userToUpdate)
-	//if result.Error != nil {
-	//	log.Println("Update Password: Error in package repository: ", result.Error)
-	//	return errors.New("Unauthorized")
-	//}
-	//// 1: +2	2:-5
-	//switch caseId {
-	//case 1:
-	//	userToUpdate.HonorPoint += 2
-	//	res := a.db.Where("id = ?", userId).Updates(&userToUpdate)
-	//	if res.Error != nil {
-	//		log.Println("Update User: Error in package repository", res.Error)
-	//		return result.Error
-	//	}
-	//case 2:
-	//	userToUpdate.HonorPoint -= 5
-	//	res := a.db.Where("id = ?", userId).Updates(&userToUpdate)
-	//	if res.Error != nil {
-	//		log.Println("Update User: Error in package repository", res.Error)
-	//		return result.Error
-	//	}
-	//default:
-	//	break
-	//}
+	var userToUpdate *entity.Account
+	result := a.db.Where("id = ?", userId).Find(&userToUpdate)
+	if result.Error != nil {
+		log.Println("Update Password: Error in package repository: ", result.Error)
+		return errors.New("Unauthorized")
+	}
+	userToUpdate.TotalIncome += value
+	res := a.db.Where("id = ?", userId).Updates(&userToUpdate)
+	if res.Error != nil {
+		log.Println("Update User: Error in package repository", res.Error)
+		return result.Error
+	}
 
 	return nil
 }

@@ -29,14 +29,6 @@ type AccountService struct {
 	AccountRepository repository.IAccountRepository
 }
 
-func (a *AccountService) UpdateInCome(userId, caseId uint, value float64) error {
-	err := a.AccountRepository.UpdateInCome(userId, caseId, value)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func NewAccountServiceDefault(accountRepository repository.IAccountRepository) *AccountService {
 	return &AccountService{AccountRepository: accountRepository}
 }
@@ -102,6 +94,13 @@ func (a *AccountService) UpdateHonorPoint(userId, caseId uint) error {
 	err := a.AccountRepository.UpdateHonorPoint(userId, caseId)
 	if err != nil {
 		log.Println("Error: Error in package service: ", err.Error())
+		return err
+	}
+	return nil
+}
+func (a *AccountService) UpdateInCome(userId, caseId uint, value float64) error {
+	err := a.AccountRepository.UpdateInCome(userId, caseId, value)
+	if err != nil {
 		return err
 	}
 	return nil

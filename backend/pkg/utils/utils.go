@@ -18,9 +18,11 @@ const (
 
 func Router() *gin.Engine {
 	router := gin.Default()
+
 	corsConfig := cors.DefaultConfig()
 
-	corsConfig.AllowOrigins = []string{"http://localhost:3000"}
+	corsConfig.AllowOrigins = []string{"https://localhost:3000"}
+	//corsConfig.AllowAllOrigins = true
 	// To be able to send tokens to the server.
 	corsConfig.AllowCredentials = true
 
@@ -30,6 +32,7 @@ func Router() *gin.Engine {
 	// Register the middleware
 	router.Use(cors.New(corsConfig))
 	//router.Use(cors.Default())
+
 	return router
 }
 

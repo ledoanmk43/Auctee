@@ -7,6 +7,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -160,13 +161,22 @@ func (a *AuctionRepositoryDefault) UpdateCurrentBidByAuctionId(newBid *entity.Bi
 		log.Println(record.Error)
 		return errors.New("error to find auction when update current winner in repo")
 	}
-	log.Println(auction.CurrentBid, "vs", maxPrice, "Time: ", time.Now().Format("2006-01-02 15:04:05"))
+
 	if newBid.BidValue >= float64(maxPrice) {
+		auction.IsActive = utils.BoolAddr(false)
 		auction.EndTime = time.Now().Format("2006-01-02 15:04:05")
 	}
+	auction.StartTime = strings.ReplaceAll(auction.StartTime, "Z", "")
+	auction.StartTime = strings.ReplaceAll(auction.StartTime, "T", " ")
+	auction.EndTime = strings.ReplaceAll(auction.EndTime, "Z", "")
+	auction.EndTime = strings.ReplaceAll(auction.EndTime, "T", " ")
 	auction.CurrentBid = newBid.BidValue
 	auction.WinnerId = newBid.UserId
-	a.connection.Save(&auction)
+	recordSave := a.connection.Updates(&auction)
+	if recordSave.Error != nil {
+		log.Println("Error to update auction repo", recordSave.Error)
+		return recordSave.Error
+	}
 	return record.Error
 }
 

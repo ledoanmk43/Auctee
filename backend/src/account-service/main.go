@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	ginPort                   = ":1001"
-	accountPortForClientsGRPC = ":50051"
+	ginPort        = ":1001"
+	grpcServerPort = ":50051"
 )
 
 func main() {
@@ -24,9 +24,7 @@ func main() {
 	defer config.CloseDatabase(db)
 	newRouter := utils.Router()
 
-	//Cookie
-	newRouter.Use(sessions.SessionsMany(config.NewSessions, config.CookieStore))
-
+	newRouter.Use(sessions.Sessions(config.CookieAuth, config.CookieStore))
 	accountRepo := repository.NewAccountRepositoryDefault(db)
 	accountService := service.NewAccountServiceDefault(accountRepo)
 	accountController := controller.NewAccountControllerDefault(accountService)
@@ -47,7 +45,7 @@ func main() {
 		log.Println("Server is opened on port 1001")
 
 	}()
-	lis, err := net.Listen("tcp", accountPortForClientsGRPC)
+	lis, err := net.Listen("tcp", grpcServerPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

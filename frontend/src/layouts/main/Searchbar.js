@@ -43,7 +43,7 @@ export default function Searchbar() {
   const [keyword, setKeyWord] = useState('');
   const [recent, setRecent] = useState([]);
   const handleSearch = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     if (keyword?.length > 0) {
       /* eslint-disable-next-line no-plusplus */
       for (let i = 0; i < recent?.length; i++) {
@@ -63,107 +63,108 @@ export default function Searchbar() {
   };
 
   useEffect(() => {
-    setKeyWord(kwd);
-    if (recent.length === 0) {
+    setKeyWord(kwd || '');
+    if (recent?.length === 0) {
       window.localStorage.setItem('recent', JSON.stringify('Giá ưu đãi hôm nay'));
     } else {
       setRecent(JSON.parse(window.localStorage.getItem('recent')));
     }
   }, [kwd, open]);
-
   return (
-    <ClickAwayListener onClickAway={() => setOpen(false)}>
-      <form onSubmit={(e) => handleSearch(e)}>
-        <SearchbarStyle>
-          <Input
-            onClick={() => setOpen(true)}
-            value={keyword || ''}
-            onChange={(e) => setKeyWord(e.target.value)}
-            fullWidth
-            onFocus={() => setOpen(true)}
-            disableUnderline
-            placeholder="Nhanh tay ẵm ngay giá tốt"
-            inputProps={{
-              sx: {
-                '&::placeholder': {
-                  opacity: 0.62,
-                  color: 'black',
-                  fontWeight: 200,
+    keyword?.length >= 0 && (
+      <ClickAwayListener onClickAway={() => setOpen(false)}>
+        <form onSubmit={(e) => handleSearch(e)}>
+          <SearchbarStyle>
+            <Input
+              onClick={() => setOpen(true)}
+              value={keyword || ''}
+              onChange={(e) => setKeyWord(e.target.value)}
+              fullWidth
+              onFocus={() => setOpen(true)}
+              disableUnderline
+              placeholder="Nhanh tay ẵm ngay giá tốt"
+              inputProps={{
+                sx: {
+                  '&::placeholder': {
+                    opacity: 0.62,
+                    color: 'black',
+                    fontWeight: 200,
+                  },
                 },
-              },
-            }}
-            sx={{
-              mr: 1,
-              ml: -3,
-            }}
-          />
-          <Button
-            type="submit"
-            sx={{
-              ':hover': {
-                bgcolor: `${alpha(theme.palette.background.main, 0.8)}`,
-              },
-              borderRadius: 0,
-              mr: -4.4,
-              py: 1,
-              px: 4,
-              backgroundColor: `${alpha(theme.palette.background.main, 0.9)}`,
-            }}
-          >
-            <Iconify icon="eva:search-fill" sx={{ color: 'white', width: 20, height: 20 }} />
-          </Button>
-          {open && (
-            <Stack
+              }}
               sx={{
-                overflow: 'auto',
-                scrollbarWidth: 'thin',
-                '&::-webkit-scrollbar': {
-                  width: '0.4em',
+                mr: 1,
+                ml: -3,
+              }}
+            />
+            <Button
+              type="submit"
+              sx={{
+                ':hover': {
+                  bgcolor: `${alpha(theme.palette.background.main, 0.8)}`,
                 },
-                '&::-webkit-scrollbar-track': {
-                  background: '#f0e7e6',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#cfc9c8',
-                },
-                '&::-webkit-scrollbar-thumb:hover': {
-                  background: '#bab3b1',
-                },
-                maxHeight: '250px',
-                width: '100%',
-                minHeight: '50px',
-                top: `calc(100% - ${APPBAR_MOBILE - 34}px)`,
-                position: 'absolute',
-                bgcolor: 'white',
+                borderRadius: 0,
+                mr: -4.4,
+                py: 1,
+                px: 4,
+                backgroundColor: `${alpha(theme.palette.background.main, 0.9)}`,
               }}
             >
-              {recent?.map((item, index) => (
-                <Button
-                  type="submit"
-                  onClick={() => {
-                    setKeyWord(item);
-                    handleSearch();
-                  }}
-                  sx={{
-                    justifyContent: 'flex-start',
-                    color: 'black',
-                    px: 2,
-                    borderRadius: '0',
-                    fontWeight: 500,
-                    opacity: 0.7,
-                    '&:hover': {
-                      opacity: 0.9,
-                    },
-                  }}
-                  key={index}
-                >
-                  {item}
-                </Button>
-              ))}
-            </Stack>
-          )}
-        </SearchbarStyle>
-      </form>
-    </ClickAwayListener>
+              <Iconify icon="eva:search-fill" sx={{ color: 'white', width: 20, height: 20 }} />
+            </Button>
+            {open && (
+              <Stack
+                sx={{
+                  overflow: 'auto',
+                  scrollbarWidth: 'thin',
+                  '&::-webkit-scrollbar': {
+                    width: '0.4em',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: '#f0e7e6',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#cfc9c8',
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    background: '#bab3b1',
+                  },
+                  maxHeight: '250px',
+                  width: '100%',
+                  minHeight: '50px',
+                  top: `calc(100% - ${APPBAR_MOBILE - 34}px)`,
+                  position: 'absolute',
+                  bgcolor: 'white',
+                }}
+              >
+                {recent?.map((item, index) => (
+                  <Button
+                    type="submit"
+                    onClick={() => {
+                      setKeyWord(item);
+                      handleSearch();
+                    }}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      color: 'black',
+                      px: 2,
+                      borderRadius: '0',
+                      fontWeight: 500,
+                      opacity: 0.7,
+                      '&:hover': {
+                        opacity: 0.9,
+                      },
+                    }}
+                    key={index}
+                  >
+                    {item}
+                  </Button>
+                ))}
+              </Stack>
+            )}
+          </SearchbarStyle>
+        </form>
+      </ClickAwayListener>
+    )
   );
 }

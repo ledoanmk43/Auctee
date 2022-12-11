@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 )
@@ -25,15 +24,13 @@ type Response struct {
 	AuctionId uint    `json:"auction_id"`
 }
 
-var (
-	newline = []byte{'\n'}
-	space   = []byte{' '}
-)
-
 func (c *Client) Read() {
 	defer func() {
 		c.Pool.Unregister <- c
-		c.Conn.Close()
+		err := c.Conn.Close()
+		if err != nil {
+			return
+		}
 	}()
 
 	for {
@@ -44,15 +41,12 @@ func (c *Client) Read() {
 		}
 		var res Response
 		_ = json.Unmarshal(message, &res)
-		//log.Println(res)
 		userMessage := Message{Data: Response{
 			BidValue:  res.BidValue,
 			Nickname:  res.Nickname,
 			UserId:    res.UserId,
 			AuctionId: res.AuctionId,
 		}}
-		//log.Println(userMessage)
 		c.Pool.Broadcast <- userMessage
-		fmt.Printf("Message Received: %+v\n", userMessage.Data)
 	}
 }

@@ -82,7 +82,7 @@ func (a *AddressRepositoryDefault) UpdateAddress(userId uint, updateBody *dto.Up
 	if *addressToUpdate.IsDefault == true {
 		var addressCheckDefault *entity.Address
 		var countDefault int64
-		_ = a.db.Where("id != ? AND is_default = ?", updateBody.Id, true).Find(&addressCheckDefault).Count(&countDefault)
+		_ = a.db.Where("id != ? AND is_default = ? AND user_id = ?", updateBody.Id, true, userId).Find(&addressCheckDefault).Count(&countDefault)
 		if addressCheckDefault != nil || countDefault != 0 {
 			addressCheckDefault.IsDefault = utils.BoolAddr(false)
 			_ = a.db.Updates(&addressCheckDefault)

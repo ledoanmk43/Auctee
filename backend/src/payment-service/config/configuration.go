@@ -15,7 +15,10 @@ var DB *gorm.DB
 var err error
 
 func ConnectDatabase() {
-	if err := godotenv.Load(); err != nil {
+	const (
+		env = ".env"
+	)
+	if err := godotenv.Load(env); err != nil {
 		log.Println("Error loading .env in auction file")
 	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",

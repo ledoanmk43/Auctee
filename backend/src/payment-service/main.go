@@ -16,8 +16,8 @@ import (
 
 const (
 	ginPort               = ":1003"
-	grpcServerPortAccount = "localhost:50051"
-	grpcServerPortAuction = "localhost:50053"
+	grpcServerPortAccount = "account:50051"
+	grpcServerPortAuction = "auction:50053"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 	newRouter := utils.Router()
 
 	//Cookie
-	newRouter.Use(sessions.SessionsMany(config_account.NewSessions, config_account.CookieStore))
+	newRouter.Use(sessions.Sessions(config_account.CookieAuth, config_account.CookieStore))
 
 	paymentRepository := repository.NewPaymentRepositoryDefault(db)
 	paymentService := service.NewPaymentServiceDefault(paymentRepository)
@@ -44,10 +44,21 @@ func main() {
 	paymentRouter := route.NewPaymentRoute(paymentController, newRouter, accountSrvCtrl, accountClient)
 	paymentRouter.GetRouter()
 
+	//go func() {
 	if err := newRouter.Run(ginPort); err != nil {
-
-		fmt.Println("Open port is fail")
+		fmt.Println("Open port is fail: ", err)
 		return
 	}
+	//}()
+
+	//_, err := tls.LoadX509KeyPair("localhost.pem", "localhost-key.pem")
+	//if err != nil {
+	//	log.Fatalf("failed to load server key pairs: %v", err)
+	//}
+
+	//if err := newRouter.RunTLS(ginPort, "localhost.pem", "localhost-key.pem"); err != nil {
+	//	fmt.Println("Open port is fail: ", err)
+	//	return
+	//}
 	fmt.Println("Server is opened on port 1003")
 }

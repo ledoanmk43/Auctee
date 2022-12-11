@@ -38,10 +38,12 @@ export default function SearchProduct() {
   const [isFetching, setIsFetching] = useState(true);
 
   const handleSearchProduct = async (kw) => {
-    await fetch(`http://localhost:1009/auctee/auctions/products?product_name=${kw.toLowerCase()}`, {
+    await fetch(`http://localhost:8080/auctee/auctions/products?product_name=${kw.toLowerCase()}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -68,7 +70,6 @@ export default function SearchProduct() {
       handleSearchProduct(kwd);
     }
   }, [kwd, searchParams]);
-  // console.log(kwd);
 
   return isFetching ? (
     <Suspense startTransition callback={<></>}>

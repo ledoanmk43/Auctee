@@ -97,11 +97,13 @@ export default function UpdateProfileForm() {
       avatar: avatarFile,
     };
 
-    await fetch('http://localhost:1001/auctee/user/profile/setting', {
+    await fetch('http://localhost:8080/auctee/user/profile/setting', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsUpdated(true);

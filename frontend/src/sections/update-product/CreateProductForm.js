@@ -55,7 +55,6 @@ export default function CreateProductForm() {
   const [isFetching, setIsFetching] = useState(true);
   const [errMessage, setErrorMessage] = useState('');
 
-
   const defaultValues = {
     id: '',
     name: '',
@@ -86,11 +85,13 @@ export default function CreateProductForm() {
       product_options: optionList,
     };
 
-    await fetch('http://localhost:1002/auctee/user/product', {
+    await fetch('http://localhost:8080/auctee/user/product', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setError(false);

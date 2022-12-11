@@ -30,9 +30,13 @@ func (p *PaymentRoute) GetRouter() {
 		paymentRoute.GET("/user/checkout/all-bills", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.GetAllPaymentsForOwner)
 		paymentRoute.GET("/user/checkout/payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.GetPaymentByPaymentId)
 		paymentRoute.PUT("/user/checkout/shipping-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.UpdateAddressPayment)
-		paymentRoute.DELETE("/user/checkout/payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.DeletePayment)
-		paymentRoute.POST("/user/checkout/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutMoMo)                         //set checkout_status to true
-		paymentRoute.PUT("/user/checkout/cod-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutCOD)                            //set checkout_status to true
-		paymentRoute.PUT("/user/checkout/shipping-status-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.SetShippingStatusCompleted) //set checkout_status to true
+		paymentRoute.PUT("/user/checkout/cancel-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CancelPayment)
+		paymentRoute.POST("/user/checkout/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutMoMo)
+		//paymentRoute.POST("/user/ipn/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.MoMoIPNResult)
+		paymentRoute.PUT("/user/update/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.UpdateMoMoCheckOut)
+		paymentRoute.PUT("/user/checkout/cod-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutCOD)
+		paymentRoute.PUT("/user/checkout/shipping-confirm", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.SetShippingStatusDelivering)
+		paymentRoute.PUT("/user/checkout/shipping-status-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.SetShippingStatusCompleted)
+		paymentRoute.PUT("/user/checkout/checkout-status-done", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.SetCheckOutStatusDone)
 	}
 }

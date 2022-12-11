@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+  krakend:
+    # The :watch image restarts the service automatically when the configuration files change.
+    # Do not use this image in production, it's meant to speed up your testing and development.
+    image: devopsfaith/krakend:watch
+    volumes:
+      - ./src/api-gateway:/etc/krakend
+    ports:
+      - "8080:8080"
+    command: [ "run", "-d", "-c", "/etc/krakend/krakend.json" ]
   account:
     container_name: account
     image: auctee/account
@@ -20,6 +29,7 @@ services:
       - GRPC_SERVER_PORT=50051
       - KEY_PAIRS=lEDOAN
       - COOKIE_AUTH=user_token
+      - SECRET_KEY=KhoaLuan2022
 
   product:
     container_name: product
@@ -41,6 +51,7 @@ services:
       - ACCOUNT_SRV_HOST=account:50051
       - KEY_PAIRS=lEDOAN
       - COOKIE_AUTH=user_token
+      - SECRET_KEY=KhoaLuan2022
 
   auction:
     container_name: auction
@@ -50,7 +61,7 @@ services:
       dockerfile: ./src/auction-service/Dockerfile
     ports:
       - "1009:1009"
-      - "50051:50051"
+      - "50053:50053"
     environment:
       - DB_USER=root
       - DB_PASS=Ledoan070899
@@ -63,6 +74,7 @@ services:
       - PRODUCT_SRV_HOST=product:50052
       - KEY_PAIRS=lEDOAN
       - COOKIE_AUTH=user_token
+      - SECRET_KEY=KhoaLuan2022
   payment:
     container_name: payment
     image: auctee/payment
@@ -76,12 +88,13 @@ services:
       - DB_PASS=Ledoan070899
       - DB_HOST=host.docker.internal
       - DB_PORT=3306
-      - DB_NAME=auctee
+      - DB_NAME=aucteev1
       - GIN_PORT=1003
       - ACCOUNT_SRV_HOST=account:50051
       - AUCTION_SRV_HOST=auction:50053
       - KEY_PAIRS=lEDOAN
       - COOKIE_AUTH=user_token
+      - SECRET_KEY=KhoaLuan2022
       - MOMO_EP=https://test-payment.momo.vn/v2/gateway/api/create
-      - MOMO_ACCESS_KEY=F8BBA842ECF85
-      - MOMO_SECRET_KEY=K951B6PE1waDMi640xX08PD3vg6EkVlz
+      - MOMO_ACCESS_KEY=iPXneGmrJH0G8FOP
+      - MOMO_SECRET_KEY=sFcbSGRSJjwGxwhhcEktCHWYUuTuPNDB

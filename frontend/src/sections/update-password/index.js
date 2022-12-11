@@ -52,11 +52,13 @@ export default function ChangePasswordForm() {
       new_password: data.newpassword,
     };
 
-    await fetch('http://localhost:1001/auctee/user/profile', {
+    await fetch('http://localhost:8080/auctee/user/profile', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 200) {
         setIsUpdated(true);

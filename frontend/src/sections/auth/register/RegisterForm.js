@@ -52,11 +52,13 @@ export default function RegisterForm() {
       username: data.email,
       password: data.password,
     };
-    await fetch('http://localhost:1001/auctee/register', {
+    await fetch('http://localhost:8080/auctee/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
       credentials: 'include',
+
+      mode: 'cors',
     }).then((res) => {
       if (res.status === 201) {
         setLoggedIn(true);
