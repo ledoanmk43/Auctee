@@ -17,6 +17,7 @@ type IPaymentRepository interface {
 	UpdateAddressPayment(payment *entity.Payment) (*entity.Payment, error)
 	CancelPayment(paymentId string, userId uint) error
 	GetPaymentByPaymentId(paymentId string, userId uint) (*entity.Payment, error)
+	GetPaymentByPaymentIdSale(paymentId string, userId uint) (*entity.Payment, error)
 	GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error)
 	GetAllPaymentsForOwner(page int, ownerId uint) (*[]entity.Payment, error)
 }
@@ -184,6 +185,21 @@ func (p *PaymentRepositoryDefault) GetPaymentByPaymentId(paymentId string, userI
 	var payment *entity.Payment
 	var count int64
 	record := p.connection.Where("id = ? and winner_id = ?", paymentId, userId).Find(&payment).Count(&count)
+	if record.Error != nil {
+		log.Println("Error to find payment in repo")
+		return nil, record.Error
+	}
+	if count == 0 {
+		log.Println("GetPaymentById: payment not found", count)
+		return nil, errors.New("error: payment not found")
+	}
+	return payment, nil
+}
+
+func (p *PaymentRepositoryDefault) GetPaymentByPaymentIdSale(paymentId string, userId uint) (*entity.Payment, error) {
+	var payment *entity.Payment
+	var count int64
+	record := p.connection.Where("id = ? and owner_id = ?", paymentId, userId).Find(&payment).Count(&count)
 	if record.Error != nil {
 		log.Println("Error to find payment in repo")
 		return nil, record.Error

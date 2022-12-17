@@ -17,6 +17,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import PaymentDetail from './pages/PaymentDetail';
+import OrderDetail from './pages/OrderDetail';
 import SearchProduct from './pages/SearchProduct';
 import Sale from './pages/Sale';
 
@@ -42,6 +43,7 @@ export default function Router() {
         { path: 'user/sale/order', element: <Sale /> },
         { path: 'blog', element: <Blog /> },
         { path: 'user/order', element: <PaymentDetail /> },
+        { path: 'user/sale/detail/order', element: <OrderDetail /> },
       ],
     },
     {

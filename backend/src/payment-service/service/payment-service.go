@@ -11,6 +11,7 @@ type IPaymentService interface {
 	UpdateAddressPayment(payment *entity.Payment) (*entity.Payment, error)
 	CancelPayment(paymentId string, userId uint) error
 	GetPaymentByPaymentId(paymentId string, userId uint) (*entity.Payment, error)
+	GetPaymentByPaymentIdSale(paymentId string, userId uint) (*entity.Payment, error)
 	GetAllPaymentsForWinner(page int, winnerId uint) (*[]entity.Payment, error)
 	GetAllPaymentsForOwner(page int, winnerId uint) (*[]entity.Payment, error)
 }
@@ -71,6 +72,15 @@ func (p *PaymentServiceDefault) CancelPayment(paymentId string, userId uint) err
 
 func (p *PaymentServiceDefault) GetPaymentByPaymentId(paymentId string, userId uint) (*entity.Payment, error) {
 	paymentDetail, err := p.PaymentRepository.GetPaymentByPaymentId(paymentId, userId)
+	if err != nil {
+		log.Println("GetPaymentById: Error in get paymentDetail by Id", err)
+		return nil, err
+	}
+	return paymentDetail, nil
+}
+
+func (p *PaymentServiceDefault) GetPaymentByPaymentIdSale(paymentId string, userId uint) (*entity.Payment, error) {
+	paymentDetail, err := p.PaymentRepository.GetPaymentByPaymentIdSale(paymentId, userId)
 	if err != nil {
 		log.Println("GetPaymentById: Error in get paymentDetail by Id", err)
 		return nil, err

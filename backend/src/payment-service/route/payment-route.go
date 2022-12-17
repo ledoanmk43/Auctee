@@ -29,6 +29,7 @@ func (p *PaymentRoute) GetRouter() {
 		paymentRoute.GET("/user/checkout/payment-history", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.GetAllPaymentsForWinner)
 		paymentRoute.GET("/user/checkout/all-bills", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.GetAllPaymentsForOwner)
 		paymentRoute.GET("/user/checkout/payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.GetPaymentByPaymentId)
+		paymentRoute.GET("/user/sale/payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.GetPaymentByPaymentIdSale)
 		paymentRoute.PUT("/user/checkout/shipping-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.UpdateAddressPayment)
 		paymentRoute.PUT("/user/checkout/cancel-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CancelPayment)
 		paymentRoute.POST("/user/checkout/momo-payment", p.AccountSrvController.MiddlewareCheckIsAuth(), p.PaymentController.CheckoutMoMo)

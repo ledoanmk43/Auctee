@@ -987,6 +987,29 @@
           "disable_host_sanitize": false
         }
       ]
+    },
+    {
+      "endpoint": "/auctee/user/sale/payment",
+      "method": "GET",
+      "input_headers": [
+        "Cookie"
+      ],
+      "input_query_strings": [
+        "id"
+      ],
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auctee/user/sale/payment",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://payment:1003"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
     }
   ]
 }

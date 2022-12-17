@@ -2,7 +2,7 @@ import { useState, useEffect, lazy } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 // material
-import { Button, Typography, Stack, Tabs, Tab, Divider, Input } from '@mui/material';
+import { Button, Typography, Stack, Tabs, Tab, Divider, Input, Tooltip } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import RemoveShoppingCartOutlinedIcon from '@mui/icons-material/RemoveShoppingCartOutlined';
 import StorefrontIcon from '@mui/icons-material/Storefront';
@@ -194,44 +194,57 @@ export default function Sale() {
         </Stack>
         {/* Main */}
         <Stack sx={{ pt: 2 }} direction="row" alignItems="center" justifyContent="space-between">
-          <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
-            {paymentsData?.length} Đơn hàng
-          </Typography>
-          <SearchbarStyle>
-            <Input
-              disableUnderline
-              placeholder="Tìm kiếm đơn hàng"
-              inputProps={{
-                sx: {
-                  '&::placeholder': {
-                    fontSize: '0.87rem',
-                    opacity: 0.62,
-                    color: 'black',
-                    fontWeight: 200,
+          <Stack direction="row" alignItems="center">
+            <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
+              {paymentsData?.length} Đơn hàng
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center">
+            <Tooltip arrow enterDelay={500} placement="left" title="Làm mới">
+              <Button
+                onClick={() => handleFetchPaymentData()}
+                disableRipple
+                sx={{ borderRadius: '45%', p: 0.5, mx: 1 }}
+              >
+                <Icon fontSize={'1.5rem'} icon="ion:reload-circle-outline" color="orange" />
+              </Button>
+            </Tooltip>
+            <SearchbarStyle>
+              <Input
+                disableUnderline
+                placeholder="Tìm kiếm đơn hàng"
+                inputProps={{
+                  sx: {
+                    '&::placeholder': {
+                      fontSize: '0.87rem',
+                      opacity: 0.62,
+                      color: 'black',
+                      fontWeight: 200,
+                    },
                   },
-                },
-              }}
-              sx={{
-                mr: 1,
-                ml: -3,
-              }}
-            />
-            <Button
-              type="submit"
-              sx={{
-                ':hover': {
-                  bgcolor: `${alpha(theme.palette.background.main, 0.8)}`,
-                },
-                borderRadius: 0,
-                mr: -4.2,
-                py: 0.75,
-                px: 2,
-                backgroundColor: `${alpha(theme.palette.background.main, 0.9)}`,
-              }}
-            >
-              <Iconify icon="eva:search-fill" sx={{ color: 'white', width: 20, height: 20, fontSize: '0.9rem' }} />
-            </Button>
-          </SearchbarStyle>
+                }}
+                sx={{
+                  mr: 1,
+                  ml: -3,
+                }}
+              />
+              <Button
+                type="submit"
+                sx={{
+                  ':hover': {
+                    bgcolor: `${alpha(theme.palette.background.main, 0.8)}`,
+                  },
+                  borderRadius: 0,
+                  mr: -4.2,
+                  py: 0.75,
+                  px: 2,
+                  backgroundColor: `${alpha(theme.palette.background.main, 0.9)}`,
+                }}
+              >
+                <Iconify icon="eva:search-fill" sx={{ color: 'white', width: 20, height: 20, fontSize: '0.9rem' }} />
+              </Button>
+            </SearchbarStyle>
+          </Stack>
         </Stack>
         <Stack sx={{ mt: 1 }}>
           <Box sx={{ width: '100%' }}>
@@ -380,7 +393,26 @@ export default function Sale() {
                           </Button>
                         )}
                       </Stack>
-                      <Stack justifyContent="flex-end" direction="row" alignItems="flex-end">
+                      <Stack maxHeight={20} justifyContent="flex-end" direction="row" alignItems="center">
+                        <Button
+                          onClick={() => {
+                            navigate(`/auctee/user/sale/detail/order?id=${payment.id}`);
+                          }}
+                          disableRipple
+                          sx={{ mx: 1, borderRadius: 0.4, opacity: 0.9, color: 'inherit' }}
+                        >
+                          <Typography
+                            variant="button"
+                            sx={{
+                              textTransform: 'none',
+                              fontSize: '0.8rem',
+                              px: 0.5,
+                            }}
+                          >
+                            Chi tiết đơn hàng
+                          </Typography>
+                        </Button>
+
                         <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
                           ID: &nbsp;
                         </Typography>
@@ -415,6 +447,7 @@ export default function Sale() {
                             currency: 'VND',
                           })}
                         </Typography>
+
                         {payment.shipping_status === 1 && (
                           <Stack sx={{}} width="100%" direction="row" justifyContent="flex-end">
                             <Button
@@ -438,6 +471,7 @@ export default function Sale() {
                         {payment.shipping_status === 2 && (
                           <Stack sx={{}} width="100%" direction="row" justifyContent="flex-end">
                             <Button
+                              disabled={payment.checkout_status === 4}
                               color="error"
                               size="medium"
                               variant="contained"

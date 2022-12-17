@@ -451,7 +451,7 @@ export default function Purchase() {
                               textTransform: 'none',
                             }}
                             onClick={() => {
-                              navigate(`/auctee/user/order/?id=${payment.id}`);
+                              navigate(`/auctee/user/order?id=${payment.id}`);
                             }}
                           >
                             Chi tiết đơn hàng

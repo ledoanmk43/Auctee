@@ -33,6 +33,7 @@ type IPaymentController interface {
 	GetAllPaymentsForWinner(ctx *gin.Context)
 	GetAllPaymentsForOwner(ctx *gin.Context)
 	GetPaymentByPaymentId(ctx *gin.Context)
+	GetPaymentByPaymentIdSale(ctx *gin.Context)
 	CheckoutMoMo(ctx *gin.Context)
 	CheckoutCOD(ctx *gin.Context)
 	SetShippingStatusCompleted(ctx *gin.Context)
@@ -306,7 +307,7 @@ func (p *PaymentController) CheckoutMoMo(ctx *gin.Context) {
 	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
 	reqID, _ := flake.NextID()
 
-	redirectToThisURL := fmt.Sprintf("https://localhost:3000/auctee/user/order/?id=%s",
+	redirectToThisURL := fmt.Sprintf("https://localhost:3000/auctee/user/order?id=%s",
 		paymentBody.Id,
 	)
 
@@ -902,6 +903,42 @@ func (p *PaymentController) GetPaymentByPaymentId(ctx *gin.Context) {
 	}
 
 	paymentDetail, err := p.PaymentService.GetPaymentByPaymentId(paymentId, claims.UserId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "payment not found",
+		})
+		log.Println("GetPaymentById: Error in package controller", err)
+		ctx.Abort()
+		return
+	}
+
+	ctx.JSON(http.StatusOK, paymentDetail)
+
+}
+
+func (p *PaymentController) GetPaymentByPaymentIdSale(ctx *gin.Context) {
+	paymentId := ctx.Query(payment_config.Id)
+
+	authSession := sessions.Default(ctx)
+	tokenFromCookie := authSession.Get(account_config.CookieAuth)
+	if tokenFromCookie == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "no cookie",
+		})
+		ctx.Abort()
+		return
+	}
+	claims, errExtract := token.ExtractToken(tokenFromCookie.(string))
+	if errExtract != nil || len(tokenFromCookie.(string)) == 0 {
+		log.Println("Error: Error when extracting token in controller: ", errExtract)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		ctx.Abort()
+		return
+	}
+
+	paymentDetail, err := p.PaymentService.GetPaymentByPaymentIdSale(paymentId, claims.UserId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "payment not found",
