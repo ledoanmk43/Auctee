@@ -41,7 +41,7 @@ import { ReloadContext } from '../../utils/Context';
 const customStyles = {
   option: (provided, state) => ({
     ...provided,
-    color: state.isSelected && '#f44336',
+    color: state.isSelected && '#F62217',
     backgroundColor: state.isSelected && 'white',
   }),
   control: (base, state) => ({
@@ -52,7 +52,7 @@ const customStyles = {
     borderRadius: 8,
     marginBottom: '4%',
     boxShadow: 'none',
-    border: state.isFocused && '1px solid #f44336 !important',
+    border: state.isFocused && '1px solid #F62217 !important',
     '&:hover': {
       border: '1px solid black',
     },
@@ -469,7 +469,7 @@ export default function UpdateAddressForm({ auction, handleDelete, index }) {
                 disabled={auction.winner_id > 0 && auction.is_active === true}
                 disableRipple
                 color="error"
-                sx={{ px: 3, position: 'absolute', right: 24 }}
+                sx={{ px: 3, position: 'absolute', right: 24, bgcolor: '#F62217' }}
                 size="medium"
                 type="submit"
                 variant="contained"
@@ -566,7 +566,7 @@ export default function UpdateAddressForm({ auction, handleDelete, index }) {
                 ml: 1,
                 width: '62px',
                 color: 'white',
-                bgcolor: '#f44336',
+                bgcolor: '#F62217',
               }}
               onClick={() => {
                 handleDelete(auction);

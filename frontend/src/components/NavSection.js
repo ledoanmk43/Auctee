@@ -119,7 +119,7 @@ NavSection.propTypes = {
   navConfig: PropTypes.array,
 };
 
-export default function NavSection({ navConfig, ...other }) {
+export default function NavSection({ navConfig, isAdmin, ...other }) {
   const { pathname } = useLocation();
 
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
@@ -127,9 +127,13 @@ export default function NavSection({ navConfig, ...other }) {
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
-        {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
-        ))}
+        {navConfig.map((item, index) =>
+          isAdmin === 1 ? (
+            <NavItem key={item.title} item={item} active={match} />
+          ) : (
+            index !== 2 && <NavItem key={item.title} item={item} active={match} />
+          )
+        )}
       </List>
     </Box>
   );

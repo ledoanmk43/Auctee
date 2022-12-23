@@ -260,14 +260,14 @@ export default function Sale() {
                     px: 4,
                   },
                   '& button:hover': {
-                    color: '#f44336',
+                    color: '#F62217',
                   },
                   '& button.Mui-selected': {
-                    color: '#f44336',
+                    color: '#F62217',
                   },
                 }}
                 textColor="primary"
-                TabIndicatorProps={{ style: { background: '#f44336' } }}
+                TabIndicatorProps={{ style: { background: '#F62217' } }}
                 value={value}
                 onChange={handleChange}
                 aria-label="secondary tabs example"
@@ -291,7 +291,7 @@ export default function Sale() {
                           variant="button"
                           sx={{
                             textTransform: 'none',
-                            bgcolor: '#f44336',
+                            bgcolor: '#F62217',
                             color: 'white',
                             borderRadius: 0.5,
                             fontSize: '0.7rem',
@@ -438,15 +438,32 @@ export default function Sale() {
                       </Stack>
                       {/* Total */}
                       <Stack alignItems="flex-end" flex={1.7}>
-                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
-                          Tổng số tiền tạm tính:
-                        </Typography>
-                        <Typography color="#f44336">
-                          {(payment.before_discount + payment.shipping_value).toLocaleString('tr-TR', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })}
-                        </Typography>
+                        {payment.total > 0 ? (
+                          <>
+                            <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                              Tổng tiền thanh toán:
+                            </Typography>
+                            <Typography color="#F62217">
+                              {payment.total.toLocaleString('tr-TR', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })}
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            {' '}
+                            <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                              Tổng số tiền tạm tính:
+                            </Typography>
+                            <Typography color="#F62217">
+                              {payment.before_discount.toLocaleString('tr-TR', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })}
+                            </Typography>
+                          </>
+                        )}
 
                         {payment.shipping_status === 1 && (
                           <Stack sx={{}} width="100%" direction="row" justifyContent="flex-end">
@@ -457,7 +474,7 @@ export default function Sale() {
                               disableRipple
                               sx={{
                                 borderRadius: 0.4,
-                                bgcolor: '#f44336',
+                                bgcolor: '#F62217',
                                 color: 'white',
                                 px: 1.5,
                                 textTransform: 'none',
@@ -478,7 +495,7 @@ export default function Sale() {
                               disableRipple
                               sx={{
                                 borderRadius: 0.4,
-                                bgcolor: '#f44336',
+                                bgcolor: '#F62217',
                                 color: 'white',
                                 px: 1.5,
                                 textTransform: 'none',
@@ -500,7 +517,7 @@ export default function Sale() {
                               disableRipple
                               sx={{
                                 borderRadius: 0.4,
-                                bgcolor: '#f44336',
+                                bgcolor: '#F62217',
                                 color: 'white',
                                 px: 1.5,
                                 textTransform: 'none',

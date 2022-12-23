@@ -57,6 +57,7 @@ func init() {
 	keyPairs := []byte(os.Getenv("KEY_PAIRS"))
 	CookieStore = cookie.NewStore(keyPairs)
 	CookieStore.Options(sessions.Options{
+		Path:     "/",
 		MaxAge:   60 * 60 * 24 * 7,
 		HttpOnly: true, // prevent from FE to be accessed from client using script
 		Secure:   true, //use in https. It means enable this line when deploying the project

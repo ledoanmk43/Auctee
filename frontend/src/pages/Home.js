@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, useContext, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // material
-import { Container, Stack, Typography, Button } from '@mui/material';
+import { Container, Stack, Typography, Button, CardMedia, Card } from '@mui/material';
 // components
 import { ProductSort, ProductList, ProductFilterSidebar } from '../sections/@dashboard/products';
 import { LoginContext } from '../utils/Context';
@@ -82,19 +82,19 @@ export default function EcommerceShop() {
       title="Auctee"
     >
       <Container>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          Tất cả sản phẩm đang được đấu giá
-        </Typography>
-        <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
-          <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-            <ProductFilterSidebar
+        <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
+          <CardMedia component="img" height="300" image="/static/banner1.jpg" alt="banner" />
+
+          {/* <ProductFilterSidebar
               isOpenFilter={openFilter}
               onOpenFilter={handleOpenFilter}
               onCloseFilter={handleCloseFilter}
             />
-            <ProductSort />
-          </Stack>
+            <ProductSort /> */}
         </Stack>
+        <Typography variant="h4" sx={{ mb: 2 }}>
+          Tất cả sản phẩm đang được đấu giá
+        </Typography>
         {auctionsData && <ProductList auctions={auctionsData} />}
       </Container>
     </Page>

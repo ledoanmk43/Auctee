@@ -43,9 +43,9 @@ export default function AccountPopover({ userData }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        mode: 'cors',
       }).then((res) => {
         if (res.status === 200) {
+          document.cookie = 'user_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/auctee;';
           setLoggedIn(false);
           navigate('/auctee/login');
         }

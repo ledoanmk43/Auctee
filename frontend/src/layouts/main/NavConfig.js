@@ -25,6 +25,15 @@ const navConfig = [
       { title: 'Thống kê đơn hàng', path: '/auctee/user/sale/order' },
     ],
   },
+  {
+    title: 'Dành cho quản trị viên',
+    icon: getIcon('ri:admin-line'),
+    children: [
+      { title: 'Tổng quan', path: '/auctee/user/administrator/dashboard' },
+      { title: 'Tất cả tài khoản', path: '/auctee/user/administrator/accounts' },
+      { title: 'Các đơn vị vận chuyển', path: '/auctee/user/sale/order' },
+    ],
+  },
 ];
 
 export default navConfig;

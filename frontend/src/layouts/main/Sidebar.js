@@ -76,7 +76,7 @@ export default function DashboardSidebar({ userData }) {
         </Link>
       </Box>
       <Divider sx={{ ml: '15%', width: '70%' }} />
-      <NavSection navConfig={navConfig} />
+      <NavSection isAdmin={userData.role} navConfig={navConfig} />
     </Scrollbar>
   );
 

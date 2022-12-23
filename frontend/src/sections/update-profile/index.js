@@ -1,7 +1,6 @@
 import { useState, useEffect, lazy } from 'react';
 import { Link as RouterLink, useNavigate, useLocation, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import FileBase64 from 'react-file-base64';
 // material
 import {
   Container,
@@ -158,7 +157,7 @@ export default function UpdateProfileForm() {
       <Stack direction="row" sx={{ p: 2 }}>
         <Stack sx={{ flex: 2 }}>
           <Stack direction="row" fontStyle="italic" sx={{ pb: 3, ml: 0.5 }}>
-            <Typography variant="body2" sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9 }}>
+            <Typography variant="body2" sx={{ color: '#F62217', minWidth: '100px', opacity: 0.9 }}>
               Mẹo: &nbsp;Duy trì điểm uy tín trên 80 để được tham gia đấu giá
             </Typography>
           </Stack>
@@ -336,7 +335,7 @@ export default function UpdateProfileForm() {
         <LoadingButton
           disableRipple
           color="error"
-          sx={{ px: 3, position: 'absolute', left: '156px' }}
+          sx={{ px: 3, position: 'absolute', left: '156px', bgcolor: '#F62217' }}
           size="medium"
           type="submit"
           variant="contained"

@@ -727,7 +727,7 @@ export default function CreateProductForm() {
             <LoadingButton
               disableRipple
               color="error"
-              sx={{ px: 3, position: 'absolute', right: 24 }}
+              sx={{ px: 3, position: 'absolute', right: 24, bgcolor: '#F62217' }}
               size="medium"
               type="submit"
               variant="contained"

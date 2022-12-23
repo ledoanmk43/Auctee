@@ -532,9 +532,9 @@ export default function OrderDetail() {
           <Stack sx={{ flex: 2 }}>
             <Stack sx={{ ml: 0.5 }}>
               <Stack direction="row">
-                <Icon icon="material-symbols:location-on-outline-rounded" color="#f44336" fontSize="1.4rem" />
+                <Icon icon="material-symbols:location-on-outline-rounded" color="#F62217" fontSize="1.4rem" />
                 <Stack sx={{ ml: 1 }}>
-                  <Typography fontSize="1rem" color="#f44336">
+                  <Typography fontSize="1rem" color="#F62217">
                     Địa chỉ nhận hàng
                   </Typography>
                   {selectedAddress ? (
@@ -644,7 +644,7 @@ export default function OrderDetail() {
                 <Typography variant="caption" sx={{ fontSize: '0.9rem', opacity: 0.8 }}>
                   Tồng cộng:
                 </Typography>
-                <Typography sx={{ ml: 2 }} color="#f44336">
+                <Typography sx={{ ml: 2 }} color="#F62217">
                   {(paymentData.before_discount + shippingFee).toLocaleString('tr-TR', {
                     style: 'currency',
                     currency: 'VND',
@@ -679,9 +679,9 @@ export default function OrderDetail() {
                       <Radio
                         sx={{
                           p: 0.7,
-                          color: '#f44336',
+                          color: '#F62217',
                           '&.Mui-checked': {
-                            color: '#f44336',
+                            color: '#F62217',
                           },
                         }}
                         disabled={paymentData.checkout_status !== 1}
@@ -706,9 +706,9 @@ export default function OrderDetail() {
                       <Radio
                         sx={{
                           p: 0.7,
-                          color: '#f44336',
+                          color: '#F62217',
                           '&.Mui-checked': {
-                            color: '#f44336',
+                            color: '#F62217',
                           },
                         }}
                         disabled={paymentData.checkout_status !== 1}
@@ -787,7 +787,7 @@ export default function OrderDetail() {
                       sx={{
                         ml: 1,
                         color: 'white',
-                        bgcolor: '#f44336',
+                        bgcolor: '#F62217',
                         textTransform: 'none',
                       }}
                       onClick={() => handleCancel(paymentData.id)}
@@ -806,7 +806,7 @@ export default function OrderDetail() {
                       disableRipple
                       sx={{
                         borderRadius: 0.4,
-                        bgcolor: '#f44336',
+                        bgcolor: '#F62217',
                         color: 'white',
                         px: 1.5,
                         textTransform: 'none',
@@ -827,7 +827,7 @@ export default function OrderDetail() {
                       disableRipple
                       sx={{
                         borderRadius: 0.4,
-                        bgcolor: '#f44336',
+                        bgcolor: '#F62217',
                         color: 'white',
                         px: 1.5,
                         textTransform: 'none',
@@ -849,7 +849,7 @@ export default function OrderDetail() {
                       disableRipple
                       sx={{
                         borderRadius: 0.4,
-                        bgcolor: '#f44336',
+                        bgcolor: '#F62217',
                         color: 'white',
                         px: 1.5,
                         textTransform: 'none',

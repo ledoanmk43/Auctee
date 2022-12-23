@@ -304,10 +304,10 @@ const BidSection = ({ product, auction }) => {
                 ml: 1,
                 textTransform: 'none',
                 color: 'white',
-                bgcolor: '#f44336',
+                bgcolor: '#F62217',
               }}
               onClick={() => {
-                navigate(`/auctee/user/order/?id=${paymentId}`);
+                navigate(`/auctee/user/order?id=${paymentId}`);
               }}
               autoFocus
             >
@@ -323,10 +323,10 @@ const BidSection = ({ product, auction }) => {
                 ml: 1,
                 textTransform: 'none',
                 color: 'white',
-                bgcolor: '#f44336',
+                bgcolor: '#F62217',
               }}
               onClick={() => {
-                navigate(`/auctee/user/order/?id=${paymentId}`);
+                navigate(`/auctee/user/order?id=${paymentId}`);
               }}
               autoFocus
             >

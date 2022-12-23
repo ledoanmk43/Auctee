@@ -14,7 +14,7 @@ type Payment struct {
 	ProductName string `json:"product_name" gorm:"type:nvarchar(100);not null"`
 	Shopname    string `json:"shopname" gorm:"type:nvarchar(100);not null"`
 	EndTime     string `json:"end_time" gorm:"type:datetime;not null"`
-	OwnerId     uint   `gorm:"not null" json:"-"`
+	OwnerId     uint   `gorm:"not null" json:"owner_id"`
 	WinnerId    uint   `gorm:"not null" json:"winner_id"`
 	ImagePath   string `json:"image_path" gorm:"type:mediumtext"`
 	Quantity    int    `json:"quantity" gorm:"type:nvarchar(100);not null"`

@@ -50,7 +50,7 @@ export default function ShopProductCard({ auction }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/auctee/auction/detail/?id=${auction.Id}&product=${auction.product_id}`);
+    navigate(`/auctee/auction/detail?id=${auction.Id}&product=${auction.product_id}`);
   };
   return (
     <Stack

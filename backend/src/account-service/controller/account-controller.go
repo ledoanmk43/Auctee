@@ -189,16 +189,18 @@ func (a *AccountController) RefreshToken(ctx *gin.Context) {
 
 func (a *AccountController) SignOut(ctx *gin.Context) {
 	authSession := sessions.Default(ctx)
+	log.Println(authSession.Get(config.CookieAuth))
 	authSession.Set(config.CookieAuth, "")
 	authSession.Clear()
-	authSession.Options(sessions.Options{MaxAge: -1})
+	log.Println(authSession.Get(config.CookieAuth))
+	authSession.Options(sessions.Options{Path: "/", MaxAge: -1, SameSite: http.SameSiteNoneMode, Secure: true, HttpOnly: true})
 	authSession.Delete(config.CookieAuth)
 	if err := authSession.Save(); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "log out successfully"})
-
+	ctx.Redirect(301, "/auctee/login")
 }
 
 func (a *AccountController) UpdatePassword(ctx *gin.Context) {
@@ -237,19 +239,18 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 
 	if errUpdate != nil {
 		if errUpdate.Error() == "wrong password" {
-			ctx.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"message": errUpdate.Error(),
 			})
-			ctx.Abort()
-			return
+
 		}
 		if errUpdate.Error() == "new password must not be the same as old password" {
 			ctx.JSON(http.StatusConflict, gin.H{
 				"message": errUpdate.Error(),
 			})
-			ctx.Abort()
-			return
 		}
+		ctx.Abort()
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

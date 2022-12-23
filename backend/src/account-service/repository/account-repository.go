@@ -179,6 +179,29 @@ func (a *AccountRepositoryDefault) GetUserByUserId(userId uint) (*entity.Account
 	if user.Id == 0 {
 		return nil, errors.New("user not found")
 	}
+	if user.Role == 1 {
+		var sum float64
+		var uCount uint
+		err := a.db.Table("accounts").Select("sum(total_income)").Row().Scan(&sum)
+		if err != nil {
+			return nil, err
+		}
+		user.SystemBalance = sum
+		err = a.db.Table("accounts").Select("count(id)").Row().Scan(&uCount)
+		if err != nil {
+			return nil, err
+		}
+		user.TotalUser = uCount
+
+		var users []entity.Account
+		record := a.db.Where("id != 0").Find(&users)
+		if record.Error != nil {
+			log.Println("Get List user in Admin got error: ", record.Error)
+			return nil, record.Error
+		}
+		log.Println(users)
+		user.Users = users
+	}
 	return user, nil
 }
 

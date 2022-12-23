@@ -44,6 +44,9 @@ export default function ChangePasswordForm() {
 
   const onSubmit = async (data) => {
     if (data.confirmpassword !== data.newpassword) {
+      setIsUpdated(false);
+      setIsWrongPwd(false);
+      setIsSamePwd(false);
       setIsWrongConfirm(true);
       return;
     }
@@ -51,6 +54,13 @@ export default function ChangePasswordForm() {
       old_password: data.oldpassword,
       new_password: data.newpassword,
     };
+    if (payload.old_password === payload.new_password) {
+      setIsUpdated(false);
+      setIsWrongConfirm(false);
+      setIsWrongPwd(false);
+      setIsSamePwd(true);
+      return;
+    }
 
     await fetch('http://localhost:8080/auctee/user/profile', {
       method: 'PUT',
@@ -67,13 +77,13 @@ export default function ChangePasswordForm() {
         setIsWrongConfirm(false);
         navigate(0);
       }
-      if (res.status === 409) {
-        setIsSamePwd(true);
-        setIsUpdated(false);
-        setIsWrongPwd(false);
-        setIsWrongConfirm(false);
-      }
-      if (res.status === 400) {
+      // if (res.status === 409 || res.status === 500) {
+      //   setIsSamePwd(true);
+      //   setIsUpdated(false);
+      //   setIsWrongPwd(false);
+      //   setIsWrongConfirm(false);
+      // }
+      if (res.status === 401) {
         setIsWrongPwd(true);
         setIsSamePwd(false);
         setIsUpdated(false);
@@ -220,7 +230,7 @@ export default function ChangePasswordForm() {
         <LoadingButton
           disableRipple
           color="error"
-          sx={{ px: 3 }}
+          sx={{ px: 3, bgcolor: '#F62217' }}
           size="medium"
           type="submit"
           variant="contained"

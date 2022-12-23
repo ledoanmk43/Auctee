@@ -42,7 +42,6 @@ export default function AuctionList() {
   // User information
   const [auctionsData, setAuctionData] = useState();
 
-  // Get user's data base on access_token
   const handleFetchAuctionData = async () => {
     await fetch('http://localhost:8080/auctee/user/auctions', {
       method: 'GET',
@@ -276,7 +275,7 @@ export default function AuctionList() {
                   </Typography>
                   <Stack sx={{ ml: 2, pl: 2, borderLeft: '2px solid grey' }}>
                     <Link
-                      to={`/auctee/auction/detail/?id=${auction.Id}&product=${auction.product_id}`}
+                      to={`/auctee/auction/detail?id=${auction.Id}&product=${auction.product_id}`}
                       style={{
                         color: 'inherit',
                         textDecoration: 'none',
@@ -347,7 +346,7 @@ export default function AuctionList() {
                           </Stack>
                           {auction.winner_id ? (
                             <Link
-                              to={`/auctee/auction/detail/?id=${auction.Id}&product=${auction.product_id}`}
+                              to={`/auctee/auction/detail?id=${auction.Id}&product=${auction.product_id}`}
                               variant="body1"
                               style={{
                                 fontSize: '0.8rem',

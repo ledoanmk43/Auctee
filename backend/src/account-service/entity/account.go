@@ -5,28 +5,35 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"strings"
+	"time"
 )
 
 type Account struct {
 	gorm.Model     `json:"-"`
-	Id             uint    `json:"id" gorm:"primaryKey"`
-	Username       string  `json:"username" gorm:"type:nvarchar(100);not null"`
-	Password       string  `json:"password,omitempty" gorm:"type:nvarchar(100);not null"`
-	Firstname      string  `json:"firstname" gorm:"type:nvarchar(100);not null"`
-	Lastname       string  `json:"lastname" gorm:"type:nvarchar(100);not null"`
-	Birthday       string  `json:"birthday" gorm:"type:nvarchar(100)"`
-	Phone          string  `json:"phone" gorm:"type:nvarchar(100)"`
-	Email          string  `json:"email" gorm:"type:nvarchar(100)"`
-	Gender         *bool   `json:"gender" gorm:"type:boolean;default:true"`
-	Country        string  `json:"country" gorm:"type:nvarchar(100)"`
-	Language       string  `json:"language" gorm:"type:nvarchar(100)"`
-	Token          string  `gorm:"-" json:"token,omitempty"`
-	Shopname       string  `json:"shopname" gorm:"type:nvarchar(100);not null"`
-	TotalIncome    float64 `json:"total_income" gorm:"type:double;not null;default:500000"`
-	Avatar         string  `json:"avatar" gorm:"type:mediumtext"`
-	Nickname       string  `json:"nickname" gorm:"type:nvarchar(100);not null"`
-	PresentAuction uint    `json:"present_auction"`
-	HonorPoint     uint    `json:"honor_point" gorm:"default:90"`
+	CreatedAt      time.Time `json:"created_at"`
+	Id             uint      `json:"id" gorm:"primaryKey"`
+	Username       string    `json:"username" gorm:"type:nvarchar(100);not null"`
+	Password       string    `json:"password,omitempty" gorm:"type:nvarchar(100);not null"`
+	Firstname      string    `json:"firstname" gorm:"type:nvarchar(100);not null"`
+	Lastname       string    `json:"lastname" gorm:"type:nvarchar(100);not null"`
+	Birthday       string    `json:"birthday" gorm:"type:nvarchar(100)"`
+	Phone          string    `json:"phone" gorm:"type:nvarchar(100)"`
+	Email          string    `json:"email" gorm:"type:nvarchar(100)"`
+	Gender         *bool     `json:"gender" gorm:"type:boolean;default:true"`
+	Country        string    `json:"country" gorm:"type:nvarchar(100)"`
+	Language       string    `json:"language" gorm:"type:nvarchar(100)"`
+	Token          string    `gorm:"-" json:"token,omitempty"`
+	Shopname       string    `json:"shopname" gorm:"type:nvarchar(100);not null"`
+	TotalIncome    float64   `json:"total_income" gorm:"type:double;not null;default:500000"`
+	Avatar         string    `json:"avatar" gorm:"type:mediumtext"`
+	Nickname       string    `json:"nickname" gorm:"type:nvarchar(100);not null"`
+	PresentAuction uint      `json:"present_auction"`
+	HonorPoint     uint      `json:"honor_point" gorm:"default:90"`
+	Role           uint      `json:"role" gorm:"default:0"` // 0: normal user 1: admin user
+	// Additional data for admin
+	SystemBalance float64   `json:"system_balance" gorm:"-"`
+	TotalUser     uint      `json:"total_user" gorm:"-"`
+	Users         []Account `json:"users_list" gorm:"-"`
 }
 
 func (user *Account) HashPassword(password string) error {

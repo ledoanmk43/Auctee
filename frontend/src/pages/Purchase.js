@@ -70,7 +70,7 @@ export default function Purchase() {
     }).then((res) => {
       if (res.status === 200) {
         setIsFetching(false);
-        navigate(`/auctee/user/order/?id=${payment.id}`);
+        navigate(`/auctee/user/order?id=${payment.id}`);
       }
       if (res.status === 401) {
         alert('You need to login first');
@@ -83,6 +83,11 @@ export default function Purchase() {
   const [value, setValue] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
 
+  const [countAll, setCountAll] = useState();
+  const [countProcessing, setCountProcessing] = useState();
+  const [countShipping, setCountShipping] = useState();
+  const [countShipped, setCountShipped] = useState();
+  const [countCancelled, setCountCancelled] = useState();
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setFilteredData([]);
@@ -173,7 +178,7 @@ export default function Purchase() {
               <Typography
                 fontStyle="italic"
                 variant="body2"
-                sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9, mt: 2 }}
+                sx={{ color: '#F62217', minWidth: '100px', opacity: 0.9, mt: 2 }}
               >
                 Mẹo: &nbsp;Số dư trong ví phải lớn hơn giá trị của sản phầm bạn muốn tham gia đấu giá
               </Typography>
@@ -182,8 +187,7 @@ export default function Purchase() {
           <Stack justifyContent="center" alignItems="flex-start" direction="row">
             <LoadingButton
               disableRipple
-              color="error"
-              sx={{ px: 3, textTransform: 'none' }}
+              sx={{ px: 3, textTransform: 'none', bgcolor: '#F62217' }}
               size="medium"
               type="submit"
               variant="contained"
@@ -206,14 +210,14 @@ export default function Purchase() {
                     px: 4,
                   },
                   '& button:hover': {
-                    color: '#f44336',
+                    color: '#F62217',
                   },
                   '& button.Mui-selected': {
-                    color: '#f44336',
+                    color: '#F62217',
                   },
                 }}
                 textColor="primary"
-                TabIndicatorProps={{ style: { background: '#f44336' } }}
+                TabIndicatorProps={{ style: { background: '#F62217' } }}
                 value={value}
                 onChange={handleChange}
                 aria-label="secondary tabs example"
@@ -236,7 +240,7 @@ export default function Purchase() {
                         variant="button"
                         sx={{
                           textTransform: 'none',
-                          bgcolor: '#f44336',
+                          bgcolor: '#F62217',
                           color: 'white',
                           borderRadius: 0.5,
                           fontSize: '0.7rem',
@@ -256,6 +260,7 @@ export default function Purchase() {
                         {payment.shopname}
                       </Link>
                       <Button
+                        onClick={() => navigate(`/auctee/shop/profile?id=${payment.owner_id}`)}
                         disableRipple
                         sx={{ ml: 1.5, border: '1px solid black', borderRadius: 0.4, opacity: 0.9, color: 'inherit' }}
                       >
@@ -385,15 +390,33 @@ export default function Purchase() {
                       </Stack>
                       {/* Total */}
                       <Stack alignItems="flex-end" flex={1.7}>
-                        <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
-                          Tổng số tiền tạm tính:
-                        </Typography>
-                        <Typography color="#f44336">
-                          {payment.before_discount.toLocaleString('tr-TR', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })}
-                        </Typography>
+                        {payment.total > 0 ? (
+                          <>
+                            <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                              Tổng tiền thanh toán:
+                            </Typography>
+                            <Typography color="#F62217">
+                              {payment.total.toLocaleString('tr-TR', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })}
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            {' '}
+                            <Typography sx={{ fontSize: '0.85rem' }} variant="caption">
+                              Tổng số tiền tạm tính:
+                            </Typography>
+                            <Typography color="#F62217">
+                              {payment.before_discount.toLocaleString('tr-TR', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })}
+                            </Typography>
+                          </>
+                        )}
+
                         {payment.checkout_status === 3 && payment.total === 0 ? (
                           <Stack width="100%" direction="row" justifyContent="space-between">
                             <Button
@@ -414,7 +437,7 @@ export default function Purchase() {
                                 },
                               }}
                               onClick={() => {
-                                navigate(`/auctee/user/order/?id=${payment.id}`);
+                                navigate(`/auctee/user/order?id=${payment.id}`);
                               }}
                             >
                               Chi tiết đơn hàng
@@ -427,7 +450,7 @@ export default function Purchase() {
                               disableRipple
                               sx={{
                                 borderRadius: 0.4,
-                                bgcolor: '#f44336',
+                                bgcolor: '#F62217',
                                 color: 'white',
                                 px: 1.5,
                                 textTransform: 'none',
@@ -445,7 +468,7 @@ export default function Purchase() {
                             disableRipple
                             sx={{
                               borderRadius: 0.4,
-                              bgcolor: '#f44336',
+                              bgcolor: '#F62217',
                               color: 'white',
                               px: 1.5,
                               textTransform: 'none',

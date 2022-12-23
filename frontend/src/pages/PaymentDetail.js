@@ -284,7 +284,7 @@ export default function PaymentDetail() {
         if (res.status === 200) {
           // res.json().then((data) => {
           setPaymentStatus('Đang vận chuyển');
-          window.location.reload(`/auctee/user/order/?id=${payload.id}`);
+          window.location.reload(`/auctee/user/order?id=${payload.id}`);
           // });
         }
         if (res.status === 401) {
@@ -561,9 +561,9 @@ export default function PaymentDetail() {
           <Stack sx={{ flex: 2 }}>
             <Stack sx={{ ml: 0.5 }}>
               <Stack direction="row">
-                <Icon icon="material-symbols:location-on-outline-rounded" color="#f44336" fontSize="1.4rem" />
+                <Icon icon="material-symbols:location-on-outline-rounded" color="#F62217" fontSize="1.4rem" />
                 <Stack sx={{ ml: 1 }}>
-                  <Typography fontSize="1rem" color="#f44336">
+                  <Typography fontSize="1rem" color="#F62217">
                     Địa chỉ nhận hàng
                   </Typography>
                   {userAddresses?.length > 0 ? (
@@ -751,7 +751,7 @@ export default function PaymentDetail() {
                               }}
                               disableRipple
                               color="error"
-                              sx={{ px: 3, position: 'absolute', right: 1, textTransform: 'none' }}
+                              sx={{ px: 3, position: 'absolute', right: 1, textTransform: 'none', bgcolor: '#F62217' }}
                               size="medium"
                               type="submit"
                               variant="contained"
@@ -787,7 +787,7 @@ export default function PaymentDetail() {
               <Typography
                 fontStyle="italic"
                 variant="body2"
-                sx={{ color: '#f44336', minWidth: '100px', opacity: 0.9, mt: 2 }}
+                sx={{ color: '#F62217', minWidth: '100px', opacity: 0.9, mt: 2 }}
               >
                 Mẹo: &nbsp;Địa chỉ càng chính xác sẽ giúp bạn nhận hàng càng nhanh
               </Typography>
@@ -810,6 +810,12 @@ export default function PaymentDetail() {
                     {paymentData.product_name}
                   </Typography>
                   <Typography sx={{ mt: 1 }}>x{paymentData.quantity}</Typography>
+                  <Typography sx={{ mt: 1 }} color="#F62217">
+                    {paymentData.before_discount.toLocaleString('tr-TR', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </Typography>
                 </Stack>
               </Stack>
               {/* Note */}
@@ -879,7 +885,7 @@ export default function PaymentDetail() {
                 <Typography variant="caption" sx={{ fontSize: '0.9rem', opacity: 0.8 }}>
                   Tồng cộng:
                 </Typography>
-                <Typography sx={{ ml: 2 }} color="#f44336">
+                <Typography sx={{ ml: 2 }} color="#F62217">
                   {(paymentData.before_discount + shippingFee).toLocaleString('tr-TR', {
                     style: 'currency',
                     currency: 'VND',
@@ -914,9 +920,9 @@ export default function PaymentDetail() {
                       <Radio
                         sx={{
                           p: 0.7,
-                          color: '#f44336',
+                          color: '#F62217',
                           '&.Mui-checked': {
-                            color: '#f44336',
+                            color: '#F62217',
                           },
                         }}
                         disabled={paymentData.checkout_status !== 1}
@@ -941,9 +947,9 @@ export default function PaymentDetail() {
                       <Radio
                         sx={{
                           p: 0.7,
-                          color: '#f44336',
+                          color: '#F62217',
                           '&.Mui-checked': {
-                            color: '#f44336',
+                            color: '#F62217',
                           },
                         }}
                         disabled={paymentData.checkout_status !== 1}
@@ -1021,7 +1027,7 @@ export default function PaymentDetail() {
                       sx={{
                         ml: 1,
                         color: 'white',
-                        bgcolor: '#f44336',
+                        bgcolor: '#F62217',
                         textTransform: 'none',
                       }}
                       onClick={() => handleCancel(paymentData.id)}
@@ -1040,7 +1046,7 @@ export default function PaymentDetail() {
                     disableRipple
                     sx={{
                       borderRadius: 0.4,
-                      bgcolor: '#f44336',
+                      bgcolor: '#F62217',
                       color: 'white',
                       px: 2.5,
                       textTransform: 'none',
@@ -1059,7 +1065,7 @@ export default function PaymentDetail() {
                     sx={{
                       minWidth: 137,
                       borderRadius: 0.4,
-                      bgcolor: '#f44336',
+                      bgcolor: '#F62217',
                       color: 'white',
                       px: 1.5,
                       textTransform: 'none',

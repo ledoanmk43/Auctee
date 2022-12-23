@@ -18,7 +18,7 @@ export default function ProductBadge({ auction, index, setLoaded }) {
   const { lastMessage } = useWebSocket(socketUrl);
 
   const handleClick = (auction) => {
-    window.location.assign(`/auctee/auction/detail/?id=${auction.Id}&product=${auction.product_id}`);
+    window.location.assign(`/auctee/auction/detail?id=${auction.Id}&product=${auction.product_id}`);
     window.localStorage.setItem(`NOTI_${auction.Id}`, false);
   };
   const notificationsLabel = (count) => {

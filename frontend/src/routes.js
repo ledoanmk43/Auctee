@@ -18,8 +18,11 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import PaymentDetail from './pages/PaymentDetail';
 import OrderDetail from './pages/OrderDetail';
+import ShopDetail from './pages/ShopDetail';
 import SearchProduct from './pages/SearchProduct';
 import Sale from './pages/Sale';
+import Admin from './pages/Admin';
+import Accounts from './pages/Accounts';
 
 import DashboardApp from './pages/DashboardApp';
 
@@ -35,6 +38,7 @@ export default function Router() {
         { path: 'auction/detail', element: <ProductDetail /> },
         { path: 'search', element: <SearchProduct /> },
         { path: 'user/profile', element: <User /> },
+        { path: 'shop/profile', element: <ShopDetail /> },
         { path: 'user/change-password', element: <ChangePwd /> },
         { path: 'user/address', element: <Address /> },
         { path: 'user/product-list', element: <Inventory /> },
@@ -44,6 +48,8 @@ export default function Router() {
         { path: 'blog', element: <Blog /> },
         { path: 'user/order', element: <PaymentDetail /> },
         { path: 'user/sale/detail/order', element: <OrderDetail /> },
+        { path: 'user/administrator/dashboard', element: <Admin /> },
+        { path: 'user/administrator/accounts', element: <Accounts /> },
       ],
     },
     {

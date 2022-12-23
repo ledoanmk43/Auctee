@@ -280,7 +280,14 @@ func (a *AuctionController) GetAllAuctionsByUserId(ctx *gin.Context) {
 		return
 	}
 
-	auctions, err := a.AuctionService.GetAllAuctionsByUserId(claims.UserId)
+	uid := claims.UserId
+	userId, _ := strconv.Atoi(ctx.Query("id"))
+
+	if userId > 0 {
+		uid = uint(userId)
+	}
+
+	auctions, err := a.AuctionService.GetAllAuctionsByUserId(uid)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "fail to get all auctions",

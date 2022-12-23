@@ -90,12 +90,12 @@ export default function SearchProduct() {
               to="/auctee/home"
               size="large"
               sx={{
-                bgcolor: '#f44336',
+                bgcolor: '#F62217',
                 '&:hover': {
                   opacity: 0.9,
                   bgcolor: 'transparent',
-                  color: '#f44336',
-                  border: '1px solid #f44336',
+                  color: '#F62217',
+                  border: '1px solid #F62217',
                 },
               }}
               variant="contained"
@@ -111,7 +111,7 @@ export default function SearchProduct() {
     <Page title="Search">
       <Container>
         <Typography variant="h4" sx={{ mb: 2 }}>
-          Results
+          Kết quả tìm kiếm cho: {kwd && kwd}
         </Typography>
 
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>

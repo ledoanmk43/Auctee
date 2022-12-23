@@ -189,7 +189,7 @@ export default function ProductDetail() {
                       opacity: 0.8,
                       px: 1.5,
                       pb: 0.2,
-                      border: '2px solid #f44336',
+                      border: '2px solid #F62217',
                       borderRadius: 1,
                       // maxHeight: '22.63px',
                     }}
@@ -264,7 +264,7 @@ export default function ProductDetail() {
                       sx={{ color: 'grey !important' }}
                       variant="caption"
                       component={RouterLink}
-                      to="/auctee/user/profile"
+                      to={`/auctee/shop/profile?id=${ownerData.id}`}
                     >
                       Thông tin chi tiết
                     </Link>
