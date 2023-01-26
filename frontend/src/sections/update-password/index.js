@@ -42,6 +42,7 @@ export default function ChangePasswordForm() {
     formState: { isSubmitting },
   } = methods;
 
+  const [errorMessage, setErrorMessage] = useState('');
   const onSubmit = async (data) => {
     if (data.confirmpassword !== data.newpassword) {
       setIsUpdated(false);
@@ -70,19 +71,24 @@ export default function ChangePasswordForm() {
 
       mode: 'cors',
     }).then((res) => {
+      console.log(res);
       if (res.status === 200) {
         setIsUpdated(true);
         setIsWrongPwd(false);
         setIsSamePwd(false);
         setIsWrongConfirm(false);
+        setErrorMessage('');
         navigate(0);
       }
-      // if (res.status === 409 || res.status === 500) {
-      //   setIsSamePwd(true);
-      //   setIsUpdated(false);
-      //   setIsWrongPwd(false);
-      //   setIsWrongConfirm(false);
-      // }
+      if (res.status === 400) {
+        setIsWrongPwd(false);
+        setIsSamePwd(false);
+        setIsUpdated(false);
+        setIsWrongConfirm(false);
+        res.json().then((data) => {
+          setErrorMessage(data.message);
+        });
+      }
       if (res.status === 401) {
         setIsWrongPwd(true);
         setIsSamePwd(false);
@@ -214,6 +220,18 @@ export default function ChangePasswordForm() {
           </Typography>
         )}
       </Stack>
+      {errorMessage.length > 0 && (
+        <Stack alignItems="right" direction="row" sx={{ maxWidth: '570px', pb: 3, ml: 30 }}>
+          <Typography
+            textAlign="
+                left"
+            variant="caption"
+            sx={{ minWidth: '150px', color: 'red' }}
+          >
+            {errorMessage}
+          </Typography>
+        </Stack>
+      )}
       {isUpdated && (
         <Stack alignItems="right" direction="row" sx={{ maxWidth: '570px', pb: 3, ml: 30 }}>
           <Typography

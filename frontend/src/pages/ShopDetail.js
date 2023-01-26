@@ -43,7 +43,7 @@ export default function ShopDetail() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const userId = searchParams.get('id');
+  const userId = searchParams.get('user');
 
   const [userData, setUserData] = useState();
 
@@ -105,7 +105,7 @@ export default function ShopDetail() {
               <Typography fontSize={'1.2rem'} variant="body2" sx={{ color: 'black' }}>
                 {userData?.shopname}
               </Typography>
-              <Typography variant="caption" sx={{ color: 'black', position: 'relative' }}>
+              <Typography variant="caption" sx={{ color: 'green', position: 'relative' }}>
                 Điểm uy tín : {userData?.honor_point} &nbsp;
               </Typography>
               <Typography

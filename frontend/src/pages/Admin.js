@@ -23,6 +23,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { Icon } from '@iconify/react';
 import { ProductSort, ProductList, ProductFilterSidebar } from '../sections/@dashboard/products';
+import DashboardApp from './DashboardApp';
 
 const Page = lazy(() => import('../components/Page'));
 const UpdateProfileForm = lazy(() => import('../sections/update-profile'));
@@ -71,7 +72,7 @@ export default function Admin() {
 
   return (
     <Suspense startTransition callback={<></>}>
-      <Page sx={{ minHeight: 580 }} title="Admin Dashboard">
+      <Page sx={{ minHeight: 580, maxWidth: 980 }} title="Admin Dashboard">
         <RootStyle sx={{ px: 3, py: 2 }}>
           {/* Heading */}
           <Stack direction="row">
@@ -165,10 +166,8 @@ export default function Admin() {
           </Stack>
         </RootStyle>
         <Container sx={{ my: 3 }}>
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Tất cả các phiên đấu giá đang hoạt động
-          </Typography>
-          {auctionsData && <ProductList auctions={auctionsData} />}
+          <DashboardApp />
+          {/* {auctionsData && <ProductList auctions={auctionsData} />} */}
         </Container>
       </Page>
     </Suspense>

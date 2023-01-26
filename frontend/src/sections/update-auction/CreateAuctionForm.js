@@ -149,6 +149,7 @@ export default function CreateProductForm() {
         setOpen(true);
       }
     });
+    setIdList([]);
   };
 
   const [productsData, setProductData] = useState();
@@ -453,7 +454,10 @@ export default function CreateProductForm() {
             <Button
               size="medium"
               variant="outlined"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                setIdList([]);
+              }}
               sx={{
                 px: 1.6,
                 position: 'absolute',

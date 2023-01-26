@@ -260,7 +260,9 @@ export default function Purchase() {
                         {payment.shopname}
                       </Link>
                       <Button
-                        onClick={() => navigate(`/auctee/shop/profile?id=${payment.owner_id}`)}
+                        onClick={() =>
+                          navigate(`/auctee/shop/profile?user=${payment.owner_id}&name=${payment.shopname}`)
+                        }
                         disableRipple
                         sx={{ ml: 1.5, border: '1px solid black', borderRadius: 0.4, opacity: 0.9, color: 'inherit' }}
                       >

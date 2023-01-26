@@ -177,6 +177,6 @@ export default function AddressList() {
       </Stack>
     ))
   ) : (
-    <>Có lỗi xảy ra</>
+    <>Bạn chưa có thông tin địa chỉ</>
   );
 }

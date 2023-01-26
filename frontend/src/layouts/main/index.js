@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 // material
 import { styled, useTheme } from '@mui/material/styles';
@@ -80,84 +80,86 @@ export default function MainLayout() {
   }, [userData]);
 
   return userData ? (
-    <RootStyle>
-      <MainNavbar userData={userData} onOpenSidebar={() => setOpen(true)} />
-      <div style={{ margin: 'auto', display: 'flex', flexDirection: 'row' }}>
-        <Sidebar userData={userData} />
-        <MainStyle userData={userData}>
-          <Outlet context={userData} />
-          <ProductCartWidget />
-        </MainStyle>
-      </div>
-      <Stack sx={{ bgcolor: 'white', pb: 1 }} alignItems="center">
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          sx={{
-            px: 30,
-            py: 2,
-            bgcolor: 'white',
-            minHeight: 200,
-            borderTop: `5px solid ${theme.palette.background.main}`,
-            minWidth: '100%',
-          }}
-        >
-          {/* One */}
-          <Stack>
-            <Typography sx={{ mb: 1.5 }} fontWeight={600} variant="body1">
-              CHĂM SÓC KHÁCH HÀNG
-            </Typography>
-            <Typography sx={{ my: 0.5 }} variant="body2">
-              Trung Tâm Trợ Giúp
-            </Typography>
-            <Typography sx={{ my: 0.5 }} variant="body2">
-              Hướng Dẫn Bán hàng
-            </Typography>
-            <Typography sx={{ my: 0.5 }} variant="body2">
-              Hướng Dẫn Mua hàng
-            </Typography>
-            <Typography sx={{ my: 0.5 }} variant="body2">
-              Chăm Sóc Khách Hàng
-            </Typography>
-          </Stack>
-          {/* Two */}
-          <Stack alignItems="flex-start">
-            <Typography fontWeight={600} variant="body1">
-              THANH TOÁN
-            </Typography>
-            <Stack direction="row" alignItems="center">
-              <CardMedia component="img" height="100" image="/static/momo.png" alt="MoMo" />
-            </Stack>
-          </Stack>
-          {/* Three */}
-          <Stack>
-            <Typography sx={{ mb: 1.5 }} fontWeight={600} variant="body1">
-              THEO DÕI CHÚNG TÔI TRÊN
-            </Typography>
-            <Stack sx={{ my: 0.5 }} direction="row" alignItems="center">
-              <Icon icon="ri:facebook-box-fill" />
-              <Typography sx={{ mx: 1 }} variant="body2">
-                Facebook
+    <Suspense fallback={<></>}>
+      <RootStyle>
+        <MainNavbar userData={userData} onOpenSidebar={() => setOpen(true)} />
+        <div style={{ margin: 'auto', display: 'flex', flexDirection: 'row' }}>
+          <Sidebar userData={userData} />
+          <MainStyle userData={userData}>
+            <Outlet context={userData} />
+            <ProductCartWidget />
+          </MainStyle>
+        </div>
+        <Stack sx={{ bgcolor: 'white', pb: 1 }} alignItems="center">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            sx={{
+              px: 30,
+              py: 2,
+              bgcolor: 'white',
+              minHeight: 200,
+              borderTop: `5px solid ${theme.palette.background.main}`,
+              minWidth: '100%',
+            }}
+          >
+            {/* One */}
+            <Stack>
+              <Typography sx={{ mb: 1.5 }} fontWeight={600} variant="body1">
+                CHĂM SÓC KHÁCH HÀNG
+              </Typography>
+              <Typography sx={{ my: 0.5 }} variant="body2">
+                Trung Tâm Trợ Giúp
+              </Typography>
+              <Typography sx={{ my: 0.5 }} variant="body2">
+                Hướng Dẫn Bán hàng
+              </Typography>
+              <Typography sx={{ my: 0.5 }} variant="body2">
+                Hướng Dẫn Mua hàng
+              </Typography>
+              <Typography sx={{ my: 0.5 }} variant="body2">
+                Chăm Sóc Khách Hàng
               </Typography>
             </Stack>
-            <Stack sx={{ my: 0.5 }} direction="row" alignItems="center">
-              <Icon icon="ri:instagram-fill" />
-              <Typography sx={{ mx: 1 }} variant="body2">
-                Instagram
+            {/* Two */}
+            <Stack alignItems="flex-start">
+              <Typography fontWeight={600} variant="body1">
+                THANH TOÁN
               </Typography>
+              <Stack direction="row" alignItems="center">
+                <CardMedia component="img" height="100" image="/static/momo.png" alt="MoMo" />
+              </Stack>
             </Stack>
-            <Stack sx={{ my: 0.5 }} direction="row" alignItems="center">
-              <Icon icon="mdi:linkedin" />
-              <Typography sx={{ mx: 1 }} variant="body2">
-                LinkedIn
+            {/* Three */}
+            <Stack>
+              <Typography sx={{ mb: 1.5 }} fontWeight={600} variant="body1">
+                THEO DÕI CHÚNG TÔI TRÊN
               </Typography>
+              <Stack sx={{ my: 0.5 }} direction="row" alignItems="center">
+                <Icon icon="ri:facebook-box-fill" />
+                <Typography sx={{ mx: 1 }} variant="body2">
+                  Facebook
+                </Typography>
+              </Stack>
+              <Stack sx={{ my: 0.5 }} direction="row" alignItems="center">
+                <Icon icon="ri:instagram-fill" />
+                <Typography sx={{ mx: 1 }} variant="body2">
+                  Instagram
+                </Typography>
+              </Stack>
+              <Stack sx={{ my: 0.5 }} direction="row" alignItems="center">
+                <Icon icon="mdi:linkedin" />
+                <Typography sx={{ mx: 1 }} variant="body2">
+                  LinkedIn
+                </Typography>
+              </Stack>
             </Stack>
           </Stack>
+          <Typography>Đấu giá Trực tuyến</Typography>
+          <Typography>© 2022 Auctee</Typography>
         </Stack>
-        <Typography>Đấu giá Trực tuyến</Typography>
-        <Typography>© 2022 Auctee</Typography>
-      </Stack>
-    </RootStyle>
+      </RootStyle>
+    </Suspense>
   ) : (
     <></>
   );

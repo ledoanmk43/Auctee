@@ -104,7 +104,7 @@ export default function ProductDetail() {
   return isFetching ? (
     <></>
   ) : (
-    <Page title={auction.name}>
+    <Page title={auction?.name}>
       <RootStyle>
         <Container
           sx={{
@@ -122,7 +122,7 @@ export default function ProductDetail() {
                 <ImageViewer>
                   <img
                     style={{ width: '100%', height: '100%', objectFit: 'cover', justifyContent: 'center' }}
-                    src={auction.image_path}
+                    src={auction?.image_path}
                     alt=""
                   />
                 </ImageViewer>
@@ -131,7 +131,7 @@ export default function ProductDetail() {
                 <ImageViewer>
                   <img
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    src={product.product_images.filter((item) => item.path !== auction.image_path)[0]?.path}
+                    src={product?.product_images.filter((item) => item.path !== auction?.image_path)[0]?.path}
                     alt=""
                   />
                 </ImageViewer>
@@ -139,7 +139,7 @@ export default function ProductDetail() {
                 <ImageViewer>
                   <img
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    src={product.product_images.filter((item) => item.path !== auction.image_path)[1]?.path}
+                    src={product?.product_images.filter((item) => item.path !== auction?.image_path)[1]?.path}
                     alt=""
                   />
                 </ImageViewer>
@@ -150,7 +150,7 @@ export default function ProductDetail() {
           <Box sx={{ flex: 3, ml: 3 }}>
             <Stack spacing={2} sx={{ px: 1.5, py: 2, height: '100%' }}>
               <Typography sx={{ fontSize: '1.5rem', textOverflow: 'ellipsis' }} variantx="body1 " noWrap>
-                {auction.name}
+                {auction?.name}
               </Typography>
               {/* Rating */}
               <Stack color="#f5b727" direction="row" spacing={1}>
@@ -160,7 +160,7 @@ export default function ProductDetail() {
               {/* Price */}
               <Stack color="#f72d2d" sx={{ mt: 3 }} direction="row" alignItems="center">
                 <Typography sx={{ fontSize: '1.5rem' }} variant="subtitle1">
-                  {product.min_price.toLocaleString('tr-TR', {
+                  {product?.min_price.toLocaleString('tr-TR', {
                     style: 'currency',
                     currency: 'VND',
                   })}
@@ -169,7 +169,7 @@ export default function ProductDetail() {
                   -
                 </Typography>
                 <Typography sx={{ fontSize: '1.5rem' }} variant="subtitle1">
-                  {product.expect_price.toLocaleString('tr-TR', {
+                  {product?.expect_price.toLocaleString('tr-TR', {
                     style: 'currency',
                     currency: 'VND',
                   })}
@@ -177,8 +177,8 @@ export default function ProductDetail() {
               </Stack>
               {/* Quantity */}
               <Stack direction="row" justifyContent="space-between">
-                <Typography variant="body1 ">Số lượng: &nbsp; {product.quantity} </Typography>
-                {new Date(auction.end_time) < new Date() ? (
+                <Typography variant="body1 ">Số lượng: &nbsp; {product?.quantity} </Typography>
+                {new Date(auction?.end_time) < new Date() ? (
                   <Typography
                     fontWeight={600}
                     fontSize={'1.2rem'}
@@ -207,7 +207,7 @@ export default function ProductDetail() {
                     }}
                   >
                     Thời gian kết thúc :&nbsp;
-                    <CountDown time={auction.end_time} />
+                    <CountDown time={auction?.end_time} />
                   </Stack>
                 )}
               </Stack>
@@ -215,7 +215,7 @@ export default function ProductDetail() {
               <Stack direction="row" alignItems="center" sx={{ maxHeight: '62px', overflow: 'hidden' }}>
                 <Typography variant="body1 ">Phân loại: &nbsp;</Typography>
                 <Stack direction="row">
-                  {product.product_options.map((item, index) => {
+                  {product?.product_options.map((item, index) => {
                     return (
                       <Button
                         key={index}
@@ -264,7 +264,7 @@ export default function ProductDetail() {
                       sx={{ color: 'grey !important' }}
                       variant="caption"
                       component={RouterLink}
-                      to={`/auctee/shop/profile?id=${ownerData.id}`}
+                      to={`/auctee/shop/profile?user=${ownerData.id}&name=${ownerData.shopname}`}
                     >
                       Thông tin chi tiết
                     </Link>

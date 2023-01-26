@@ -13,74 +13,50 @@ const Page = lazy(() => import('../components/Page'));
 export default function EcommerceShop() {
   const { loggedIn, setLoggedIn } = useContext(LoginContext);
   const location = useLocation();
-  const [openFilter, setOpenFilter] = useState(false);
-  const listInnerRef = useRef();
-  const handleOpenFilter = () => {
-    setOpenFilter(true);
-  };
+  // const [openFilter, setOpenFilter] = useState(false);
 
-  const handleCloseFilter = () => {
-    setOpenFilter(false);
-  };
+  // const handleOpenFilter = () => {
+  //   setOpenFilter(true);
+  // };
 
-  const [isFetching, setIsFetching] = useState(true);
+  // const handleCloseFilter = () => {
+  //   setOpenFilter(false);
+  // };
 
-  const [currPage, setCurrPage] = useState(1); // storing current page number
-  const [prevPage, setPrevPage] = useState(0); // storing prev page number
-  const [wasLastList, setWasLastList] = useState(false); // setting a flag to know the last list
+  const [currPage, setCurrentPage] = useState(1);
+
+  const [loadDone, setLoadDone] = useState(false);
   const [auctionsData, setAuctionsData] = useState([]);
-
-  const onScroll = () => {
-    if (listInnerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
-        setCurrPage(currPage + 1);
-      }
-    }
-  };
-  // useEffect(() => {
-  //   if (isFetching) {
-  //     handleFetchAuctionData();
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      // eslint-disable-next-line no-unneeded-ternary
-      await fetch(`http://localhost:8080/auctee/auctions?page=${currPage ? currPage : 1}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        mode: 'cors',
-      }).then((response) => {
-        response.json().then((data) => {
-          if (!data.length) {
-            setWasLastList(true);
-            return;
-          }
-          setPrevPage(currPage);
-          setAuctionsData([...auctionsData, ...data]);
-        });
+  const fetchData = async () => {
+    // eslint-disable-next-line no-unneeded-ternary
+    await fetch(`http://localhost:8080/auctee/auctions?page=${currPage}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      mode: 'cors',
+    }).then((response) => {
+      response.json().then((data) => {
+        if (data.length === 0) {
+          setLoadDone(true);
+        }
+        setAuctionsData((datas) => [...datas, ...data]);
       });
-    };
-    if (!wasLastList && prevPage !== currPage) {
-      fetchData();
-    }
-  }, [currPage, wasLastList, prevPage, auctionsData]);
+    });
+  };
+  const handleLoadMore = () => {
+    setCurrentPage(currPage + 1);
+  };
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    currPage > 1 && fetchData();
+  }, [currPage]);
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    auctionsData.length === 0 && fetchData();
+  }, [auctionsData]);
 
   return (
-    <Page
-      onScroll={onScroll}
-      ref={listInnerRef}
-      sx={{
-        height: '100vh',
-        overflowY: 'auto',
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-      }}
-      title="Auctee"
-    >
+    <Page title="Auctee">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
           <CardMedia component="img" height="300" image="/static/banner1.jpg" alt="banner" />
@@ -95,7 +71,19 @@ export default function EcommerceShop() {
         <Typography variant="h4" sx={{ mb: 2 }}>
           Tất cả sản phẩm đang được đấu giá
         </Typography>
-        {auctionsData && <ProductList auctions={auctionsData} />}
+        <Stack>
+          {auctionsData && <ProductList auctions={auctionsData} />}
+          {auctionsData.length !== 0 && (
+            <Button
+              color="error"
+              onClick={() => handleLoadMore()}
+              disableRipple
+              sx={{ mx: 'auto', my: 2, textTransform: 'none' }}
+            >
+              {loadDone ? 'Đã tải xong' : 'Xem thêm'}
+            </Button>
+          )}
+        </Stack>
       </Container>
     </Page>
   );

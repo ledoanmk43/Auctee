@@ -64,7 +64,7 @@ export default function RegisterForm() {
         setLoggedIn(true);
         navigate('/auctee/home', { replace: true });
       }
-      if (res.status === 401) {
+      if (res.status === 400) {
         setIsConflictUserName(true);
         setLoggedIn(false);
         res.json().then((data) => {

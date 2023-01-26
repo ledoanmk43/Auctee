@@ -30,7 +30,7 @@ func NewAccountRepositoryDefault(db *gorm.DB) *AccountRepositoryDefault {
 }
 
 func (a *AccountRepositoryDefault) InsertUser(user *entity.Account) (*entity.Account, error) {
-	if errCheckEmptyField := user.Validate("register"); errCheckEmptyField != nil {
+	if errCheckEmptyField := user.Validate(user.Password); errCheckEmptyField != nil {
 		log.Println("Verify Credential: Error empty field in package repository", errCheckEmptyField)
 		return nil, errCheckEmptyField
 	}
@@ -54,8 +54,14 @@ func (a *AccountRepositoryDefault) UpdatePassword(dto *dto.PasswordToUpdate, use
 	result := a.db.Where("id = ?", userId).Find(&userToUpdate)
 	if result.Error != nil {
 		log.Println("Update Password: Error in package repository: ", result.Error)
-		return errors.New("Unauthorized")
+		return errors.New("unauthorized")
 	}
+
+	if errCheckEmptyField := userToUpdate.Validate(dto.NewPassword); errCheckEmptyField != nil {
+		log.Println("bad input: Error empty field in package repository", errCheckEmptyField)
+		return errCheckEmptyField
+	}
+
 	if userToUpdate.CheckPassword(dto.OldPassword) != nil { //compare
 		return errors.New("wrong password")
 	}

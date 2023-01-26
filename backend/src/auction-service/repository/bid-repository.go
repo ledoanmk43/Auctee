@@ -35,7 +35,7 @@ func (b *BidRepositoryDefault) GetAllBidsByAuctionId(auctionId uint) (*[]entity.
 
 func (b *BidRepositoryDefault) GetAllBidsByUserId(userId uint) (*[]entity.Bid, error) {
 	var bids *[]entity.Bid
-	record := b.connection.Where("user_id = ? ", userId).Distinct("auction_id").Find(&bids)
+	record := b.connection.Where("user_id = ? ", userId).Distinct("auction_id").Order("created_at desc").Find(&bids)
 	if record.Error != nil {
 		log.Println("Get auctions: Error get all bid in repo", record.Error)
 		return nil, record.Error

@@ -15,6 +15,9 @@ import {
   TableContainer,
   TablePagination,
   Stack,
+  Tooltip,
+  Input,
+  Button,
 } from '@mui/material';
 
 import { styled, useTheme, alpha } from '@mui/material/styles';
@@ -22,6 +25,7 @@ import { Icon } from '@iconify/react';
 import Scrollbar from '../components/Scrollbar';
 import { UserListHead } from '../sections/@dashboard/user';
 import { ProductSort, ProductList, ProductFilterSidebar } from '../sections/@dashboard/products';
+import Iconify from '../components/Iconify';
 
 const Page = lazy(() => import('../components/Page'));
 const UpdateProfileForm = lazy(() => import('../sections/update-profile'));
@@ -34,6 +38,19 @@ const RootStyle = styled('div')(({ theme }) => ({
     backgroundColor: 'white',
     height: '100%',
   },
+}));
+
+const APPBAR_MOBILE = 32;
+const SearchbarStyle = styled('div')(({ theme }) => ({
+  width: 250,
+  display: 'flex',
+
+  border: '1px solid grey',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: APPBAR_MOBILE,
+  padding: theme.spacing(0, 4),
+  backgroundColor: 'white',
 }));
 
 const TABLE_HEAD = [
@@ -117,7 +134,7 @@ export default function Accounts() {
 
   return (
     <Suspense startTransition callback={<></>}>
-      <Page sx={{ minHeight: 580 }} title="Accounts Dashboard">
+      <Page sx={{ minHeight: 580, maxWidth: 980 }} title="Accounts Dashboard">
         <RootStyle sx={{ px: 3, py: 2 }}>
           {/* Heading */}
           <Stack direction="row">
@@ -211,9 +228,47 @@ export default function Accounts() {
           </Stack>
         </RootStyle>
         <Container sx={{ my: 3, px: '0 !important' }}>
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Danh sách tất cả tài khoản: {userData.total_user}
-          </Typography>
+          <Stack direction="row" alignContent="center" justifyContent="space-between">
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Danh sách tất cả tài khoản: {userData.total_user}
+            </Typography>{' '}
+            <SearchbarStyle>
+              <Input
+                type="number"
+                disableUnderline
+                placeholder="Tìm kiếm theo số điện thoại"
+                inputProps={{
+                  sx: {
+                    '&::placeholder': {
+                      fontSize: '0.87rem',
+                      opacity: 0.62,
+                      color: 'black',
+                      fontWeight: 200,
+                    },
+                  },
+                }}
+                sx={{
+                  mr: 1,
+                  ml: -3,
+                }}
+              />
+              <Button
+                type="submit"
+                sx={{
+                  ':hover': {
+                    bgcolor: `${alpha(theme.palette.background.main, 0.8)}`,
+                  },
+                  borderRadius: 0,
+                  mr: -4.2,
+                  py: 0.75,
+                  px: 2,
+                  backgroundColor: `${alpha(theme.palette.background.main, 0.9)}`,
+                }}
+              >
+                <Iconify icon="eva:search-fill" sx={{ color: 'white', width: 20, height: 20, fontSize: '0.9rem' }} />
+              </Button>
+            </SearchbarStyle>
+          </Stack>
           <Container sx={{ px: '0 !important', bgcolor: 'transparent' }}>
             <Card
               sx={{
@@ -247,38 +302,43 @@ export default function Accounts() {
                           const isItemSelected = selected.indexOf(userId) !== -1;
 
                           return (
-                            <TableRow
-                              hover
-                              key={index}
-                              tabIndex={-1}
-                              role="checkbox"
-                              selected={isItemSelected}
-                              aria-checked={isItemSelected}
-                            >
-                              <TableCell component="th" scope="row" padding="none" sx={{ pl: 2 }}>
-                                <Stack direction="row" alignItems="center" spacing={2}>
-                                  {/* <Avatar alt={nickname} src={avatarUrl} /> */}
-                                  <Typography
-                                    sx={{
-                                      color: 'inherit',
-                                    }}
-                                    variant="subtitle2"
-                                    noWrap
-                                  >
-                                    {user.shopname}
-                                  </Typography>
-                                  {user.userId === userData.id && (
-                                    <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                                      (Tôi)
+                            <Tooltip enterDelay={200} arrow followCursor title="Chi tiết">
+                              <TableRow
+                                onClick={() =>
+                                  navigate(`/auctee/shop/profile?user=${user.userId}&name=${user.shopname}`)
+                                }
+                                hover
+                                key={index}
+                                tabIndex={-1}
+                                role="checkbox"
+                                selected={isItemSelected}
+                                aria-checked={isItemSelected}
+                              >
+                                <TableCell component="th" scope="row" padding="none" sx={{ pl: 2 }}>
+                                  <Stack direction="row" alignItems="center" spacing={2}>
+                                    {/* <Avatar alt={nickname} src={avatarUrl} /> */}
+                                    <Typography
+                                      sx={{
+                                        color: 'inherit',
+                                      }}
+                                      variant="subtitle2"
+                                      noWrap
+                                    >
+                                      {user.shopname}
                                     </Typography>
-                                  )}
-                                </Stack>
-                              </TableCell>
-                              <TableCell align="left">{user.email}</TableCell>
-                              <TableCell align="left">{user.phone}</TableCell>
-                              <TableCell align="left">{user.phone}</TableCell>
-                              <TableCell align="left">{user.role === 1 ? 'Quản trị viên' : 'Người dùng'}</TableCell>
-                            </TableRow>
+                                    {user.userId === userData.id && (
+                                      <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                                        (Tôi)
+                                      </Typography>
+                                    )}
+                                  </Stack>
+                                </TableCell>
+                                <TableCell align="left">{user.email}</TableCell>
+                                <TableCell align="left">{user.phone}</TableCell>
+                                <TableCell align="left">{user.timeCreated}</TableCell>
+                                <TableCell align="left">{user.role === 1 ? 'Quản trị viên' : 'Người dùng'}</TableCell>
+                              </TableRow>
+                            </Tooltip>
                           );
                         })}
                       {emptyRows > 0 && (

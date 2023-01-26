@@ -88,14 +88,14 @@
     {
       "endpoint": "/auctee/register",
       "method": "POST",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "input_headers": [
         "Cookie","Content-Type"
       ],
       "backend": [
         {
           "url_pattern": "/auctee/register",
-          "encoding": "json",
+          "encoding": "no-op",
           "sd": "static",
           "method": "POST",
           "host": [
@@ -453,7 +453,7 @@
       "input_query_strings": [
         "id"
       ],
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/auctee/user/auction/detail",

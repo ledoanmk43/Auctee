@@ -73,6 +73,7 @@ func (a *AccountService) UpdatePassword(dto *dto.PasswordToUpdate, userId uint) 
 		log.Println("Update Password: Error empty field in package repository: empty input")
 		return errors.New("password too short")
 	}
+
 	err := a.AccountRepository.UpdatePassword(dto, userId)
 	if err != nil {
 		log.Println("Error: Error in package service: ", err.Error())

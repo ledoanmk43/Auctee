@@ -4,8 +4,8 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strings"
 	"time"
+	"unicode"
 )
 
 type Account struct {
@@ -62,31 +62,48 @@ func (user *Account) BeforeSave() error {
 	return nil
 }
 
-func (user *Account) Validate(action string) error {
-	switch strings.ToLower(action) {
-	case "login":
-		if len(strings.TrimSpace(user.Username)) == 0 {
-			return errors.New("required username")
+func (user *Account) Validate(pass string) error {
+	var (
+		upp, low, num, sym bool
+		tot                uint8
+	)
+	var message error
+	for _, char := range pass {
+		switch {
+		case unicode.IsUpper(char):
+			upp = true
+			tot++
+		case unicode.IsLower(char):
+			low = true
+			tot++
+
+		case unicode.IsNumber(char):
+			num = true
+			tot++
+
+		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+			sym = true
+			tot++
+
+		default:
+			return message
 		}
-		if len(strings.TrimSpace(user.Password)) == 0 {
-			return errors.New("required password")
-		}
-		return nil
-	case "register":
-		if len(strings.TrimSpace(user.Username)) == 0 {
-			return errors.New("required username")
-		}
-		if len(strings.TrimSpace(user.Password)) == 0 {
-			return errors.New("required password")
-		}
-		return nil
-	default:
-		if len(strings.TrimSpace(user.Username)) == 0 {
-			return errors.New("required username")
-		}
-		if len(strings.TrimSpace(user.Password)) == 0 {
-			return errors.New("required password")
-		}
-		return nil
 	}
+
+	if !upp || !low || !num || !sym || tot < 6 {
+		if upp == false {
+			message = errors.New("cần ít nhất một ký tự in hoa")
+		}
+		if low == false {
+			message = errors.New("cần ít nhất một ký tự viết thường")
+		}
+		if num == false {
+			message = errors.New("cần ít nhất một số tự nhiên")
+		}
+		if sym == false {
+			message = errors.New("cần ít nhất một ký tự đặc biệt")
+		}
+		return message
+	}
+	return nil
 }

@@ -249,6 +249,9 @@ func (a *AccountController) UpdatePassword(ctx *gin.Context) {
 				"message": errUpdate.Error(),
 			})
 		}
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errUpdate.Error(),
+		})
 		ctx.Abort()
 		return
 	}
